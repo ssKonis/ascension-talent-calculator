@@ -1,0 +1,36 @@
+*{
+  padding: 0;margin:0;;box-sizing: border-box;
+}
+
+body{
+  display:grid;
+  grid-template-rows: 1.5fr 8fr 1fr;
+  height: 100vh;
+  width: 100vw;
+}
+.wrapper{
+  display: grid;
+  margin: 20px;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(auto-fill, 100px);
+  
+}
+.icon{
+  display:grid;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid;
+  color: white;
+}
+
+header{
+  background-color: red;
+}
+.main{
+  background-image: url("images/backgrounds/druid_balance.jpg");
+  background-repeat: no-repeat;
+  background-size: 100% 100%
+}
+footer{
+  background: green;
+}

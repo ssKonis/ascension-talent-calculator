@@ -1,0 +1,19 @@
+:before,:after{
+  padding: 0;margin:0;
+}
+
+body{
+  display:grid;
+  grid-template-rows: 1fr 4fr 1fr;
+}
+.wrapper{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+header{
+  background-color: red;
+}
+main{
+  background-color: blue;
+}

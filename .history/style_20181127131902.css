@@ -1,0 +1,12 @@
+:before,:after{
+  padding: 0;margin:0;
+}
+
+.header{
+  position: fixed;
+  height:10%
+}
+.wrapper{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
