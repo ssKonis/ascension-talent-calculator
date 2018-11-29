@@ -79,8 +79,7 @@ header > div{
   background-repeat: no-repeat;
   background-size: 100% 100%;
   padding:5%;
-  background-clip: content-box;
-  background-color: black;
+  background-clip: padding-box;
 
   display: grid;
   width: 100vw;

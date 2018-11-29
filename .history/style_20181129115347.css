@@ -66,8 +66,8 @@ header > div{
 
 
   /*Set snap points*/
-  -webkit-scroll-snap-points-x: repeat(100vw);
-  -ms-scroll-snap-points-x: repeat(100vw);
+  -webkit-scroll-snap-points-x: repeat(320px);
+  -ms-scroll-snap-points-x: repeat(320px);
       scroll-snap-points-x: repeat(100vw);
   -webkit-scroll-snap-type: mandatory;
   -ms-scroll-snap-type: mandatory;
@@ -78,12 +78,9 @@ header > div{
 .tree{
   background-repeat: no-repeat;
   background-size: 100% 100%;
-  padding:5%;
-  background-clip: content-box;
-  background-color: black;
 
   display: grid;
-  width: 100vw;
+  width: 100vh;
   height: 800px; /*Change to auto once icons are placed*/
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(11, 1fr);

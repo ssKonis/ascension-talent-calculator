@@ -23,8 +23,6 @@
   display: grid;
   grid-template-rows: var(--header-height) auto; /*1vh = the header, auto = footer + body */
   height: calc(100vh - (var(--footer-height))); /* height = size of page minus footer*/
-  background: black;
-
 }
 .panel-body {
   overflow: auto;
@@ -60,28 +58,17 @@ header > div{
   grid-template-columns: 1fr 1fr 1fr;
   overflow-x: auto;
 
-
-
-  -webkit-overflow-scrolling: touch; /*improve swipe smoothness*/
-
-
-  /*Set snap points*/
-  -webkit-scroll-snap-points-x: repeat(100vw);
-  -ms-scroll-snap-points-x: repeat(100vw);
-      scroll-snap-points-x: repeat(100vw);
-  -webkit-scroll-snap-type: mandatory;
-  -ms-scroll-snap-type: mandatory;
-      scroll-snap-type: mandatory;
+  /* padding:0 5%;
+  background: black; */
  
 }
 
 .tree{
+  /* margin:5% 0; */
   background-repeat: no-repeat;
   background-size: 100% 100%;
-  padding:5%;
-  background-clip: content-box;
-  background-color: black;
 
+  
   display: grid;
   width: 100vw;
   height: 800px; /*Change to auto once icons are placed*/

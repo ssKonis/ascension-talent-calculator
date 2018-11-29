@@ -78,9 +78,6 @@ header > div{
 .tree{
   background-repeat: no-repeat;
   background-size: 100% 100%;
-  padding:5%;
-  background-clip: content-box;
-  background-color: black;
 
   display: grid;
   width: 100vw;
