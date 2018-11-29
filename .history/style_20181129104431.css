@@ -59,6 +59,7 @@ header > div{
   background-image: url("images/backgrounds/druid_feral.jpg");
 }
 .tree3{
+  color:black;
   background-image: url("images/backgrounds/druid_restoration.jpg");
 }
 
@@ -66,7 +67,7 @@ header > div{
   background-repeat: no-repeat;
   background-size: 100% 100%;
   display: grid;
-  height: 800px; /*Change to auto once icons are placed*/
+  height: 800px;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(11, 1fr)
   

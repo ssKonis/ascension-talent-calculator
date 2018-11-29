@@ -52,6 +52,10 @@ header > div{
 
 /* Content */
 
+main{
+  margin:5%;
+}
+
 .tree1{
   background-image: url("images/backgrounds/druid_balance.jpg");
 }
@@ -66,7 +70,7 @@ header > div{
   background-repeat: no-repeat;
   background-size: 100% 100%;
   display: grid;
-  height: 800px; /*Change to auto once icons are placed*/
+  height: 800px;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(11, 1fr)
   

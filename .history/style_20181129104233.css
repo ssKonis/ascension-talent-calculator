@@ -63,10 +63,11 @@ header > div{
 }
 
 .tree{
+  grid-gap: 20px;
   background-repeat: no-repeat;
   background-size: 100% 100%;
   display: grid;
-  height: 800px; /*Change to auto once icons are placed*/
+  height: 800px;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(11, 1fr)
   

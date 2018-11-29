@@ -1,8 +1,3 @@
-:root{
---header-height:10vh;
---footer-height:10vh;
-}
-
 
 /* Body */
 *{
@@ -14,15 +9,15 @@
 /* Containers */
 .wrapper {
   display: grid;
-  grid-template-rows: auto var(--footer-height); /*auto = the body+header, 10vh = the footer*/
+  grid-template-rows: auto 10vh; /*auto = the body+header, 10vh = the footer*/
   grid-template-columns: 1fr;
   height: 100vh;
 }
 
 .panel {
   display: grid;
-  grid-template-rows: var(--header-height) auto; /*1vh = the header, auto = footer + body */
-  height: calc(100vh - (var(--footer-height))); /* height = size of page minus footer*/
+  grid-template-rows: 10vh auto; /*1vh = the header, auto = footer + body */
+  height: calc(100vh - 10vh); /* height = size of page minus footer*/
 }
 .panel-body {
   overflow: auto;
@@ -66,7 +61,8 @@ header > div{
   background-repeat: no-repeat;
   background-size: 100% 100%;
   display: grid;
-  height: 800px; /*Change to auto once icons are placed*/
+  margin: 5%;
+  height: 800px;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(11, 1fr)
   
