@@ -6,6 +6,7 @@
 }
 
 body{
+ 
   height: 100%;
   width: 100%;
 }
@@ -16,12 +17,10 @@ header{
   position: absolute; 
   top: 0px;
   left:0px;
-  right:0px;
-  overflow:hidden;
-  height: 10%;
+  height 100px;
   display: grid;
-  grid-template-columns: 2fr 1fr 2fr;
-  background-color: rgba(red, green, blue, alpha);
+  grid-template-columns: repeat(3, 1fr);
+  background-color: red;
 }
 header > div{
   border: 2px solid;
@@ -31,39 +30,18 @@ header > div{
   text-align: center;
 }
 
-.headerClassIcon > img{
-  height: 50px;
-  width: 50x;
-  border-radius: 50%;
-}
-
 
 /* Content */
 main{
-  position: absolute; 
-  top: 10%;
-  bottom: 10%;
-  left:0px;
-  right:0px;
-  overflow:scroll;
   background-color: black;
 }
-.tree1{
+.wrapper{
   background-image: url("images/backgrounds/druid_balance.jpg");
-}
-.tree2{
-  background-image: url("images/backgrounds/druid_feral.jpg");
-}
-.tree3{
-  background-image: url("images/backgrounds/druid_restoration.jpg");
-}
-
-.tree{
   background-repeat: no-repeat;
   background-size: 100% 100%;
   display: grid;
-  margin: 5%;
-  height: 800px;
+  margin: 20px;
+  height: 1600px;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(11, 1fr)
   
@@ -72,28 +50,16 @@ main{
   display:grid;
   justify-content: center;
   align-items: center;
-  /* border: 1px solid; */
+  border: 1px solid;
   color: white;
-}
-
-.icon > img{
-  height: 50px;
-  width: 50px;
-  filter: grayscale(100);
 }
 
 /* Footer */
 
 footer{
-  position: absolute; 
-  bottom: 0px;
-  left:0px;
-  right:0px;
-  overflow:hidden;
   display: grid;
   background: green;
-  grid-template-columns: repeat(4, 1fr);
-  height:10%;
+  grid-template-columns: repeat(4, 1fr)
 }
 footer > div{
   text-align: center;

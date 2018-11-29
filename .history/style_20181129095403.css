@@ -63,7 +63,7 @@ main{
   background-size: 100% 100%;
   display: grid;
   margin: 5%;
-  height: 800px;
+  height: 1600px;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(11, 1fr)
   
@@ -77,8 +77,8 @@ main{
 }
 
 .icon > img{
-  height: 50px;
-  width: 50px;
+  height: 100px;
+  width: 100px;
   filter: grayscale(100);
 }
 

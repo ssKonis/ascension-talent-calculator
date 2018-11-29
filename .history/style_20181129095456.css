@@ -60,10 +60,10 @@ main{
 
 .tree{
   background-repeat: no-repeat;
-  background-size: 100% 100%;
+  background-size: 200px 100px;
   display: grid;
   margin: 5%;
-  height: 800px;
+  height: 1600px;
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(11, 1fr)
   
