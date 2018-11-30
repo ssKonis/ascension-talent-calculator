@@ -47,7 +47,7 @@
     display:grid;
     justify-content: center;
     width: 100vw;
-    grid-template-columns: 10vw auto;
+    grid-template-columns: 1fr 1fr;
   }
 
 }

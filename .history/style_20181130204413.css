@@ -25,8 +25,7 @@
     direction: rtl;
 
     display:grid;
-    /*actual layout is reverse of this*/
-    grid-template-columns: auto 10vw; 
+    grid-template-columns: auto 10vw; /*actual layout is reverse of this*/
     grid-template-rows: repeat(10,10vh);
     height:100vh;
     background: black;
@@ -47,7 +46,7 @@
     display:grid;
     justify-content: center;
     width: 100vw;
-    grid-template-columns: 10vw auto;
+    grid-column-start: 0;
   }
 
 }
@@ -105,8 +104,6 @@ header > div{
   .trees{
     /*Display all trees*/
     grid-template-columns: repeat(3, 1fr);
-      /*Prevents trees from sitting under sidebar/footer at certain sizes*/
-      grid-column-start: 2;
   }
 }
 /*On Mobile*/
@@ -115,9 +112,6 @@ header > div{
     /*Display one tree at a time and add scroll snap functionality*/
     
     grid-template-columns: repeat(3, 100% );
-
-  
-
   }
 }
 /*On All screens*/
@@ -126,7 +120,6 @@ header > div{
   display:grid;
   scroll-snap-type: x mandatory;
   overflow-x:scroll;
-
 }
 
 

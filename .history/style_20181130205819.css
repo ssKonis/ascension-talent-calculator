@@ -105,8 +105,6 @@ header > div{
   .trees{
     /*Display all trees*/
     grid-template-columns: repeat(3, 1fr);
-      /*Prevents trees from sitting under sidebar/footer at certain sizes*/
-      grid-column-start: 2;
   }
 }
 /*On Mobile*/
@@ -116,7 +114,8 @@ header > div{
     
     grid-template-columns: repeat(3, 100% );
 
-  
+    /*Prevents trees from sitting under sidebar/footer at certain sizes*/
+    grid-column-start: 2;
 
   }
 }
