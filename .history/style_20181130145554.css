@@ -71,15 +71,6 @@ header > div{
     grid-template-columns: repeat(3, 1fr);
   }
 }
-/*On Mobile*/
-@media only screen and (max-width: 600px) {
-  .trees{
-    /*Display one tree at a time and add scroll snap functionality*/
-    
-    grid-template-columns: repeat(3, 100% );
-  }
-}
-/*On All screens*/
 .trees{
   /*Positioning*/
   display:grid;
@@ -88,7 +79,14 @@ header > div{
 }
 
 
-
+/*On Mobile*/
+@media only screen and (max-width: 600px) {
+  .trees{
+    /*Display one tree at a time and add scroll snap functionality*/
+    
+    grid-template-columns: repeat(3, 100% );
+  }
+}
 
 
 .tree{

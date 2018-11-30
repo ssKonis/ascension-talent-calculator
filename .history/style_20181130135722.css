@@ -45,7 +45,7 @@
 
 header{
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 2fr;
   background: red;
 }
 header > div{
@@ -57,45 +57,50 @@ header > div{
 }
 
 .headerClassIcon > img{
-  height: 75px;
-  width: 75x;
+  height: 50px;
+  width: 50x;
   border-radius: 50%;
 }
 
 /* Content */
 
-/*On desktop/ipad*/
+/*On large screens*/
 @media only screen and (min-width: 601px) {
+  body {
+      color: purple;
+  }
   .trees{
     /*Display all trees*/
     grid-template-columns: repeat(3, 1fr);
+
   }
 }
-/*On Mobile*/
-@media only screen and (max-width: 600px) {
-  .trees{
-    /*Display one tree at a time and add scroll snap functionality*/
-    
-    grid-template-columns: repeat(3, 100% );
-  }
-}
-/*On All screens*/
 .trees{
   /*Positioning*/
   display:grid;
-  scroll-snap-type: x mandatory;
-  overflow-x:scroll;
 }
 
 
-
+/*On Mobile*/
+@media only screen and (max-width: 600px) {
+  body {
+      color: green;
+  }
+  .trees{
+    /*Display one tree at a time and add scroll snap functionality*/
+    scroll-snap-type: x mandatory;
+    overflow-x:scroll;
+    width:300%;
+    grid-template-columns: repeat(auto-fill,1fr );
+  }
+}
 
 
 .tree{
   scroll-snap-align:center;
 
   background-repeat: no-repeat;
-  background-size: 100% 100%;
+  background-size: 300px 700px;
   padding:5%;
   background-clip: content-box;
   background-color: black;
