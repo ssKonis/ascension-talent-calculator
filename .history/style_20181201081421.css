@@ -21,6 +21,8 @@ body{
 
 
 /* Containers */
+
+
 .wrapper {
   display: grid;
   grid-template-rows: auto var(--footer-height); /*auto = the body+header, 10vh = the footer*/
@@ -28,7 +30,7 @@ body{
   height: 100vh;
 }
 /*On desktop/ipad*/
-@media only screen and (min-width: 600px) {
+@media only screen and (min-width: 601px) {
   .wrapper{
     /*Swaps sides of column layour*/
     direction: rtl;
@@ -38,22 +40,14 @@ body{
   }
 }
 
+
 .panel {
   display: grid;
   grid-template-rows: var(--header-height) auto; /*1vh = the header, auto = footer + body */
   height: calc(100vh - (var(--footer-height))); /* height = size of page minus footer*/
   background: black;
-}
 
-/*On desktop/ipad*/
-@media only screen and (min-width: 600px) {
-  .panel{
-    /*Swaps sides of column layout back to normal*/
-    direction: ltr;
-    grid-column: span 2;
-  }
 }
-
 .panel-body {
   overflow-y: auto;
   display: grid;
@@ -62,13 +56,26 @@ body{
 
 }
 /*On desktop/ipad*/
-@media only screen and (min-width: 600px) {
+@media only screen and (min-width: 601px) {
+  
+
+  .panel{
+    /*Swaps sides of column layout back to normal*/
+    direction: ltr;
+    display: grid;
+    grid-column: span 2;
+  }
   .panel-body{
     
     direction:ltr;
+    display:grid;
+    justify-content: center;
+    align-content: center;
+
     width: 100vw;
     grid-template-columns: 10vw auto;
   }
+
 }
 
 
@@ -104,7 +111,7 @@ header > div{
 }
 
 /*On desktop/ipad*/
-@media only screen and (min-width: 600px) {
+@media only screen and (min-width: 601px) {
   .trees{
     /*Display all trees*/
     grid-template-columns: repeat(3, 1fr);
@@ -163,7 +170,7 @@ header > div{
 /** Footer **/
 
 /*Desktop screens*/
-@media only screen and (min-width: 600px) {
+@media only screen and (min-width: 601px) {
   footer{
     grid-template-rows: repeat(5, 100px); /*need to change to relative values*/
     grid-row: 2/ -1;

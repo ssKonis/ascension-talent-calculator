@@ -21,6 +21,8 @@ body{
 
 
 /* Containers */
+
+
 .wrapper {
   display: grid;
   grid-template-rows: auto var(--footer-height); /*auto = the body+header, 10vh = the footer*/
