@@ -11,3 +11,8 @@ Mobile User Stories:
 	
 Sprint 1:
 	• Set up layout for mobile
+
+Todo
+	1.  
+	2. 
+	3. 

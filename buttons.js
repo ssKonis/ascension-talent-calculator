@@ -9,8 +9,8 @@ $(document).ready(function () { //check document is loaded
     $(this.element).css('background-image', 'url(' + this.image + ')');
   }
 
-  //Icon Blue Print
-  function Icon(name, element) {
+  //ClassIcon Blue Print
+  function ClassIcon(name, element) {
     this.name = name;
     this.element = element;
     this.image = 'https://data.project-ascension.com/files/images/icons/classes/' + name + '.png';
@@ -21,11 +21,38 @@ $(document).ready(function () { //check document is loaded
       loadBackground(element.name); /*Load background images*/
       loadTalents();
       /*Close modal*/
-      modal.css('display', 'none');
-      modal.isOpen = false;
+      toggleModal();
 
       $('#selectedClassIcon').attr('src', element.src)/*Change icon image*/
       selected_class = element.name;
+    }
+  }
+
+  //Talent Blue Print
+  function Talent(id, name, element, image, nRanks) {
+    this.id = id;
+    this.name = name;
+    this.element = element;
+    // this.image = 'https://data.project-ascension.com/files/images/icons/Spell_Nature_AbolishMagic.png';
+    this.image = image;
+    this.tooltip;
+    this.nRanks = nRanks;
+
+    element.onmousedown = function (event) {
+      console.log(event.which)
+      if (event.which == 1) {
+        /* Add point on left click and remove gray filter*/
+        $(this).css('filter', 'none')
+      }
+      if (event.which == 3) {
+        /* Remove point on right click and add gray filter */
+        $(this).css('filter', 'grayscale(100)')
+
+      }
+    }
+    /* On mouse over show tooltip */
+    element.onmouseover = function () {
+
     }
   }
 
@@ -33,18 +60,22 @@ $(document).ready(function () { //check document is loaded
   let elements = $('.modal-content').children().toArray();
 
   let class_names = ['druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'shaman', 'warlock', 'warrior'];
-  let Icons = [];
+  let ClassIcons = [];
   for (let i = 0; i < class_names.length; i++) {
-    let icon = new Icon(class_names[i], elements[i])
-    Icons.push(icon);
+    let icon = new ClassIcon(class_names[i], elements[i])
+    ClassIcons.push(icon);
   }
 
-
+  /* Modal */
   let modal = $('.modal');
   modal.isOpen = false;
 
-  //Toggle modal display on icon click
+  //Toggle modal display on ClassIcon click
   $('#selectedClassIcon').on('click', function () {
+    toggleModal()
+  })
+
+  function toggleModal() {
     if (modal.isOpen) { //Close Modal
       modal.css('display', 'none');
       modal.isOpen = false;
@@ -53,21 +84,22 @@ $(document).ready(function () { //check document is loaded
       modal.css('display', 'block');
       modal.isOpen = true;
     }
-  })
+  }
+
 
   /*Load background*/
   function loadBackground(class_name) {
     //Select div that holds talent trees and populate with relevant data
     let trees = $('.trees').children();
-    let icons = []
+    let class_icons = []
     for (let i = 0; i < 3; i++) {
       let tree = new Tree(class_name, trees[i], i + 1)
-      icons.push(tree);
+      class_icons.push(tree);
     }
   }
 
   function loadTalents() {
-    for (let j = 1; j < 4; j++) {
+    for (let j = 1; j < 4; j++) {/*For each tree*/
       let selector = '#tree' + j
       $(selector).children().empty(); /*Clear previous talents*/
       let n = 44; /* Number of grids per tree */
@@ -77,12 +109,11 @@ $(document).ready(function () { //check document is loaded
         if (i == (6) || i == (11) || i == (19) || i == (27) || i == (42)) {
           let imgElement = document.createElement("img")
           imgElement.src = "/images/talents/genesis.jpg"
-          grids[i].appendChild(imgElement)
+          let talent = new Talent(5, 'poo', imgElement, 5);
+          grids[i].appendChild(talent.element)
         }
       }
     }
-
-
   }
 
   /* Initialize Default Settings */
