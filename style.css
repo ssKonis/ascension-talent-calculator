@@ -85,7 +85,7 @@ header > div{
   text-align: center;
 }
 
-#selected_class > img{
+#selectedClassIcon{
   height: 10vh;
   width: auto;
   z-index: 2;

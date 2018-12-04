@@ -15,11 +15,18 @@ $(document).ready(function () { //check document is loaded
     this.element = element;
     this.image = 'https://data.project-ascension.com/files/images/icons/classes/' + name + '.png';
     element.src = this.image;
+    element.name = name /*Image name*/
+
     element.onclick = function () {
+      loadBackground(element.name); /*Load background images*/
+      loadTalents();
+      /*Close modal*/
       modal.css('display', 'none');
       modal.isOpen = false;
+
+      $('#selectedClassIcon').attr('src', element.src)/*Change icon image*/
+      selected_class = element.name;
     }
-    this.active = false;
   }
 
   // Get placeholder divs
@@ -37,7 +44,7 @@ $(document).ready(function () { //check document is loaded
   modal.isOpen = false;
 
   //Toggle modal display on icon click
-  $('#selected_class').on('click', function () {
+  $('#selectedClassIcon').on('click', function () {
     if (modal.isOpen) { //Close Modal
       modal.css('display', 'none');
       modal.isOpen = false;
@@ -48,8 +55,8 @@ $(document).ready(function () { //check document is loaded
     }
   })
 
-  /*Load Trees*/
-  function loadTrees(class_name) {
+  /*Load background*/
+  function loadBackground(class_name) {
     //Select div that holds talent trees and populate with relevant data
     let trees = $('.trees').children();
     let icons = []
@@ -59,10 +66,29 @@ $(document).ready(function () { //check document is loaded
     }
   }
 
+  function loadTalents() {
+    for (let j = 1; j < 4; j++) {
+      let selector = '#tree' + j
+      $(selector).children().empty(); /*Clear previous talents*/
+      let n = 44; /* Number of grids per tree */
+      let grids = $(selector).children().toArray();
+      for (let i = 0; i < n; i++) {
+        /*Example fluff content*/
+        if (i == (6) || i == (11) || i == (19) || i == (27) || i == (42)) {
+          let imgElement = document.createElement("img")
+          imgElement.src = "/images/talents/genesis.jpg"
+          grids[i].appendChild(imgElement)
+        }
+      }
+    }
 
+
+  }
+
+  /* Initialize Default Settings */
   let selected_class = 'druid';
-
-  loadTrees(selected_class);
+  loadBackground(selected_class);
+  loadTalents();
 
 });
 
