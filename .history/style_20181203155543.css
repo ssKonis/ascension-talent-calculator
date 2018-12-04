@@ -124,7 +124,24 @@ header > div{
   border-radius: 10px;
   
 }
+
+/* The Close Button */
+/* .close {
+  color: #aaa;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+} */
 /* Content */
+
+
+
 .trees{
   /*Positioning*/
   display:grid;
@@ -139,8 +156,8 @@ header > div{
   .trees{
     /*Display all trees*/
     grid-template-columns: repeat(3, minmax(300px, 1fr));
-    /*Prevents trees from sitting under sidebar/footer at certain sizes*/
-    grid-column-start: 2;
+      /*Prevents trees from sitting under sidebar/footer at certain sizes*/
+      grid-column-start: 2;
       
   }
 }
@@ -162,12 +179,24 @@ header > div{
 }
 
 
+.tree1{
+  background-image: url("images/backgrounds/druid_balance.jpg");
+}
+.tree2{
+  background-image: url("images/backgrounds/druid_feral.jpg");
+}
+.tree3{
+  background-image: url("images/backgrounds/druid_restoration.jpg");
+}
+
 .icon{
   display:grid;
   /* border: 1px solid; */
   color: white;
   justify-content: center;
   align-items: center;
+  
+ 
 }
 
 .icon > img{

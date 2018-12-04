@@ -74,7 +74,7 @@ body{
 header{
   display: grid;
   grid-template-columns: 2fr 1fr 2fr;
-  /* z-index: 1; */
+  z-index: 1;
   background-color: red;
 }
 header > div{
@@ -85,65 +85,36 @@ header > div{
   text-align: center;
 }
 
-#selected_class > img{
+.headerClassIcon > img{
   height: 10vh;
   width: auto;
-  z-index: 2;
-
 }
 
-
-
-/* The Modal (background) */
-.modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-}
-
-/* Modal Content/Box */
-.modal-content {
-  background-color: black;
-  margin: 15% auto; /* 15% from the top and centered */
-  padding: 20px;
-  width: 80%; /* Could be more or less, depending on screen size */
-  display: grid;
-  grid-template-rows: repeat(3,1fr);
-  grid-template-columns: repeat(3,1fr);
-  height:75vh;
-  justify-items: center;
-  align-items: center;
-  grid-gap:20px;
-  border-radius: 10px;
-  
-}
 /* Content */
+
+
+
 .trees{
   /*Positioning*/
   display:grid;
   scroll-snap-type: x mandatory;
   overflow-x:scroll;
   grid-template-columns: repeat(3, 100% );
-  margin:5%;
+ margin:5%;
 }
 
 /*On desktop/ipad*/
 @media only screen and (min-width: 600px) {
   .trees{
     /*Display all trees*/
-    grid-template-columns: repeat(3, minmax(300px, 1fr));
-    /*Prevents trees from sitting under sidebar/footer at certain sizes*/
-    grid-column-start: 2;
+    grid-template-columns: repeat(3, 1fr);
+      /*Prevents trees from sitting under sidebar/footer at certain sizes*/
+      grid-column-start: 2;
       
   }
 }
+
+
 
 .tree{
   scroll-snap-align:end;
@@ -152,15 +123,25 @@ header > div{
   background-clip: content-box;
   background-color: black;
   display: grid;
-
+  grid-gap:20px;
+  height: auto; /*Change to auto once icons are placed*/
   grid-template-columns: repeat(4, minmax(48px,1fr)); /*change back to 1fr*/
-  grid-template-rows: repeat(11, minmax(48px,1fr));  
+  grid-template-rows: repeat(11, 1fr);  
  
-  justify-items: center;
-  align-items: center;
-  box-shadow:  inset 0 0 20px 10px #000000;
+
+ box-shadow:  inset 0 0 20px 10px #000000;
 }
 
+
+.tree1{
+  background-image: url("images/backgrounds/druid_balance.jpg");
+}
+.tree2{
+  background-image: url("images/backgrounds/druid_feral.jpg");
+}
+.tree3{
+  background-image: url("images/backgrounds/druid_restoration.jpg");
+}
 
 .icon{
   display:grid;
@@ -168,10 +149,14 @@ header > div{
   color: white;
   justify-content: center;
   align-items: center;
+  height:48px;
+  width:48px;
+ 
 }
 
 .icon > img{
- 
+  height: 100%;
+  width: 100%;
   filter: grayscale(100);
 
 }

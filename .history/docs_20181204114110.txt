@@ -1,0 +1,15 @@
+API Access:
+
+
+Tool tips can be accessed in the following way:
+https://data.project-ascension.com/api/spells/16914/tooltip.html
+
+
+Method for aligning and finding talents in API:
+ - Web scrape the ascension calculator and check each grid space
+ - Then, map that grid space to the id in the div
+ - Then, On each div, check how the number of ranks that talent has
+ - Once found, use javascript to perform a click on that div
+ - for each click, map the id to each rank 
+  - this method can also be used to get pictures
+ - once all ids are found, use the id's to search the API for relevant tooltip info 

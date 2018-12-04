@@ -111,7 +111,7 @@ header > div{
 /* Modal Content/Box */
 .modal-content {
   background-color: black;
-  margin: 15% auto; /* 15% from the top and centered */
+  margin: 15%; /* 15% from the top and centered */
   padding: 20px;
   width: 80%; /* Could be more or less, depending on screen size */
   display: grid;
@@ -125,6 +125,9 @@ header > div{
   
 }
 /* Content */
+
+
+
 .trees{
   /*Positioning*/
   display:grid;
@@ -139,8 +142,8 @@ header > div{
   .trees{
     /*Display all trees*/
     grid-template-columns: repeat(3, minmax(300px, 1fr));
-    /*Prevents trees from sitting under sidebar/footer at certain sizes*/
-    grid-column-start: 2;
+      /*Prevents trees from sitting under sidebar/footer at certain sizes*/
+      grid-column-start: 2;
       
   }
 }
@@ -162,12 +165,24 @@ header > div{
 }
 
 
+.tree1{
+  background-image: url("images/backgrounds/druid_balance.jpg");
+}
+.tree2{
+  background-image: url("images/backgrounds/druid_feral.jpg");
+}
+.tree3{
+  background-image: url("images/backgrounds/druid_restoration.jpg");
+}
+
 .icon{
   display:grid;
   /* border: 1px solid; */
   color: white;
   justify-content: center;
   align-items: center;
+  
+ 
 }
 
 .icon > img{

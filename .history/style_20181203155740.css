@@ -162,12 +162,24 @@ header > div{
 }
 
 
+.tree1{
+  background-image: url("images/backgrounds/druid_balance.jpg");
+}
+.tree2{
+  background-image: url("images/backgrounds/druid_feral.jpg");
+}
+.tree3{
+  background-image: url("images/backgrounds/druid_restoration.jpg");
+}
+
 .icon{
   display:grid;
   /* border: 1px solid; */
   color: white;
   justify-content: center;
   align-items: center;
+  
+ 
 }
 
 .icon > img{
