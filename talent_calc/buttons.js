@@ -35,11 +35,10 @@ $(document).ready(function () { //check document is loaded
     this.element = element;
     // this.image = 'https://data.project-ascension.com/files/images/icons/Spell_Nature_AbolishMagic.png';
     this.image = image;
-    this.tooltip;
+    this.tooltip = "Example Text";
     this.nRanks = nRanks;
 
     element.onmousedown = function (event) {
-      console.log(event.which)
       if (event.which == 1) {
         /* Add point on left click and remove gray filter*/
         $(this).css('filter', 'none')
