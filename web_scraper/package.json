@@ -1,0 +1,22 @@
+{
+  "name": "web_scraper",
+  "version": "1.0.0",
+  "description": "used to scrape data from ascension website to get Id and position of talents",
+  "main": "app.js",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "puppeteer": "^1.11.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2"
+  },
+  "devDependencies": {
+    "curl": "^0.1.4",
+    "jquery": "^3.3.1",
+    "jsdom": "^13.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "James Wilkinson",
+  "license": "ISC"
+}
