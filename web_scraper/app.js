@@ -2,6 +2,16 @@ const curl = require("curl");
 const jsdom = require("jsdom");
 const url = "http://127.0.0.1:5500/web_scraper/Ascension%20Classless%20Realm.html#/talentsandabilities/editor/";
 
+var Talent = function (row, col, image) {
+  this.row = row;
+  this.col = col;
+  this.image = image;
+  this.tiers = {
+    /*id*/
+    /*rank*/
+    /*tool tip?*/
+  }
+}
 
 
 function parseData(html) {
@@ -23,7 +33,10 @@ function parseData(html) {
       if (iconExists) {
         let image = $(table_col).find('img').attr('src')
         let id = $(table_col).find('.atc-editor-classtabbarcontent-content-wrapper-talenttree-table-talent-container-content-wrapper-talent-images-overlay-gray').attr('data-ascension-tooltip-id');
-        console.log("id = ", id, "image = ", image);
+        let rank_range = $(table_col).find('.atc-editor-classtabbarcontent-content-wrapper-talenttree-table-talent-container-content-wrapper-talent-text-gray').html();
+        let cur_rank = rank_range.charAt(0);
+        let max_rank = rank_range.charAt(2);
+        console.log("id = ", id, "image = ", image, "rank = ", rank_range, "current_rank =", cur_rank, "max_rank = ", max_rank);
       }
       else {
         console.log("Empty")
