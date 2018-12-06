@@ -164,13 +164,13 @@ header > div{
 
 .icon{
   display:grid;
-  /* border: 1px solid; */
   color: white;
   justify-content: center;
   align-items: center;
 }
 
 .icon > img{
+  
  
   filter: grayscale(100);
 

@@ -1,29 +1,23 @@
+/* Get Locations from JSON FIle*/
+var map = []
+/*Turn of asynch to load JSON*/
+$.ajaxSetup({
+  async: false
+});
 
+/*Get locations*/
+$.getJSON("talent_locations_map.json", function (data) {
+  data.forEach(element => {
+    map.push(element);
+  });
+})
+
+/*turn Async back on*/
+$.ajaxSetup({
+  async: true
+});
 
 $(document).ready(function () { //check document is loaded
-
-  /* Get Locations from JSON FIle*/
-  var items = []
-  /*Turn of asynch to load JSON*/
-  $.ajaxSetup({
-    async: false
-  });
-
-  /*Get locations*/
-  $.getJSON("talent_locations_map.json", function (data) {
-    data.forEach(element => {
-      items.push(element);
-
-    });
-  })
-
-  /*turn Async back on*/
-  $.ajaxSetup({
-    async: true
-  });
-
-  console.log(items);
-
   //Talent Tree object
   function Tree(class_name, element, index) {
     this.class_name = class_name
@@ -53,11 +47,10 @@ $(document).ready(function () { //check document is loaded
   }
 
   //Talent Blue Print
-  function Talent(id, name, element, image_name, nRanks) {
+  function Talent(id, element, nRanks) {
     this.id = id;
-    this.name = name;
     this.element = element;
-    this.image = 'https://data.project-ascension.com/files/images/icons/' + image_name;
+    // this.image = image_name
     this.tooltip = "Example Text";
     this.nRanks = nRanks;
 
@@ -127,12 +120,20 @@ $(document).ready(function () { //check document is loaded
       let n = 44; /* Number of grids per tree */
       let grids = $(selector).children().toArray();
       for (let i = 0; i < n; i++) {
-        /*Example fluff content*/
-        if (i == (6) || i == (11) || i == (19) || i == (27) || i == (42)) {
-          let imgElement = document.createElement("img")
-          imgElement.src = "/images/talents/genesis.jpg"
-          let talent = new Talent(5, 'poo', imgElement, 5);
-          grids[i].appendChild(talent.element)
+        // /*Example fluff content*/
+        // if (i == (6) || i == (11) || i == (19) || i == (27) || i == (42)) {
+        //   let imgElement = document.createElement("img")
+        //   imgElement.src = "/images/talents/genesis.jpg"
+        //   let talent = new Talent(5, 'poo', imgElement, 5);
+        //   grids[i].appendChild(talent.element)
+        // }
+        if (map[i].data[1] != undefined) {
+          let image_name = map[i].data[1].image;
+          let imgElement = document.createElement("img");
+          imgElement.src = 'https://data.project-ascension.com/files/images/icons/' + image_name;
+          // let talent = new Talent(id)
+          grids[i].appendChild(imgElement)
+          // console.log(map[i].data[1].image)
         }
       }
     }
