@@ -1,4 +1,28 @@
+
+
 $(document).ready(function () { //check document is loaded
+
+  /* Get Locations from JSON FIle*/
+  var items = []
+  /*Turn of asynch to load JSON*/
+  $.ajaxSetup({
+    async: false
+  });
+
+  /*Get locations*/
+  $.getJSON("talent_locations_map.json", function (data) {
+    data.forEach(element => {
+      items.push(element);
+
+    });
+  })
+
+  /*turn Async back on*/
+  $.ajaxSetup({
+    async: true
+  });
+
+  console.log(items);
 
   //Talent Tree object
   function Tree(class_name, element, index) {
@@ -29,12 +53,11 @@ $(document).ready(function () { //check document is loaded
   }
 
   //Talent Blue Print
-  function Talent(id, name, element, image, nRanks) {
+  function Talent(id, name, element, image_name, nRanks) {
     this.id = id;
     this.name = name;
     this.element = element;
-    // this.image = 'https://data.project-ascension.com/files/images/icons/Spell_Nature_AbolishMagic.png';
-    this.image = image;
+    this.image = 'https://data.project-ascension.com/files/images/icons/' + image_name;
     this.tooltip = "Example Text";
     this.nRanks = nRanks;
 

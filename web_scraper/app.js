@@ -38,7 +38,7 @@ function parseData(html) {
         let id = $(table_col).find('.atc-editor-classtabbarcontent-content-wrapper-talenttree-table-talent-container-content-wrapper-talent-images-overlay-gray').attr('data-ascension-tooltip-id');
         let rank_range = $(table_col).find('.atc-editor-classtabbarcontent-content-wrapper-talenttree-table-talent-container-content-wrapper-talent-text-gray').html();
         let cur_rank = rank_range.charAt(0);
-        let max_rank = rank_range.charAt(2);
+        let max_rank = parseInt(rank_range.charAt(2));
         let talent = new Talent((row + 1), col, max_rank);
 
         for (let k = 0; k < max_rank; k++) {

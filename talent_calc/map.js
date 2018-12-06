@@ -1,4 +1,4 @@
-[
+var json = [
   {
     "location": {
       "row": 1,
@@ -32,7 +32,7 @@
         "image": "Spell_Nature_AbolishMagic.png"
       }
     ],
-    "max_rank": "3"
+    "max_rank": 3
   },
   {
     "location": {
@@ -67,7 +67,7 @@
         "image": "Spell_Arcane_Arcane03.png"
       }
     ],
-    "max_rank": "5"
+    "max_rank": 5
   },
   {
     "location": {
@@ -102,7 +102,7 @@
         "image": "Spell_Nature_Sentinal.png"
       }
     ],
-    "max_rank": "3"
+    "max_rank": 3
   },
   {
     "location": {
@@ -122,7 +122,7 @@
         "image": "INV_Staff_01.png"
       }
     ],
-    "max_rank": "2"
+    "max_rank": 2
   },
   {
     "location": {
@@ -152,7 +152,7 @@
         "image": "Spell_Nature_StarFall.png"
       }
     ],
-    "max_rank": "2"
+    "max_rank": 2
   },
   {
     "location": {
@@ -177,7 +177,7 @@
         "image": "Spell_Nature_Thorns.png"
       }
     ],
-    "max_rank": "3"
+    "max_rank": 3
   },
   {
     "location": {
@@ -202,7 +202,7 @@
         "image": "Spell_Nature_NaturesBlessing.png"
       }
     ],
-    "max_rank": "3"
+    "max_rank": 3
   },
   {
     "location": {
@@ -217,7 +217,7 @@
         "image": "Spell_Nature_NatureGuardian.png"
       }
     ],
-    "max_rank": "1"
+    "max_rank": 1
   },
   {
     "location": {
@@ -237,7 +237,7 @@
         "image": "Spell_Nature_NatureTouchGrow.png"
       }
     ],
-    "max_rank": "2"
+    "max_rank": 2
   },
   {
     "location": {
@@ -282,7 +282,7 @@
         "image": "Spell_Nature_Purge.png"
       }
     ],
-    "max_rank": "5"
+    "max_rank": 5
   },
   {
     "location": {
@@ -307,7 +307,7 @@
         "image": "Spell_Arcane_StarFire.png"
       }
     ],
-    "max_rank": "3"
+    "max_rank": 3
   },
   {
     "location": {
@@ -342,7 +342,7 @@
         "image": "Ability_Druid_LunarGuidance.png"
       }
     ],
-    "max_rank": "3"
+    "max_rank": 3
   },
   {
     "location": {
@@ -357,7 +357,7 @@
         "image": "Spell_Nature_InsectSwarm.png"
       }
     ],
-    "max_rank": "1"
+    "max_rank": 1
   },
   {
     "location": {
@@ -382,7 +382,7 @@
         "image": "Spell_Nature_InsectSwarm.png"
       }
     ],
-    "max_rank": "3"
+    "max_rank": 3
   },
   {
     "location": {
@@ -417,7 +417,7 @@
         "image": "Ability_Druid_Dreamstate.png"
       }
     ],
-    "max_rank": "3"
+    "max_rank": 3
   },
   {
     "location": {
@@ -442,7 +442,7 @@
         "image": "Spell_Nature_MoonGlow.png"
       }
     ],
-    "max_rank": "3"
+    "max_rank": 3
   },
   {
     "location": {
@@ -462,7 +462,7 @@
         "image": "Ability_Druid_BalanceofPower.png"
       }
     ],
-    "max_rank": "2"
+    "max_rank": 2
   },
   {
     "location": {
@@ -497,7 +497,7 @@
         "image": "Spell_Nature_ForceOfNature.png"
       }
     ],
-    "max_rank": "1"
+    "max_rank": 1
   },
   {
     "location": {
@@ -522,7 +522,7 @@
         "image": "Ability_Druid_ImprovedMoonkinForm.png"
       }
     ],
-    "max_rank": "3"
+    "max_rank": 3
   },
   {
     "location": {
@@ -547,7 +547,7 @@
         "image": "Spell_Nature_FaerieFire.png"
       }
     ],
-    "max_rank": "3"
+    "max_rank": 3
   },
   {
     "location": {
@@ -572,7 +572,7 @@
         "image": "Ability_Druid_OwlkinFrenzy.png"
       }
     ],
-    "max_rank": "3"
+    "max_rank": 3
   },
   {
     "location": {
@@ -617,7 +617,7 @@
         "image": "Ability_Druid_TwilightsWrath.png"
       }
     ],
-    "max_rank": "5"
+    "max_rank": 5
   },
   {
     "location": {
@@ -652,7 +652,7 @@
         "image": "Ability_Druid_Eclipse.png"
       }
     ],
-    "max_rank": "3"
+    "max_rank": 3
   },
   {
     "location": {
@@ -667,7 +667,7 @@
         "image": "Ability_Druid_Typhoon.png"
       }
     ],
-    "max_rank": "1"
+    "max_rank": 1
   },
   {
     "location": {
@@ -682,7 +682,7 @@
         "image": "Ability_Druid_ForceofNature.png"
       }
     ],
-    "max_rank": "1"
+    "max_rank": 1
   },
   {
     "location": {
@@ -702,7 +702,7 @@
         "image": "Ability_Druid_GaleWinds.png"
       }
     ],
-    "max_rank": "2"
+    "max_rank": 2
   },
   {
     "location": {
@@ -737,7 +737,7 @@
         "image": "Ability_Druid_EarthandSky.png"
       }
     ],
-    "max_rank": "3"
+    "max_rank": 3
   },
   {
     "location": {
@@ -782,7 +782,7 @@
         "image": "Ability_Druid_Starfall.png"
       }
     ],
-    "max_rank": "1"
+    "max_rank": 1
   },
   {
     "location": {
@@ -804,4 +804,11 @@
     ],
     "max_rank": 1
   }
-]
+];
+
+var map = []
+json.forEach(obj => {
+  map.push(JSON.parse(String(obj)));
+});
+
+console.log(map);
