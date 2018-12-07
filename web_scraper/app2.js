@@ -28,7 +28,7 @@ function Talent(max_rank) {
 // }
 var map = [];
 
-function parseData(html) {
+function parseData(html, class_name) {
   var window = cheerio.load(fs.readFileSync('classPage/' + html)).html();
 
   const { JSDOM } = jsdom;
@@ -44,7 +44,12 @@ function parseData(html) {
     for (let row = 0; row < table.length; row++) {
       let table_row = $(table[row]).children();
       /*For Each column, skip first column*/
-      for (let col = 1; col < table_row.length; col++) {
+      let row_length = table_row.length
+      if ((class_name == 'paladin.html') && (i == 1)) {
+        row_length = 5;
+        console.log("Found paladin prot")
+      }
+      for (let col = 1; col < row_length; col++) {
         let table_col = $(table_row[col]).children();
 
         let iconExists = table_col.length; /* Length > than 1 if there is an icon */
@@ -56,11 +61,12 @@ function parseData(html) {
           let max_rank = parseInt(rank_range.charAt(2));
           let talent = new Talent(max_rank);
 
-          for (let k = 1; k < max_rank; k++) {
+          for (let k = 0; k < max_rank; k++) {
             let data = {}
-            data.id = parseInt(id) + k - 1; /*This method does not always return correct ID*/
-            data.rank = parseInt(cur_rank) + k;
+            data.id = parseInt(id) + k; /*This method does not always return correct ID*/
+            data.rank = parseInt(cur_rank) + k + 1;
             data.image = image.split("/")[2];
+
             talent.data.push(data);
           }
 
@@ -82,14 +88,16 @@ function parseData(html) {
 
 
 var pages = ['druid.html', 'hunter.html', 'mage.html', 'paladin.html', 'priest.html', 'rogue.html', 'shaman.html', 'warlock.html', 'warrior.html'];
-
+var count = 0;
 pages.forEach(html => {
-  parseData(html);
+
+  parseData(html, pages[count]);
+  count += 1;
 });
 
-map.forEach(item => {
-  console.log(JSON.stringify(item.data, null, 2));
-});
+// map.forEach(item => {
+//   console.log(JSON.stringify(item.data, null, 2));
+// });
 
 fs.writeFile("./text.json", JSON.stringify(map), (err) => {
   if (err) {

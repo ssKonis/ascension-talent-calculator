@@ -1,4 +1,25 @@
 var map = []
+var class_names = ['druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'shaman', 'warlock', 'warrior'];
+
+/* Get Locations from JSON FIle*/
+function getMap() {
+  /*Turn of asynch to load JSON*/
+  $.ajaxSetup({
+    async: false
+  });
+
+  /*Get locations*/
+  $.getJSON("text.json", function (data) {
+    data.forEach(element => {
+      map.push(element);
+    });
+  })
+
+  /*turn Async back on*/
+  $.ajaxSetup({
+    async: true
+  });
+}
 
 //Talent Tree object
 function Tree(class_name, element, index) {
@@ -19,7 +40,7 @@ function ClassIcon(name, element, modalId) {
 
   element.onclick = function () {
     loadBackground(element.name); /*Load background images*/
-    loadTalents();
+    loadTalents(name);
     /*Close modal*/
     $('#' + modalId).toggle();
 
@@ -55,47 +76,24 @@ function Talent(id, element, nRanks) {
   }
 }
 
-/* Get Locations from JSON FIle*/
-function getMap() {
-  /*Turn of asynch to load JSON*/
-  $.ajaxSetup({
-    async: false
-  });
 
-  /*Get locations*/
-  $.getJSON("talent_locations_map.json", function (data) {
-    data.forEach(element => {
-      map.push(element);
-    });
-  })
 
-  /*turn Async back on*/
-  $.ajaxSetup({
-    async: true
-  });
-}
+function loadTalents(selectedclass) {
+  let n = 44; /* Number of grids per tree */
 
-function loadTalents() {
-  for (let j = 1; j < 4; j++) {/*For each tree*/
+  let placeholder = class_names.indexOf(selectedclass) * n * 3;
+  console.log(placeholder);
+  for (let j = 0; j < 3; j++) {/*For each tree*/
     let selector = '#tree' + j
     $(selector).children().empty(); /*Clear previous talents*/
-    let n = 44; /* Number of grids per tree */
     let grids = $(selector).children().toArray();
+    let p = placeholder + (j * n);
     for (let i = 0; i < n; i++) {
-      // /*Example fluff content*/
-      // if (i == (6) || i == (11) || i == (19) || i == (27) || i == (42)) {
-      //   let imgElement = document.createElement("img")
-      //   imgElement.src = "/images/talents/genesis.jpg"
-      //   let talent = new Talent(5, 'poo', imgElement, 5);
-      //   grids[i].appendChild(talent.element)
-      // }
-      if (map[i].data[1] != undefined) {
-        let image_name = map[i].data[1].image;
+      if (map[i + p].data[0] != undefined) {
+        let image_name = map[i + p].data[0].image;
         let imgElement = document.createElement("img");
         imgElement.src = 'https://data.project-ascension.com/files/images/icons/' + image_name;
-        // let talent = new Talent(id)
         grids[i].appendChild(imgElement)
-        // console.log(map[i].data[1].image)
       }
     }
   }
@@ -131,7 +129,6 @@ function Modal(modalId) {
     // Get placeholder divs
     let elements = $('.modal-content').children().toArray();
 
-    let class_names = ['druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'shaman', 'warlock', 'warrior'];
     let ClassIcons = [];
     /* Replace placeholder with appropriate class icons and give click functionality*/
     for (let i = 0; i < class_names.length; i++) {
@@ -146,6 +143,7 @@ $(document).ready(function () { //check document is loaded
 
   /*Retrieve JSON File containing locations of each talent point */
   getMap();
+
 
   /* Init Modal and class Icons */
   let classModal = new Modal('modal');
@@ -163,7 +161,7 @@ $(document).ready(function () { //check document is loaded
   /* Initialize Default Settings */
   let selected_class = 'druid';
   loadBackground(selected_class);
-  loadTalents();
+  loadTalents(selected_class);
 
 });
 

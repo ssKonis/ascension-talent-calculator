@@ -172,7 +172,8 @@ header > div{
 
 .icon > img{
   
- 
+ max-width: 64px;
+ max-height:64px;
   filter: grayscale(100);
 
 }
