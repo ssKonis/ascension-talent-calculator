@@ -95,7 +95,7 @@ header > div{
 
 
 /* The Modal (background) */
-.modal {
+#modal {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
   z-index: 1; /* Sit on top */
@@ -167,6 +167,7 @@ header > div{
   color: white;
   justify-content: center;
   align-items: center;
+  margin:10%;
 }
 
 .icon > img{
