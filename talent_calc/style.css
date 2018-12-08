@@ -168,14 +168,23 @@ header > div{
   justify-content: center;
   align-items: center;
   margin:10%;
+  position: relative;
 }
 
 .icon > img{
   
  max-width: 64px;
  max-height:64px;
-  filter: grayscale(100);
 
+}
+
+.rankBox{
+  background-color: black;
+  height:20px;
+  width:30px;
+  position: absolute;
+  right:0;
+  bottom:0;
 }
 
 .icon > .tooltip{

@@ -55,18 +55,35 @@ function ClassIcon(name, element, modalId) {
 function Talent(id, element, nRanks) {
   this.id = id;
   this.element = element;
-  // this.image = image_name
+
+  let imageElement = $(this.element).first().children();
+  $(imageElement).css('filter', 'grayscale(100)') /* make image grayscale*/
+
   this.tooltip = "Example Text";
   this.nRanks = nRanks;
+  curRank = 0;
+
+  $(this.element).append("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
 
   element.onmousedown = function (event) {
     if (event.which == 1) {
       /* Add point on left click and remove gray filter*/
-      $(this).css('filter', 'none')
+      $(imageElement).css('filter', 'none')
+      if (curRank < nRanks) {
+        curRank += 1;
+        $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
+      }
+
     }
     if (event.which == 3) {
       /* Remove point on right click and add gray filter */
-      $(this).css('filter', 'grayscale(100)')
+      $(imageElement).css('filter', 'grayscale(100)')
+      if (curRank > 0) {
+        curRank -= 1;
+        $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
+
+      }
+
 
     }
   }
@@ -82,18 +99,23 @@ function loadTalents(selectedclass) {
   let n = 44; /* Number of grids per tree */
 
   let placeholder = class_names.indexOf(selectedclass) * n * 3;
-  console.log(placeholder);
   for (let j = 0; j < 3; j++) {/*For each tree*/
     let selector = '#tree' + j
     $(selector).children().empty(); /*Clear previous talents*/
     let grids = $(selector).children().toArray();
     let p = placeholder + (j * n);
     for (let i = 0; i < n; i++) {
-      if (map[i + p].data[0] != undefined) {
-        let image_name = map[i + p].data[0].image;
+      let index = i + p;
+      if (map[index].data[0] != undefined) {
+        let image_name = map[index].data[0].image;
         let imgElement = document.createElement("img");
         imgElement.src = 'https://data.project-ascension.com/files/images/icons/' + image_name;
         grids[i].appendChild(imgElement)
+
+        let id = map[index].data[0].id;
+        let element = grids[i];
+        let maxRank = map[index].max_rank;
+        let talent = new Talent(id, element, maxRank)
       }
     }
   }
