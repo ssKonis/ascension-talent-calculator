@@ -1,14 +1,18 @@
-/*Prevent inspect on right click*/
-// document.addEventListener('contextmenu', function (e) {
-//   e.preventDefault();
-// });
-
 var map = []
 var class_names = ['druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'shaman', 'warlock', 'warrior'];
+var spec_names =
+  ['balance', 'feral', 'restoration',
+    'beast mastery', 'marksman', 'survival',
+    'arcane', 'fire', 'frost',
+    'holy', 'protection', 'retribution',
+    'discipline', 'holy', 'shadow',
+    'assasination', 'combat', 'subtlety',
+    'elemental', 'enhancement', 'restoration',
+    'affliction', 'demonology', 'destruction',
+    'arms', 'fury', 'protection']
 
 /* Get Locations from JSON FIle*/
 function getMap() {
-
   /*Get locations*/
   $.getJSON("text.json", function (data) {
     data.forEach(element => {
@@ -21,8 +25,9 @@ function getMap() {
 }
 
 //Talent Tree object
-function Tree(class_name, element, index) {
+function Tree(class_name, spec_name, element, index) {
   this.class_name = class_name
+  this.spec_name = spec_name
   this.element = element;
   this.image = 'https://wotlk.evowow.com/static/images/wow/talents/backgrounds/' + class_name + '_' + index + '.jpg'
   /*Update background image css*/
@@ -63,6 +68,11 @@ function Talent(id, element, nRanks) {
   let curRank = 0;
 
   $(this.element).append("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
+
+  /*Prevent dev tool inspect on right click*/
+  element.addEventListener('contextmenu', function (e) {
+    e.preventDefault();
+  });
 
   /*Handle left click and right click for desktop*/
   element.onmousedown = function (event) {
@@ -170,11 +180,12 @@ function loadTalents(selectedclass) {
 /*Load background*/
 function loadBackground(class_name) {
   //Select div that holds talent trees and populate with relevant data
+
   let trees = $('.trees').children();
-  let class_icons = []
   for (let i = 0; i < 3; i++) {
-    let tree = new Tree(class_name, trees[i], i + 1)
-    class_icons.push(tree);
+    let spec_name = spec_names[class_names.indexOf(class_name) * 3 + i]
+    let tree = new Tree(class_name, spec_name, trees[i], i + 1)
+    console.log(tree);
   }
 }
 
@@ -221,11 +232,10 @@ $(document).ready(function () { //check document is loaded
   document.addEventListener('mapLoaded', function () {
     /* waits untill the map is loaded before other assets are loaded*/
 
-
-
     /* Initialize Default Settings */
     let selected_class = 'druid';
     loadBackground(selected_class);
+    loadtreeHeaders(selected_class);
     loadTalents(selected_class)
   })
 
