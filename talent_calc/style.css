@@ -57,6 +57,7 @@ body{
 }
 
 .panel-body {
+  grid-template-rows: 1fr 19fr;
   overflow-y: auto;
   display: grid;
   justify-content: center;
@@ -66,7 +67,6 @@ body{
 /*On desktop/ipad*/
 @media only screen and (min-width: 600px) {
   .panel-body{
-    
     direction:ltr;
     width: 100vw;
     grid-template-columns: 10vw auto;
@@ -127,14 +127,28 @@ header > div{
   border-radius: 10px;
   
 }
+
+
 /* Content */
+.tree-header{
+  color:white;
+  display:grid;
+  grid-template-rows: 1fr 1fr 1fr;
+}
+/*On desktop/ipad*/
+@media only screen and (min-width: 600px) {
+  .tree-header{
+    grid-column-start: 2;
+  }
+}
+
+
 .trees{
   /*Positioning*/
   display:grid;
   scroll-snap-type: x mandatory;
   overflow-x:scroll;
   grid-template-columns: repeat(3, 100% );
-  margin:5%;
 }
 
 /*On desktop/ipad*/

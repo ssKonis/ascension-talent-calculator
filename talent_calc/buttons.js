@@ -1,29 +1,23 @@
 /*Prevent inspect on right click*/
-document.addEventListener('contextmenu', function (e) {
-  e.preventDefault();
-});
+// document.addEventListener('contextmenu', function (e) {
+//   e.preventDefault();
+// });
 
 var map = []
 var class_names = ['druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'shaman', 'warlock', 'warrior'];
 
 /* Get Locations from JSON FIle*/
 function getMap() {
-  /*Turn of asynch to load JSON*/
-  $.ajaxSetup({
-    async: false
-  });
 
   /*Get locations*/
   $.getJSON("text.json", function (data) {
     data.forEach(element => {
       map.push(element);
     });
+    let event = new Event('mapLoaded');
+    document.dispatchEvent(event);
   })
 
-  /*turn Async back on*/
-  $.ajaxSetup({
-    async: true
-  });
 }
 
 //Talent Tree object
@@ -214,11 +208,6 @@ function Modal(modalId) {
 }
 
 $(document).ready(function () { //check document is loaded
-
-  /*Retrieve JSON File containing locations of each talent point */
-  getMap();
-
-
   /* Init Modal and class Icons */
   let classModal = new Modal('modal');
   classModal.initIcons();
@@ -228,14 +217,18 @@ $(document).ready(function () { //check document is loaded
     classModal.toggle()
   })
 
+  getMap();
+  document.addEventListener('mapLoaded', function () {
+    /* waits untill the map is loaded before other assets are loaded*/
 
 
 
+    /* Initialize Default Settings */
+    let selected_class = 'druid';
+    loadBackground(selected_class);
+    loadTalents(selected_class)
+  })
 
-  /* Initialize Default Settings */
-  let selected_class = 'druid';
-  loadBackground(selected_class);
-  loadTalents(selected_class);
 
 });
 
