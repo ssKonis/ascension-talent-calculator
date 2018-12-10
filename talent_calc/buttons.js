@@ -1,3 +1,8 @@
+/*Prevent inspect on right click*/
+document.addEventListener('contextmenu', function (e) {
+  e.preventDefault();
+});
+
 var map = []
 var class_names = ['druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'shaman', 'warlock', 'warrior'];
 
@@ -61,10 +66,11 @@ function Talent(id, element, nRanks) {
 
   this.tooltip = "Example Text";
   this.nRanks = nRanks;
-  curRank = 0;
+  let curRank = 0;
 
   $(this.element).append("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
 
+  /*Handle left click and right click for desktop*/
   element.onmousedown = function (event) {
     if (event.which == 1) {
       /* Add point on left click and remove gray filter*/
@@ -76,17 +82,63 @@ function Talent(id, element, nRanks) {
 
     }
     if (event.which == 3) {
-      /* Remove point on right click and add gray filter */
-      $(imageElement).css('filter', 'grayscale(100)')
+      /* Remove point on right click*/
       if (curRank > 0) {
         curRank -= 1;
         $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
-
+        /* If rank == 0, add greyscale filter */
+        if (curRank == 0) {
+          $(imageElement).css('filter', 'grayscale(100)')
+        }
       }
-
-
     }
   }
+
+  /*Handle touch hold for mobile users */
+
+  let onlongtouch;
+  let timer, lockTimer;
+  let touchduration = 1000; //length of time we want the user to touch before we do something
+
+  function touchstart(e) {
+    /*On Each click, add an element */
+    $(imageElement).css('filter', 'none')
+    if (curRank < nRanks) {
+      curRank += 1;
+      $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
+    }
+
+    e.preventDefault();
+    if (lockTimer) {
+      return;
+    }
+    timer = setTimeout(onlongtouch, touchduration);
+    lockTimer = true;
+  }
+
+  function touchend() {
+    //stops short touches from firing the event
+    if (timer) {
+      clearTimeout(timer); // clearTimeout, not cleartimeout..
+      lockTimer = false;
+    }
+    else {
+    }
+  }
+
+  onlongtouch = function () {
+    /* on long hold, remove all points from an icon*/
+    console.log('Hold Triggered')
+    curRank = 0;
+    $(element).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
+    $(imageElement).css('filter', 'grayscale(100)')
+  }
+
+  element.addEventListener("touchstart", touchstart, false);
+  element.addEventListener("touchend", touchend, false);
+
+
+
   /* On mouse over show tooltip */
   element.onmouseover = function () {
 
@@ -186,4 +238,5 @@ $(document).ready(function () { //check document is loaded
   loadTalents(selected_class);
 
 });
+
 

@@ -50,6 +50,9 @@ body{
     /*Swaps sides of column layout back to normal*/
     direction: ltr;
     grid-column: span 2;
+    grid-template-rows: var(--header-height) auto; /*1vh = the header, auto = footer + body */
+    height: 100vh; 
+
   }
 }
 
@@ -173,8 +176,8 @@ header > div{
 
 .icon > img{
   
- max-width: 64px;
- max-height:64px;
+ max-width: 48px;
+ max-height:48px;
 
 }
 
