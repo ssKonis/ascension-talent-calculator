@@ -28,10 +28,19 @@ function getMap() {
 function Tree(class_name, spec_name, element, index) {
   this.class_name = class_name
   this.spec_name = spec_name
-  this.element = element;
+  this.body = element;
   this.image = 'https://wotlk.evowow.com/static/images/wow/talents/backgrounds/' + class_name + '_' + index + '.jpg'
   /*Update background image css*/
-  $(this.element).css('background-image', 'url(' + this.image + ')');
+  $(this.body).css('background-image', 'url(' + this.image + ')');
+
+  function buildHeader() {
+    /*Assigns the correct header name to each tree*/
+    let s = spec_names.indexOf(spec_name);
+    let header = $('.tree-header').children()[s % 3];
+    $(header).html(spec_name)
+  }
+  // buildHeader();
+
 }
 
 //ClassIcon Blue Print
@@ -69,87 +78,89 @@ function Talent(id, element, nRanks) {
 
   $(this.element).append("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
 
-  /*Prevent dev tool inspect on right click*/
-  element.addEventListener('contextmenu', function (e) {
-    e.preventDefault();
-  });
+  this.loadEvents = function () {
+    /*Prevent dev tool inspect on right click*/
+    element.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+    });
 
-  /*Handle left click and right click for desktop*/
-  element.onmousedown = function (event) {
-    if (event.which == 1) {
-      /* Add point on left click and remove gray filter*/
+    /*Handle left click and right click for desktop*/
+    element.onmousedown = function (event) {
+      if (event.which == 1) {
+        /* Add point on left click and remove gray filter*/
+        $(imageElement).css('filter', 'none')
+        if (curRank < nRanks) {
+          curRank += 1;
+          $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
+        }
+
+      }
+      if (event.which == 3) {
+        /* Remove point on right click*/
+        if (curRank > 0) {
+          curRank -= 1;
+          $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
+          /* If rank == 0, add greyscale filter */
+          if (curRank == 0) {
+            $(imageElement).css('filter', 'grayscale(100)')
+          }
+        }
+      }
+    }
+
+    /*Handle touch hold for mobile users */
+
+    let onlongtouch;
+    let timer, lockTimer;
+    let touchduration = 1000; //length of time we want the user to touch before we do something
+
+    function touchstart(e) {
+      /*On Each click, add an element */
       $(imageElement).css('filter', 'none')
       if (curRank < nRanks) {
         curRank += 1;
         $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
       }
 
+      e.preventDefault();
+      if (lockTimer) {
+        return;
+      }
+      timer = setTimeout(onlongtouch, touchduration);
+      lockTimer = true;
     }
-    if (event.which == 3) {
-      /* Remove point on right click*/
-      if (curRank > 0) {
-        curRank -= 1;
-        $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
-        /* If rank == 0, add greyscale filter */
-        if (curRank == 0) {
-          $(imageElement).css('filter', 'grayscale(100)')
-        }
+
+    function touchend() {
+      //stops short touches from firing the event
+      if (timer) {
+        clearTimeout(timer); // clearTimeout, not cleartimeout..
+        lockTimer = false;
+      }
+      else {
       }
     }
-  }
 
-  /*Handle touch hold for mobile users */
-
-  let onlongtouch;
-  let timer, lockTimer;
-  let touchduration = 1000; //length of time we want the user to touch before we do something
-
-  function touchstart(e) {
-    /*On Each click, add an element */
-    $(imageElement).css('filter', 'none')
-    if (curRank < nRanks) {
-      curRank += 1;
-      $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
+    onlongtouch = function () {
+      /* on long hold, remove all points from an icon*/
+      console.log('Hold Triggered')
+      curRank = 0;
+      $(element).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
+      $(imageElement).css('filter', 'grayscale(100)')
     }
 
-    e.preventDefault();
-    if (lockTimer) {
-      return;
-    }
-    timer = setTimeout(onlongtouch, touchduration);
-    lockTimer = true;
+    element.addEventListener("touchstart", touchstart, false);
+    element.addEventListener("touchend", touchend, false);
   }
-
-  function touchend() {
-    //stops short touches from firing the event
-    if (timer) {
-      clearTimeout(timer); // clearTimeout, not cleartimeout..
-      lockTimer = false;
-    }
-    else {
-    }
-  }
-
-  onlongtouch = function () {
-    /* on long hold, remove all points from an icon*/
-    console.log('Hold Triggered')
-    curRank = 0;
-    $(element).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
-    $(imageElement).css('filter', 'grayscale(100)')
-  }
-
-  element.addEventListener("touchstart", touchstart, false);
-  element.addEventListener("touchend", touchend, false);
-
-
 
   /* On mouse over show tooltip */
   element.onmouseover = function () {
 
   }
+  this.loadEvents();
+
+
+
 }
-
-
 
 function loadTalents(selectedclass) {
   let n = 44; /* Number of grids per tree */
@@ -181,11 +192,10 @@ function loadTalents(selectedclass) {
 function loadBackground(class_name) {
   //Select div that holds talent trees and populate with relevant data
 
-  let trees = $('.trees').children();
+  let trees = $('.tree');
   for (let i = 0; i < 3; i++) {
     let spec_name = spec_names[class_names.indexOf(class_name) * 3 + i]
     let tree = new Tree(class_name, spec_name, trees[i], i + 1)
-    console.log(tree);
   }
 }
 
@@ -218,6 +228,8 @@ function Modal(modalId) {
 
 }
 
+
+getMap();
 $(document).ready(function () { //check document is loaded
   /* Init Modal and class Icons */
   let classModal = new Modal('modal');
@@ -228,14 +240,12 @@ $(document).ready(function () { //check document is loaded
     classModal.toggle()
   })
 
-  getMap();
   document.addEventListener('mapLoaded', function () {
     /* waits untill the map is loaded before other assets are loaded*/
 
     /* Initialize Default Settings */
     let selected_class = 'druid';
     loadBackground(selected_class);
-    loadtreeHeaders(selected_class);
     loadTalents(selected_class)
   })
 

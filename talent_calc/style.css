@@ -57,7 +57,7 @@ body{
 }
 
 .panel-body {
-  grid-template-rows: 1fr 19fr;
+  /* grid-template-rows: 1fr 9fr; */
   overflow-y: auto;
   display: grid;
   justify-content: center;
@@ -127,21 +127,7 @@ header > div{
   border-radius: 10px;
   
 }
-
-
 /* Content */
-.tree-header{
-  color:white;
-  display:grid;
-  grid-template-rows: 1fr 1fr 1fr;
-}
-/*On desktop/ipad*/
-@media only screen and (min-width: 600px) {
-  .tree-header{
-    grid-column-start: 2;
-  }
-}
-
 
 .trees{
   /*Positioning*/
@@ -149,6 +135,11 @@ header > div{
   scroll-snap-type: x mandatory;
   overflow-x:scroll;
   grid-template-columns: repeat(3, 100% );
+  grid-template-rows: 1fr 1fr;
+}
+
+.trees > .spec-banner{
+  background-color: blue;
 }
 
 /*On desktop/ipad*/
