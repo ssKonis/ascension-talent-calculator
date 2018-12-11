@@ -138,10 +138,6 @@ header > div{
   grid-template-rows: 1fr 1fr;
 }
 
-.trees > .spec-banner{
-  background-color: blue;
-}
-
 /*On desktop/ipad*/
 @media only screen and (min-width: 600px) {
   .trees{
@@ -151,6 +147,12 @@ header > div{
     grid-column-start: 2;
       
   }
+}
+
+.trees > .spec-banner{
+  background-color: blue;
+  margin: 10px;
+  display:grid
 }
 
 .tree{

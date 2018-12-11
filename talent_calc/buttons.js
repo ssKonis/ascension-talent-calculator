@@ -11,6 +11,12 @@ var spec_names =
     'affliction', 'demonology', 'destruction',
     'arms', 'fury', 'protection']
 
+
+var legacy_wow_api = {
+  // append class name and talent tree index. e.g balance druid = 'druid0.png'
+  spec_icon: 'https://legacy-wow.com/talentcalcs/vanilla/shared/global/talents/images/talents/trees/'
+}
+
 /* Get Locations from JSON FIle*/
 function getMap() {
   /*Get locations*/
@@ -36,10 +42,12 @@ function Tree(class_name, spec_name, element, index) {
   function buildHeader() {
     /*Assigns the correct header name to each tree*/
     let s = spec_names.indexOf(spec_name);
-    let header = $('.tree-header').children()[s % 3];
-    $(header).html(spec_name)
+    let header = $('.spec-banner')[s % 3];
+    $(header).html(spec_name) /*Add Name of spec*/
+    let logo = legacy_wow_api.spec_icon + class_name + (s % 3) + '.png' //get icon
+    $(header).append('<img src=' + "'" + logo + "'" + '/>')
   }
-  // buildHeader();
+  buildHeader();
 
 }
 
