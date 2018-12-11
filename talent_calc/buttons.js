@@ -43,9 +43,11 @@ function Tree(class_name, spec_name, element, index) {
     /*Assigns the correct header name to each tree*/
     let s = spec_names.indexOf(spec_name);
     let header = $('.spec-banner')[s % 3];
-    $(header).html(spec_name) /*Add Name of spec*/
     let logo = legacy_wow_api.spec_icon + class_name + (s % 3) + '.png' //get icon
     $(header).append('<img src=' + "'" + logo + "'" + '/>')
+    $(header).append('<div>' + spec_name + '</div>') /*Add Name of spec*/
+    $(header).append('<span class="close">&times;' + '</span>')
+
   }
   buildHeader();
 
