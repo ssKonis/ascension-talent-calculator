@@ -173,15 +173,18 @@ for (let j = 1; j < 9; j++) {
 
 
 var superMap = map.slice()
+// Used on set timeout to avoid missing data not being fully recieved
 setTimeout(function () {
 
-  for (let j = 0; j < map.length; j++) {
+  for (let j = 0; j < map.length; j++) { //each item in map
     if (map[j].data[0] != undefined) {
-      for (let i = 0; i < items.length; i++) {
+      for (let i = 0; i < items.length; i++) {// each item in items
         if (map[j].data[0].id == items[i].id) {
           superMap[j].name = items[i].name;
-          for (let k = 0; k < items.length; k++) {
+          for (let k = 0; k < items.length; k++) { //check each item again to find sibling ranks
+            /*Makes sure that the correct refernce is selected*/
             if ((superMap[j].name == items[k].name) && (items[k].rank != 1) && (map[j].class_name == items[k].class_name)) {
+              //add new data entry for each rank
               let data = {}
               data.id = items[k].id;
               data.rank = items[k].rank;
@@ -192,6 +195,8 @@ setTimeout(function () {
       }
     }
   }
+
+  //TODO remove duplicate objects from supermap
   superMap.forEach(item => {
     console.log(JSON.stringify(item, null, 2));
 
