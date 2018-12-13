@@ -128,6 +128,17 @@ header > div{
 }
 /* Content */
 
+.talents{
+  /* visibility: hidden;
+  position: absolute; */
+}
+
+.abilities{
+  position: absolute;
+  visibility: hidden;
+
+}
+
 .trees{
   /*Positioning*/
   display:grid;
@@ -135,6 +146,9 @@ header > div{
   overflow-x:scroll;
   grid-template-columns: repeat(3, 100% );
   grid-template-rows: 1fr 1fr;
+
+  max-height: 90vh;
+
 }
 
 /*On desktop/ipad*/

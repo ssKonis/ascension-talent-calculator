@@ -1,3 +1,12 @@
+/* TODOS
+ fix image overwrites in hunter tree
+ fix cumulative tree header
+ fix layout
+ add abilility icons
+
+ */
+
+
 var map = []
 var class_names = ['druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'shaman', 'warlock', 'warrior'];
 var spec_names =
@@ -198,7 +207,7 @@ function Talent(id, element, nRanks) {
     });
 
     request.done(function (msg) {
-      // console.log($(msg).find('.ascension-tooltip-spell-tooltip-text').text());
+      console.log($(msg).find('.ascension-tooltip-spell-tooltip-text').text());
     })
   }
   /* On mouse over show tooltip */
@@ -213,7 +222,7 @@ function loadTalents(selectedclass) {
 
   let placeholder = class_names.indexOf(selectedclass) * n * 3;
   for (let j = 0; j < 3; j++) {/*For each tree*/
-    let selector = '#tree' + j
+    let selector = $('.trees.talents').find('#tree' + j)
     $(selector).children().empty(); /*Clear previous talents*/
     let grids = $(selector).children().toArray();
     let p = placeholder + (j * n);
@@ -251,7 +260,7 @@ function loadTalents(selectedclass) {
 function loadBackground(class_name) {
   //Select div that holds talent trees and populate with relevant data
 
-  let trees = $('.tree');
+  let trees = $('.trees.talents > .tree');
   for (let i = 0; i < 3; i++) {
     let spec_name = spec_names[class_names.indexOf(class_name) * 3 + i]
     let tree = new Tree(class_name, spec_name, trees[i], i + 1)
@@ -307,9 +316,31 @@ $(document).ready(function () { //check document is loaded
 
 
     /* Initialize Default Settings */
-    let selected_class = 'mage';
+    let selected_class = 'druid';
     loadBackground(selected_class);
     loadTalents(selected_class)
+
+    $('.abilitiesBtn').on('click', function () {
+      $('.talents').css('visibility', 'hidden');
+      $('.talents').css('position', 'absolute');
+      $('.abilities').css('visibility', 'visible');
+      $('.abilities').css('position', 'static');
+
+
+      let trees = $('.trees.abilities > .tree');
+      for (let i = 0; i < 3; i++) {
+        let spec_name = spec_names[class_names.indexOf('druid') * 3 + i]
+        let tree = new Tree('druid', spec_name, trees[i], i + 1)
+      }
+
+    })
+    $('.talentsBtn').on('click', function () {
+      $('.abilities').css('visibility', 'hidden');
+      $('.abilities').css('position', 'absolute');
+      $('.talents').css('visibility', 'visible');
+      $('.talents').css('position', 'static');
+
+    })
   })
 
 
