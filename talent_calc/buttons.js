@@ -83,9 +83,6 @@ function Talent(id, element, nRanks) {
   this.element = element;
   this.states = [] // Holds array of ids for each rank
 
-  // // Appends ID to icon class
-  // $(this.element).attr('id', this.id)
-
   let imageElement = $(this.element).first().children();
   $(imageElement).css('filter', 'grayscale(100)') /* make image grayscale*/
 
@@ -93,7 +90,9 @@ function Talent(id, element, nRanks) {
   this.nRanks = nRanks;
   let curRank = 0;
 
+  // Add Rank Box
   $(this.element).append("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
+
 
   updateState = function (self, index) {
     if (index > 0) {
@@ -121,6 +120,7 @@ function Talent(id, element, nRanks) {
           curRank += 1;
           updateState(self, curRank)
           getToolTip(self)
+          $('.tooltip').show()
           $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
         }
 
@@ -145,10 +145,10 @@ function Talent(id, element, nRanks) {
 
     let onlongtouch;
     let timer, lockTimer;
-    let touchduration = 1000; //length of time we want the user to touch before we do something
-
+    let touchduration = 600; //length of time we want the user to touch before we do something
     function touchstart(e) {
       /*On Each click, add an element */
+
       $(imageElement).css('filter', 'none')
       if (curRank < nRanks) {
         curRank += 1;
@@ -176,7 +176,9 @@ function Talent(id, element, nRanks) {
     onlongtouch = function () {
       /* on long hold, remove all points from an icon*/
       console.log('Hold Triggered')
-      curRank = 0;
+      // show tooltip
+
+      curRank -= 1;
       $(element).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
       $(imageElement).css('filter', 'grayscale(100)')
     }
@@ -229,8 +231,15 @@ function loadTalents(selectedclass) {
         let talent = new Talent(id, element, maxRank)
         for (let k = 0; k < maxRank; k++) {
           let state = {}
-          state.id = map[index].data[k].id
-          state.rank = map[index].data[k].rank
+          if (map[index].data[k] == undefined) {
+            state.id = map[index].data[0].id + k;
+            state.rank = map[index].data[0].rank + k;
+          }
+          else {
+            state.id = map[index].data[k].id
+            state.rank = map[index].data[k].rank
+          }
+
           talent.states.push(state)
         }
       }
@@ -293,8 +302,12 @@ $(document).ready(function () { //check document is loaded
   document.addEventListener('mapLoaded', function () {
     /* waits untill the map is loaded before other assets are loaded*/
 
+    // $('.tree').append('<div class=tooltip></div>')
+    // $('.tooltip').hide()
+
+
     /* Initialize Default Settings */
-    let selected_class = 'druid';
+    let selected_class = 'mage';
     loadBackground(selected_class);
     loadTalents(selected_class)
   })
