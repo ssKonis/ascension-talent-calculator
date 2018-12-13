@@ -77,10 +77,14 @@ function ClassIcon(name, element, modalId) {
 //Talent Blue Print
 function Talent(id, element, nRanks) {
   this.id = id;
-  this.element = element;
+  let self = this
 
-  // Appends ID to icon class
-  $(this.element).attr('id', this.id)
+
+  this.element = element;
+  this.states = [] // Holds array of ids for each rank
+
+  // // Appends ID to icon class
+  // $(this.element).attr('id', this.id)
 
   let imageElement = $(this.element).first().children();
   $(imageElement).css('filter', 'grayscale(100)') /* make image grayscale*/
@@ -91,7 +95,18 @@ function Talent(id, element, nRanks) {
 
   $(this.element).append("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
 
+  updateState = function (self, index) {
+    if (index > 0) {
+      index -= 1
+    }
+    else (
+      index = 0
+    )
+    self.id = self.states[index].id
+    self.curRank = self.states[index].rank
+  }
   this.loadEvents = function () {
+
     /*Prevent dev tool inspect on right click*/
     element.addEventListener('contextmenu', function (e) {
       e.preventDefault();
@@ -104,6 +119,8 @@ function Talent(id, element, nRanks) {
         $(imageElement).css('filter', 'none')
         if (curRank < nRanks) {
           curRank += 1;
+          updateState(self, curRank)
+          getToolTip(self)
           $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
         }
 
@@ -112,6 +129,9 @@ function Talent(id, element, nRanks) {
         /* Remove point on right click*/
         if (curRank > 0) {
           curRank -= 1;
+          updateState(self, curRank)
+          getToolTip(self)
+
           $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
           /* If rank == 0, add greyscale filter */
           if (curRank == 0) {
@@ -165,10 +185,10 @@ function Talent(id, element, nRanks) {
     element.addEventListener("touchend", touchend, false);
   }
 
-  /* On mouse over show tooltip */
-  element.onmouseover = function () {
-    let id = $(this).attr('id')
+  getToolTip = function (self) {
+    let id = self.id
     let url = 'https://data.project-ascension.com/api/spells/' + id + '/tooltip.html'
+
     let request = $.ajax({
       url: url,
       type: 'GET',
@@ -176,10 +196,14 @@ function Talent(id, element, nRanks) {
     });
 
     request.done(function (msg) {
-      console.log($(msg).find('.ascension-tooltip-spell-tooltip-text').text());
+      // console.log($(msg).find('.ascension-tooltip-spell-tooltip-text').text());
     })
   }
-  this.loadEvents();
+  /* On mouse over show tooltip */
+  element.onmouseover = function () {
+    getToolTip(self)
+  }
+  this.loadEvents(self);
 }
 
 function loadTalents(selectedclass) {
@@ -203,6 +227,12 @@ function loadTalents(selectedclass) {
         let element = grids[i];
         let maxRank = map[index].max_rank;
         let talent = new Talent(id, element, maxRank)
+        for (let k = 0; k < maxRank; k++) {
+          let state = {}
+          state.id = map[index].data[k].id
+          state.rank = map[index].data[k].rank
+          talent.states.push(state)
+        }
       }
     }
   }
