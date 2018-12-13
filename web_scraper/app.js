@@ -50,7 +50,11 @@ function getRootID(html, class_name) {
           let talent = new Talent(max_rank);
           talent.class_name = class_name.split('.')[0]
 
-          for (let k = 0; k < 1; k++) {
+          let limit = 1;
+          if (class_name == 'druid.html') {
+            limit = max_rank
+          }
+          for (let k = 0; k < limit; k++) {
             let data = {}
             data.id = parseInt(id) + k; /*This method does not always return correct ID*/
             data.rank = parseInt(cur_rank) + k + 1;
@@ -165,13 +169,6 @@ for (let j = 1; j < 9; j++) {
   });
 }
 
-
-
-
-
-
-
-
 var superMap = map.slice()
 // Used on set timeout to avoid missing data not being fully recieved
 setTimeout(function () {
@@ -183,7 +180,7 @@ setTimeout(function () {
           superMap[j].name = items[i].name;
           for (let k = 0; k < items.length; k++) { //check each item again to find sibling ranks
             /*Makes sure that the correct refernce is selected*/
-            if ((superMap[j].name == items[k].name) && (items[k].rank != 1) && (map[j].class_name == items[k].class_name)) {
+            if ((superMap[j].name == items[k].name) && (map[j].class_name == items[k].class_name)) {
               //add new data entry for each rank
               let data = {}
               data.id = items[k].id;
@@ -196,18 +193,29 @@ setTimeout(function () {
     }
   }
 
+  function removeDuplicates(myArr, prop) {
+    return myArr.filter((obj, pos, arr) => {
+      return arr.map(mapObj => mapObj[prop]).indexOf(obj[prop]) === pos;
+    });
+  }
+
   //TODO remove duplicate objects from supermap
+
   superMap.forEach(item => {
-    console.log(JSON.stringify(item, null, 2));
+    item.data = removeDuplicates(item.data, 'id')
 
   })
+  // superMap.forEach(item => {
+  //   console.log(JSON.stringify(item, null, 2));
 
-  // fs.writeFile("./test.json", JSON.stringify(superMap), (err) => {
-  //   if (err) {
-  //     console.error(err);
-  //     return;
-  //   };
-  //   console.log("File has been created");
   // })
+
+  fs.writeFile("./talents.json", JSON.stringify(superMap), (err) => {
+    if (err) {
+      console.error(err);
+      return;
+    };
+    console.log("File has been created");
+  })
 }, 30000)
 

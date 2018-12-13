@@ -20,7 +20,7 @@ var legacy_wow_api = {
 /* Get Locations from JSON FIle*/
 function getMap() {
   /*Get locations*/
-  $.getJSON("text.json", function (data) {
+  $.getJSON("talents.json", function (data) {
     data.forEach(element => {
       map.push(element);
     });
@@ -78,6 +78,9 @@ function ClassIcon(name, element, modalId) {
 function Talent(id, element, nRanks) {
   this.id = id;
   this.element = element;
+
+  // Appends ID to icon class
+  $(this.element).attr('id', this.id)
 
   let imageElement = $(this.element).first().children();
   $(imageElement).css('filter', 'grayscale(100)') /* make image grayscale*/
@@ -164,12 +167,19 @@ function Talent(id, element, nRanks) {
 
   /* On mouse over show tooltip */
   element.onmouseover = function () {
+    let id = $(this).attr('id')
+    let url = 'https://data.project-ascension.com/api/spells/' + id + '/tooltip.html'
+    let request = $.ajax({
+      url: url,
+      type: 'GET',
+      dataType: 'html'
+    });
 
+    request.done(function (msg) {
+      console.log($(msg).find('.ascension-tooltip-spell-tooltip-text').text());
+    })
   }
   this.loadEvents();
-
-
-
 }
 
 function loadTalents(selectedclass) {
