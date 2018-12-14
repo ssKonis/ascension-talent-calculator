@@ -83,12 +83,17 @@ function ClassIcon(name, element, modalId) {
 
 }
 
+//Ability Blue Print
+function Ability(id, element) {
+  this.id = id;
+  let self = this;
+  this.element = element;
+}
+
 //Talent Blue Print
 function Talent(id, element, nRanks) {
   this.id = id;
   let self = this
-
-
   this.element = element;
   this.states = [] // Holds array of ids for each rank
 
