@@ -7,7 +7,9 @@
  */
 
 
-var map = []
+var talentMap = []
+var abilityMap = []
+
 var class_names = ['druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'shaman', 'warlock', 'warrior'];
 var spec_names =
   ['balance', 'feral', 'restoration',
@@ -29,12 +31,20 @@ var legacy_wow_api = {
 /* Get Locations from JSON FIle*/
 function getMap() {
   /*Get locations*/
-  $.getJSON("talents.json", function (data) {
-    data.forEach(element => {
-      map.push(element);
+  $.getJSON("talents.json", function (talent) {
+    talent.forEach(element => {
+      talentMap.push(element);
     });
-    let event = new Event('mapLoaded');
-    document.dispatchEvent(event);
+
+    $.getJSON("abilities.json", function (ability) {
+      ability.forEach(element => {
+        abilityMap.push(element);
+      });
+      let event = new Event('mapLoaded');
+      document.dispatchEvent(event);
+
+    })
+
   })
 
 }
@@ -88,6 +98,7 @@ function Ability(id, element) {
   this.id = id;
   let self = this;
   this.element = element;
+
 }
 
 //Talent Blue Print
@@ -222,6 +233,26 @@ function Talent(id, element, nRanks) {
   this.loadEvents(self);
 }
 
+function loadAbilities(selectedclass) {
+  let classData = abilityMap.filter(ability => ability.class_name == selectedclass);
+  for (let j = 0; j < 3; j++) {/*For each tree*/
+    let selector = $('.trees.abilities').find('#tree' + j)
+    $(selector).children().empty(); /*Clear previous talents*/
+    let grids = $(selector).children().toArray(); //Select empty grid elements
+
+    let spec_name = spec_names[class_names.indexOf(selectedclass) * 3 + j]
+    spec_name = spec_name.charAt(0).toUpperCase() + spec_name.slice(1)//capitalise first letter
+    let specData = classData.filter(ability => ability.spec == spec_name)
+    console.log(specData)
+    specData.forEach(function (item, i) {
+      let ability = new Ability(item.id, grids[i])
+      let image_name = item.image;
+      let imgElement = document.createElement("img");
+      imgElement.src = 'https://data.project-ascension.com/files/images/icons/' + image_name;
+      grids[i].appendChild(imgElement)
+    })
+  }
+}
 function loadTalents(selectedclass) {
   let n = 44; /* Number of grids per tree */
 
@@ -233,25 +264,25 @@ function loadTalents(selectedclass) {
     let p = placeholder + (j * n);
     for (let i = 0; i < n; i++) {
       let index = i + p;
-      if (map[index].data[0] != undefined) {
-        let image_name = map[index].data[0].image;
+      if (talentMap[index].data[0] != undefined) {
+        let image_name = talentMap[index].data[0].image;
         let imgElement = document.createElement("img");
         imgElement.src = 'https://data.project-ascension.com/files/images/icons/' + image_name;
         grids[i].appendChild(imgElement)
 
-        let id = map[index].data[0].id;
+        let id = talentMap[index].data[0].id;
         let element = grids[i];
-        let maxRank = map[index].max_rank;
+        let maxRank = talentMap[index].max_rank;
         let talent = new Talent(id, element, maxRank)
         for (let k = 0; k < maxRank; k++) {
           let state = {}
-          if (map[index].data[k] == undefined) {
-            state.id = map[index].data[0].id + k;
-            state.rank = map[index].data[0].rank + k;
+          if (talentMap[index].data[k] == undefined) {
+            state.id = talentMap[index].data[0].id + k;
+            state.rank = talentMap[index].data[0].rank + k;
           }
           else {
-            state.id = map[index].data[k].id
-            state.rank = map[index].data[k].rank
+            state.id = talentMap[index].data[k].id
+            state.rank = talentMap[index].data[k].rank
           }
 
           talent.states.push(state)
@@ -323,7 +354,8 @@ $(document).ready(function () { //check document is loaded
     /* Initialize Default Settings */
     let selected_class = 'druid';
     loadBackground(selected_class);
-    loadTalents(selected_class)
+    loadTalents(selected_class);
+    loadAbilities(selected_class);
 
     $('.abilitiesBtn').on('click', function () {
       $('.talents').css('visibility', 'hidden');
