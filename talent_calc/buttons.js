@@ -1,9 +1,9 @@
 /* TODOS
- fix image overwrites in hunter tree
- fix cumulative tree header
+ fix hunter tree
  fix layout
- add abilility icons
-
+ refactor code
+ add abilities to desktop layout
+ 
  */
 
 
@@ -50,18 +50,21 @@ function getMap() {
 }
 
 //Talent Tree object
-function Tree(class_name, spec_name, element, index) {
+function Tree(class_name, spec_name, element, index, target) {
   this.class_name = class_name
   this.spec_name = spec_name
   this.body = element;
   this.image = 'https://wotlk.evowow.com/static/images/wow/talents/backgrounds/' + class_name + '_' + index + '.jpg'
   /*Update background image css*/
   $(this.body).css('background-image', 'url(' + this.image + ')');
+  this.target = target;
+  let self = this;
 
   function buildHeader() {
     /*Assigns the correct header name to each tree*/
     let s = spec_names.indexOf(spec_name);
-    let header = $('.spec-banner')[s % 3];
+    let header = $('.trees' + self.target + ' > .spec-banner')[s % 3];
+    $(header).empty();
     let logo = legacy_wow_api.spec_icon + class_name + (s % 3) + '.png' //get icon
     $(header).append('<img src=' + "'" + logo + "'" + '/>')
     $(header).append('<div>' + spec_name + '</div>') /*Add Name of spec*/
@@ -81,15 +84,17 @@ function ClassIcon(name, element, modalId) {
   element.name = name /*Image name*/
 
   element.onclick = function () {
-    loadBackground(element.name); /*Load background images*/
+    loadBackground(element.name, '.talents'); /*Load background images*/
+    loadBackground(element.name, '.abilities'); /*Load background images*/
+
     loadTalents(name);
+    loadAbilities(name);
     /*Close modal*/
     $('#' + modalId).toggle();
 
     $('#selectedClassIcon').attr('src', element.src)/*Change icon image*/
     selected_class = element.name;
   }
-
 
 }
 
@@ -176,7 +181,7 @@ function Ability(id, element) {
     });
 
     request.done(function (msg) {
-      console.log($(msg).find('.ascension-tooltip-spell-tooltip-text').text());
+      // console.log($(msg).find('.ascension-tooltip-spell-tooltip-text').text());
     })
   }
   /* On mouse over show tooltip */
@@ -309,7 +314,7 @@ function Talent(id, element, nRanks) {
     });
 
     request.done(function (msg) {
-      console.log($(msg).find('.ascension-tooltip-spell-tooltip-text').text());
+      // console.log($(msg).find('.ascension-tooltip-spell-tooltip-text').text());
     })
   }
   /* On mouse over show tooltip */
@@ -329,7 +334,6 @@ function loadAbilities(selectedclass) {
     let spec_name = spec_names[class_names.indexOf(selectedclass) * 3 + j]
     spec_name = spec_name.charAt(0).toUpperCase() + spec_name.slice(1)//capitalise first letter
     let specData = classData.filter(ability => ability.spec == spec_name)
-    console.log(specData)
     specData.forEach(function (item, i) {
       let ability = new Ability(item.id, grids[i])
       let image_name = item.image;
@@ -379,13 +383,13 @@ function loadTalents(selectedclass) {
 }
 
 /*Load background*/
-function loadBackground(class_name) {
+function loadBackground(class_name, target) {
   //Select div that holds talent trees and populate with relevant data
 
-  let trees = $('.trees.talents > .tree');
+  let trees = $('.trees' + target + ' > .tree');
   for (let i = 0; i < 3; i++) {
     let spec_name = spec_names[class_names.indexOf(class_name) * 3 + i]
-    let tree = new Tree(class_name, spec_name, trees[i], i + 1)
+    let tree = new Tree(class_name, spec_name, trees[i], i + 1, target)
   }
 }
 
@@ -433,13 +437,12 @@ $(document).ready(function () { //check document is loaded
   document.addEventListener('mapLoaded', function () {
     /* waits untill the map is loaded before other assets are loaded*/
 
-    // $('.tree').append('<div class=tooltip></div>')
-    // $('.tooltip').hide()
-
 
     /* Initialize Default Settings */
     let selected_class = 'druid';
-    loadBackground(selected_class);
+    loadBackground(selected_class, '.talents');
+    loadBackground(selected_class, '.abilities');
+
     loadTalents(selected_class);
     loadAbilities(selected_class);
 
@@ -448,13 +451,6 @@ $(document).ready(function () { //check document is loaded
       $('.talents').css('position', 'absolute');
       $('.abilities').css('visibility', 'visible');
       $('.abilities').css('position', 'static');
-
-
-      let trees = $('.trees.abilities > .tree');
-      for (let i = 0; i < 3; i++) {
-        let spec_name = spec_names[class_names.indexOf('druid') * 3 + i]
-        let tree = new Tree('druid', spec_name, trees[i], i + 1)
-      }
 
     })
     $('.talentsBtn').on('click', function () {
