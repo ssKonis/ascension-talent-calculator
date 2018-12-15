@@ -99,6 +99,92 @@ function Ability(id, element) {
   let self = this;
   this.element = element;
 
+  let imageElement = $(this.element);;
+  $(imageElement).css('filter', 'grayscale(100)') /* make image grayscale*/
+
+  this.loadEvents = function () {
+
+    /*Prevent dev tool inspect on right click*/
+    element.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+    });
+
+    /*Handle left click and right click for desktop*/
+    element.onmousedown = function (event) {
+      if (event.which == 1) {
+        /* Add point on left click and remove gray filter*/
+        $(imageElement).css('filter', 'none')
+        getToolTip(self)
+        $('.tooltip').show()
+
+      }
+      if (event.which == 3) {
+        /* Remove point on right click*/
+        getToolTip(self)
+        $(imageElement).css('filter', 'grayscale(100)')
+      }
+    }
+
+    /*Handle touch hold for mobile users */
+
+    let onlongtouch;
+    let timer, lockTimer;
+    let touchduration = 600; //length of time we want the user to touch before we do something
+    function touchstart(e) {
+      /*On Each click, add an element */
+
+      $(imageElement).css('filter', 'none')
+
+      e.preventDefault();
+      if (lockTimer) {
+        return;
+      }
+      timer = setTimeout(onlongtouch, touchduration);
+      lockTimer = true;
+    }
+
+    function touchend() {
+      //stops short touches from firing the event
+      if (timer) {
+        clearTimeout(timer); // clearTimeout, not cleartimeout..
+        lockTimer = false;
+      }
+      else {
+      }
+    }
+
+    onlongtouch = function () {
+      /* on long hold, remove all points from an icon*/
+      console.log('Hold Triggered')
+      // show tooltip
+
+      $(imageElement).css('filter', 'grayscale(100)')
+    }
+
+    element.addEventListener("touchstart", touchstart, false);
+    element.addEventListener("touchend", touchend, false);
+  }
+
+  getToolTip = function (self) {
+    let id = self.id
+    let url = 'https://data.project-ascension.com/api/spells/' + id + '/tooltip.html'
+
+    let request = $.ajax({
+      url: url,
+      type: 'GET',
+      dataType: 'html'
+    });
+
+    request.done(function (msg) {
+      console.log($(msg).find('.ascension-tooltip-spell-tooltip-text').text());
+    })
+  }
+  /* On mouse over show tooltip */
+  element.onmouseover = function () {
+    getToolTip(self)
+  }
+  this.loadEvents(self);
+
 }
 
 //Talent Blue Print
