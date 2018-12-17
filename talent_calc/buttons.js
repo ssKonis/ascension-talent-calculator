@@ -3,6 +3,7 @@
  fix layout
  refactor code
  add abilities to desktop layout
+ third tree header not loading correctly
  
  */
 
@@ -11,16 +12,19 @@ var talentMap = []
 var abilityMap = []
 
 var class_names = ['druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'shaman', 'warlock', 'warrior'];
-var spec_names =
-  ['balance', 'feral', 'restoration',
-    'beast mastery', 'marksman', 'survival',
-    'arcane', 'fire', 'frost',
-    'holy', 'protection', 'retribution',
-    'discipline', 'holy', 'shadow',
-    'assasination', 'combat', 'subtlety',
-    'elemental', 'enhancement', 'restoration',
-    'affliction', 'demonology', 'destruction',
-    'arms', 'fury', 'protection']
+
+
+var tree_names = {
+  'druid': ['Balance', 'Feral', 'Restoration'],
+  'hunter': ['Beast Mastery', 'Marksmanship', 'Survival'],
+  'mage': ['Arcane', 'Fire', 'Frost'],
+  'paladin': ['Holy', 'Protection', 'Retribution'],
+  'priest': ['Discipline', 'Holy', 'Shadow'],
+  'rogue': ['Assassination', 'Combat', 'Subtlety'],
+  'shaman': ['Elemental', 'Enhancement', 'Restoration'],
+  'warlock': ['Affliction', 'Demonology', 'Destruction'],
+  'warrior': ['Arms', 'Fury', 'Protection']
+}
 
 
 var legacy_wow_api = {
@@ -62,9 +66,10 @@ function Tree(class_name, spec_name, element, index, target) {
 
   function buildHeader() {
     /*Assigns the correct header name to each tree*/
-    let s = spec_names.indexOf(spec_name);
+    let s = tree_names[class_name].indexOf(spec_name);
     let header = $('.trees' + self.target + ' > .spec-banner')[s % 3];
     $(header).empty();
+    console.log(s % 3)
     let logo = legacy_wow_api.spec_icon + class_name + (s % 3) + '.png' //get icon
     $(header).append('<img src=' + "'" + logo + "'" + '/>')
     $(header).append('<div>' + spec_name + '</div>') /*Add Name of spec*/
@@ -331,7 +336,8 @@ function loadAbilities(selectedclass) {
     $(selector).children().empty(); /*Clear previous talents*/
     let grids = $(selector).children().toArray(); //Select empty grid elements
 
-    let spec_name = spec_names[class_names.indexOf(selectedclass) * 3 + j]
+    // let spec_name = spec_names[class_names.indexOf(selectedclass) * 3 + j]
+    let spec_name = tree_names[selectedclass][j]
     spec_name = spec_name.charAt(0).toUpperCase() + spec_name.slice(1)//capitalise first letter
     let specData = classData.filter(ability => ability.spec == spec_name)
     specData.forEach(function (item, i) {
@@ -388,7 +394,7 @@ function loadBackground(class_name, target) {
 
   let trees = $('.trees' + target + ' > .tree');
   for (let i = 0; i < 3; i++) {
-    let spec_name = spec_names[class_names.indexOf(class_name) * 3 + i]
+    let spec_name = tree_names[class_name][i]
     let tree = new Tree(class_name, spec_name, trees[i], i + 1, target)
   }
 }

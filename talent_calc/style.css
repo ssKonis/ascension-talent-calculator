@@ -29,10 +29,12 @@ body{
 @media only screen and (min-width: 600px) {
   .wrapper{
     /*Swaps sides of column layour*/
-    direction: rtl;
+    /* direction: rtl; */
     /*actual layout is reverse of this*/
-    grid-template-columns: auto 10vw; 
-    grid-template-rows: 10vh auto;
+    /* grid-template-columns: auto 10vw; 
+    grid-template-rows: 10vh auto; */
+    /* grid-template-columns: 3fr 1fr;
+    grid-template-rows: 1fr 1fr; */
   }
 }
 
@@ -48,15 +50,17 @@ body{
   .panel{
     /*Swaps sides of column layout back to normal*/
     direction: ltr;
-    grid-column: span 2;
-    grid-template-rows: var(--header-height) auto; /*1vh = the header, auto = footer + body */
+    /*grid-column: span 2;
+    /*grid-template-rows: var(--header-height) auto; 1vh = the header, auto = footer + body */
     height: 100vh; 
+    max-height: 875px;
 
   }
 }
 
 .panel-body {
   /* grid-template-rows: 1fr 9fr; */
+
   overflow-y: auto;
   display: grid;
   justify-content: center;
@@ -66,9 +70,10 @@ body{
 /*On desktop/ipad*/
 @media only screen and (min-width: 600px) {
   .panel-body{
-    direction:ltr;
-    width: 100vw;
-    grid-template-columns: 10vw auto;
+    /* direction:ltr; */
+    /* width: 100vw; */
+    /* grid-template-columns: 10vw auto; */
+    
   }
 }
 
@@ -155,7 +160,7 @@ header > div{
 @media only screen and (min-width: 600px) {
   .trees{
     /*Display all trees*/
-    grid-template-columns: repeat(3, minmax(300px, 1fr));
+    grid-template-columns: repeat(3, minmax(240px, 1fr));
     /*Prevents trees from sitting under sidebar/footer at certain sizes*/
     grid-column-start: 2;
       
@@ -164,6 +169,7 @@ header > div{
 
 .trees > .spec-banner{
   background-color: blue;
+  max-height:50px;
   margin: 10px;
   display:grid;
   grid-template-columns: 1fr 9fr 1fr;
@@ -204,6 +210,16 @@ header > div{
 
 }
 
+/*Desktop screens*/
+@media only screen and (min-width: 600px) {
+  .icon > img{
+    max-width: 48px;
+    max-height:48px;
+  }
+  
+}
+
+
 .tooltip{
   background-color: turquoise;
   width: 80px;
@@ -239,10 +255,12 @@ footer {
 /*Desktop screens*/
 @media only screen and (min-width: 600px) {
   footer{
-    grid-template-rows: repeat(5, 100px); /*need to change to relative values*/
-    grid-row: 2/ -1;
-    grid-column-end: -1;
-    
+    /*grid-template-rows: repeat(5, 100px); need to change to relative values*/
+    /* grid-row: 2/ -1;
+    grid-column-end: -1; */
+    /* height: 10vh; */
+    visibility: hidden;
+     
   }
   
 }
@@ -264,3 +282,6 @@ footer > div{
   border: 2px solid;
   display:grid;
 } 
+
+
+
