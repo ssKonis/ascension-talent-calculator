@@ -70,6 +70,8 @@ body{
 /*On desktop/ipad*/
 @media only screen and (min-width: 600px) {
   .panel-body{
+    display:grid;
+    grid-template-columns: 1fr 3fr;
     /* direction:ltr; */
     /* width: 100vw; */
     /* grid-template-columns: 10vw auto; */
@@ -83,6 +85,13 @@ header{
   grid-template-columns: 2fr 1fr 2fr;
   /* z-index: 1; */
   background-color: #ff0000;
+}
+
+/*On Desktop/ipad*/
+@media only screen and (min-width:600px){
+  header{
+    grid-template-columns: 1fr 3fr;
+  }
 }
 header > div{
   border: 2px solid;
@@ -161,8 +170,19 @@ header > div{
   .trees{
     /*Display all trees*/
     grid-template-columns: repeat(3, minmax(240px, 1fr));
-    /*Prevents trees from sitting under sidebar/footer at certain sizes*/
-    grid-column-start: 2;
+      
+  }
+}
+
+/*On desktop/ipad*/
+@media only screen and (min-width: 600px) {
+  .trees.abilities{
+    /*Display all trees*/
+    grid-template-rows: auto;
+    grid-template-columns: 1fr;
+    overflow-x: visible;
+    scroll-snap-type: none;
+    position:static;
       
   }
 }
@@ -175,6 +195,13 @@ header > div{
   grid-template-columns: 1fr 9fr 1fr;
   justify-items: center;
   align-items: center;
+}
+
+/*On desktop/ipad*/
+@media only screen and (min-width: 600px) {
+  .trees.abilities > .spec-banner{
+      
+  }
 }
 
 .tree{
@@ -193,6 +220,23 @@ header > div{
   box-shadow:  inset 0 0 20px 10px #000000;
 }
 
+/*On desktop/ipad*/
+@media only screen and (min-width: 600px) {
+  .trees.abilities > .tree{
+    scroll-snap-align:none;
+    grid-template-columns: repeat(auto-fill, 48px );
+    grid-gap:5px;
+    grid-template-rows: auto;
+  }
+
+  /* Change order of banners and trees*/
+  .trees.abilities > div:nth-child(1){order:1} 
+  .trees.abilities > div:nth-child(2){order:3}
+  .trees.abilities > div:nth-child(3){order:5}
+  .trees.abilities > div:nth-child(4){order:2}
+  .trees.abilities > div:nth-child(5){order:4}
+  .trees.abilities > div:nth-child(6){order:6}
+}
 
 .icon{
   display:grid;

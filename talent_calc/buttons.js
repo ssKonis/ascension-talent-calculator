@@ -1,9 +1,15 @@
 /* TODOS
- fix hunter tree
  fix layout
  refactor code
  add abilities to desktop layout
- third tree header not loading correctly
+  Desktop Layout:
+    Display abilities on left hand side
+    Make Header display all class icons and footer information
+    display abilities vertically
+    choose different background for abilities
+  
+
+  
  
  */
 
@@ -332,14 +338,22 @@ function Talent(id, element, nRanks) {
 function loadAbilities(selectedclass) {
   let classData = abilityMap.filter(ability => ability.class_name == selectedclass);
   for (let j = 0; j < 3; j++) {/*For each tree*/
+    let spec_name = tree_names[selectedclass][j]
+    // spec_name = spec_name.charAt(0).toUpperCase() + spec_name.slice(1)//capitalise first letter
+    let specData = classData.filter(ability => ability.spec == spec_name)
+
     let selector = $('.trees.abilities').find('#tree' + j)
     $(selector).children().empty(); /*Clear previous talents*/
+
+    let n = specData.length
+    /*Dynamically generate icons*/
+    for (let i = 0; i < n; i++) {
+      $(selector).append('<div class="icon"></div>')
+    }
+
     let grids = $(selector).children().toArray(); //Select empty grid elements
 
-    // let spec_name = spec_names[class_names.indexOf(selectedclass) * 3 + j]
-    let spec_name = tree_names[selectedclass][j]
-    spec_name = spec_name.charAt(0).toUpperCase() + spec_name.slice(1)//capitalise first letter
-    let specData = classData.filter(ability => ability.spec == spec_name)
+
     specData.forEach(function (item, i) {
       let ability = new Ability(item.id, grids[i])
       let image_name = item.image;
@@ -350,12 +364,19 @@ function loadAbilities(selectedclass) {
   }
 }
 function loadTalents(selectedclass) {
-  let n = 44; /* Number of grids per tree */
+  let n = 44; /* Number of grids per talent tree */
 
   let placeholder = class_names.indexOf(selectedclass) * n * 3;
   for (let j = 0; j < 3; j++) {/*For each tree*/
     let selector = $('.trees.talents').find('#tree' + j)
+
     $(selector).children().empty(); /*Clear previous talents*/
+
+    /*Dynamically generate icons*/
+    for (let i = 0; i < n; i++) {
+      $(selector).append('<div class="icon"></div>')
+    }
+
     let grids = $(selector).children().toArray();
     let p = placeholder + (j * n);
     for (let i = 0; i < n; i++) {
@@ -428,6 +449,42 @@ function Modal(modalId) {
 
 }
 
+function showTree(target) {
+  $('.' + target).css('visibility', 'visible');
+  $('.' + target).css('position', 'static');
+}
+function hideTree(target) {
+  $('.' + target).css('visibility', 'hidden');
+  $('.' + target).css('position', 'absolute');
+}
+
+function toggleTree(target) {
+  if (target == 'abilities') {
+    showTree('abilities')
+    hideTree('talents')
+  }
+  else if (target == 'talents') {
+    showTree('talents')
+    hideTree('abilities')
+  }
+}
+
+function Page() {
+  function myFunction(desktopSize) {
+    if (desktopSize.matches) { // If media query matches
+      showTree('abilities')
+    } else {
+      showTree('talents')
+      hideTree('abilities')
+
+    }
+  }
+
+  var desktopSize = window.matchMedia("(min-width: 600px)")
+  myFunction(desktopSize) // Call listener function at run time
+  desktopSize.addListener(myFunction) // Attach listener function on state changes
+}
+
 
 getMap();
 $(document).ready(function () { //check document is loaded
@@ -442,28 +499,22 @@ $(document).ready(function () { //check document is loaded
 
   document.addEventListener('mapLoaded', function () {
     /* waits untill the map is loaded before other assets are loaded*/
-
+    Page()
 
     /* Initialize Default Settings */
     let selected_class = 'druid';
     loadBackground(selected_class, '.talents');
-    loadBackground(selected_class, '.abilities');
+    // loadBackground(selected_class, '.abilities');
 
     loadTalents(selected_class);
     loadAbilities(selected_class);
 
     $('.abilitiesBtn').on('click', function () {
-      $('.talents').css('visibility', 'hidden');
-      $('.talents').css('position', 'absolute');
-      $('.abilities').css('visibility', 'visible');
-      $('.abilities').css('position', 'static');
+      toggleTree('abilities')
 
     })
     $('.talentsBtn').on('click', function () {
-      $('.abilities').css('visibility', 'hidden');
-      $('.abilities').css('position', 'absolute');
-      $('.talents').css('visibility', 'visible');
-      $('.talents').css('position', 'static');
+      toggleTree('talents')
 
     })
   })
