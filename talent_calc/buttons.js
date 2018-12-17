@@ -13,7 +13,7 @@
  
  */
 
-
+var screenBreakpoint;
 var talentMap = []
 var abilityMap = []
 
@@ -87,7 +87,7 @@ function Tree(class_name, spec_name, element, index, target) {
 }
 
 //ClassIcon Blue Print
-function ClassIcon(name, element, modalId) {
+function ClassIcon(name, element) {
   this.name = name;
   this.element = element;
   this.image = 'https://data.project-ascension.com/files/images/icons/classes/' + name + '.png';
@@ -101,7 +101,7 @@ function ClassIcon(name, element, modalId) {
     loadTalents(name);
     loadAbilities(name);
     /*Close modal*/
-    $('#' + modalId).toggle();
+    // $('#' + modalId).toggle();
 
     $('#selectedClassIcon').attr('src', element.src)/*Change icon image*/
     selected_class = element.name;
@@ -448,6 +448,20 @@ function Modal(modalId) {
   }
 
 }
+function Modal2() {
+
+  this.initIcons = function () {
+    // Get placeholder divs
+    let elements = $('.modal-content2').children().toArray();
+    let ClassIcons = [];
+    /* Replace placeholder with appropriate class icons and give click functionality*/
+    for (let i = 0; i < class_names.length; i++) {
+      let icon = new ClassIcon(class_names[i], elements[i])
+      ClassIcons.push(icon);
+    }
+  }
+
+}
 
 function showTree(target) {
   $('.' + target).css('visibility', 'visible');
@@ -457,7 +471,6 @@ function hideTree(target) {
   $('.' + target).css('visibility', 'hidden');
   $('.' + target).css('position', 'absolute');
 }
-
 function toggleTree(target) {
   if (target == 'abilities') {
     showTree('abilities')
@@ -470,10 +483,14 @@ function toggleTree(target) {
 }
 
 function Page() {
-  function myFunction(desktopSize) {
+  function toggleHeaderLayout(desktopSize) {
     if (desktopSize.matches) { // If media query matches
+      $('.abilitiesBtn').hide()
+      $('.talentsBtn').hide()
       showTree('abilities')
     } else {
+      $('.abilitiesBtn').show()
+      $('.talentsBtn').show()
       showTree('talents')
       hideTree('abilities')
 
@@ -481,21 +498,24 @@ function Page() {
   }
 
   var desktopSize = window.matchMedia("(min-width: 600px)")
-  myFunction(desktopSize) // Call listener function at run time
-  desktopSize.addListener(myFunction) // Attach listener function on state changes
+  toggleHeaderLayout(desktopSize) // Call listener function at run time
+  desktopSize.addListener(toggleHeaderLayout) // Attach listener function on state changes
 }
 
 
 getMap();
 $(document).ready(function () { //check document is loaded
   /* Init Modal and class Icons */
-  let classModal = new Modal('modal');
-  classModal.initIcons();
+  // let classModal = new Modal('modal');
+  // classModal.initIcons();
 
-  //Toggle modal display on ClassIcon click
-  $('#selectedClassIcon').on('click', function () {
-    classModal.toggle()
-  })
+  // //Toggle modal display on ClassIcon click
+  // $('#selectedClassIcon').on('click', function () {
+  //   classModal.toggle()
+  // })
+
+  let modal2 = new Modal2()
+  modal2.initIcons();
 
   document.addEventListener('mapLoaded', function () {
     /* waits untill the map is loaded before other assets are loaded*/
