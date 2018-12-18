@@ -106,13 +106,19 @@ header > .tallyBox{
   display:grid;
   text-align: center;
 }
-
-#selectedClassIcon{
+*/
+.SelectedClassIcon{
   height: 10vh;
   width: auto;
   z-index: 2;
 
-} */
+} 
+
+/* Dynamically Generated container for holding class icons. Only displays on Desktop*/
+.class-icon-container{
+  display:grid;
+  grid-auto-flow: column;
+}
 
 
 

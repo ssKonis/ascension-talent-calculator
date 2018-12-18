@@ -14,14 +14,13 @@
  */
 var SELECTED = 'druid';
 
-var screenStates = ['mobile', 'desktop']
-var talentMap = []
-var abilityMap = []
+var TALENT_MAP = []
+var ABILITY_MAP = []
 
-var class_names = ['druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'shaman', 'warlock', 'warrior'];
+var CLASS_NAMES = ['druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'shaman', 'warlock', 'warrior'];
 
 
-var tree_names = {
+var TREE_NAMES = {
   'druid': ['Balance', 'Feral', 'Restoration'],
   'hunter': ['Beast Mastery', 'Marksmanship', 'Survival'],
   'mage': ['Arcane', 'Fire', 'Frost'],
@@ -34,7 +33,7 @@ var tree_names = {
 }
 
 
-var legacy_wow_api = {
+var LEGACY_WOW_API = {
   // append class name and talent tree index. e.g balance druid = 'druid0.png'
   spec_icon: 'https://legacy-wow.com/talentcalcs/vanilla/shared/global/talents/images/talents/trees/'
 }
@@ -44,12 +43,12 @@ function getMap() {
   /*Get locations*/
   $.getJSON("talents.json", function (talent) {
     talent.forEach(element => {
-      talentMap.push(element);
+      TALENT_MAP.push(element);
     });
 
     $.getJSON("abilities.json", function (ability) {
       ability.forEach(element => {
-        abilityMap.push(element);
+        ABILITY_MAP.push(element);
       });
       let event = new Event('mapLoaded');
       document.dispatchEvent(event);
@@ -73,11 +72,10 @@ function Tree(class_name, spec_name, element, index, target) {
 
   function buildHeader() {
     /*Assigns the correct header name to each tree*/
-    let s = tree_names[class_name].indexOf(spec_name);
+    let s = TREE_NAMES[class_name].indexOf(spec_name);
     let header = $('.trees' + self.target + ' > .spec-banner')[s % 3];
     $(header).empty();
-    console.log(s % 3)
-    let logo = legacy_wow_api.spec_icon + class_name + (s % 3) + '.png' //get icon
+    let logo = LEGACY_WOW_API.spec_icon + class_name + (s % 3) + '.png' //get icon
     $(header).append('<img src=' + "'" + logo + "'" + '/>')
     $(header).append('<div>' + spec_name + '</div>') /*Add Name of spec*/
     $(header).append('<span class="close">&times;' + '</span>')
@@ -88,8 +86,7 @@ function Tree(class_name, spec_name, element, index, target) {
 }
 
 //ClassIcon Blue Print
-function ClassIcon(name, element) {
-  this.name = name;
+function ClassIcon(element) {
   this.element = element;
   this.image = 'https://data.project-ascension.com/files/images/icons/classes/' + name + '.png';
   element.src = this.image;
@@ -115,8 +112,8 @@ function ClassIcon(name, element) {
 
     let ClassIcons = [];
     /* Replace placeholder with appropriate class icons and give click functionality*/
-    for (let i = 0; i < class_names.length; i++) {
-      let icon = new ClassIcon(class_names[i], elements[i], modalId)
+    for (let i = 0; i < CLASS_NAMES.length; i++) {
+      let icon = new ClassIcon(CLASS_NAMES[i], elements[i], modalId)
       ClassIcons.push(icon);
     }
   }
@@ -316,7 +313,6 @@ function Talent(id, element, nRanks) {
 
     onlongtouch = function () {
       /* on long hold, remove all points from an icon*/
-      console.log('Hold Triggered')
       // show tooltip
 
       curRank -= 1;
@@ -350,24 +346,21 @@ function Talent(id, element, nRanks) {
 }
 
 function loadAbilities(selectedclass) {
-  let classData = abilityMap.filter(ability => ability.class_name == selectedclass);
+  let classData = ABILITY_MAP.filter(ability => ability.class_name == selectedclass);
   for (let j = 0; j < 3; j++) {/*For each tree*/
-    let spec_name = tree_names[selectedclass][j]
+    let spec_name = TREE_NAMES[selectedclass][j]
     // spec_name = spec_name.charAt(0).toUpperCase() + spec_name.slice(1)//capitalise first letter
     let specData = classData.filter(ability => ability.spec == spec_name)
-
     let selector = $('.trees.abilities').find('#tree' + j)
-    $(selector).children().empty(); /*Clear previous talents*/
+
+    $(selector).empty(); /*Clear previous talents*/
 
     let n = specData.length
     /*Dynamically generate icons*/
     for (let i = 0; i < n; i++) {
       $(selector).append('<div class="icon"></div>')
     }
-
     let grids = $(selector).children().toArray(); //Select empty grid elements
-
-
     specData.forEach(function (item, i) {
       let ability = new Ability(item.id, grids[i])
       let image_name = item.image;
@@ -380,7 +373,7 @@ function loadAbilities(selectedclass) {
 function loadTalents(selectedclass) {
   let n = 44; /* Number of grids per talent tree */
 
-  let placeholder = class_names.indexOf(selectedclass) * n * 3;
+  let placeholder = CLASS_NAMES.indexOf(selectedclass) * n * 3;
   for (let j = 0; j < 3; j++) {/*For each tree*/
     let selector = $('.trees.talents').find('#tree' + j)
 
@@ -395,25 +388,25 @@ function loadTalents(selectedclass) {
     let p = placeholder + (j * n);
     for (let i = 0; i < n; i++) {
       let index = i + p;
-      if (talentMap[index].data[0] != undefined) {
-        let image_name = talentMap[index].data[0].image;
+      if (TALENT_MAP[index].data[0] != undefined) {
+        let image_name = TALENT_MAP[index].data[0].image;
         let imgElement = document.createElement("img");
         imgElement.src = 'https://data.project-ascension.com/files/images/icons/' + image_name;
         grids[i].appendChild(imgElement)
 
-        let id = talentMap[index].data[0].id;
+        let id = TALENT_MAP[index].data[0].id;
         let element = grids[i];
-        let maxRank = talentMap[index].max_rank;
+        let maxRank = TALENT_MAP[index].max_rank;
         let talent = new Talent(id, element, maxRank)
         for (let k = 0; k < maxRank; k++) {
           let state = {}
-          if (talentMap[index].data[k] == undefined) {
-            state.id = talentMap[index].data[0].id + k;
-            state.rank = talentMap[index].data[0].rank + k;
+          if (TALENT_MAP[index].data[k] == undefined) {
+            state.id = TALENT_MAP[index].data[0].id + k;
+            state.rank = TALENT_MAP[index].data[0].rank + k;
           }
           else {
-            state.id = talentMap[index].data[k].id
-            state.rank = talentMap[index].data[k].rank
+            state.id = TALENT_MAP[index].data[k].id
+            state.rank = TALENT_MAP[index].data[k].rank
           }
 
           talent.states.push(state)
@@ -429,14 +422,11 @@ function loadBackground(class_name, target) {
 
   let trees = $('.trees' + target + ' > .tree');
   for (let i = 0; i < 3; i++) {
-    let spec_name = tree_names[class_name][i]
+    let spec_name = TREE_NAMES[class_name][i]
     let tree = new Tree(class_name, spec_name, trees[i], i + 1, target)
   }
 }
 
-function Component() {
-
-}
 
 function Header() {
   this.initDesktop = function () {
@@ -446,18 +436,37 @@ function Header() {
     createMobileElements('header')
   }
 
-
   function createDesktopElements(parent) {
     $(parent).empty();
     $(parent).append('<div class="tallyBox"></div>')
-    $(parent).append('<div>Class icons</div>')
+    $(parent).append('<div class="class-icon-container"></div>')
 
     showTree('abilities')
+
+    /* Create Icons and load them into header */
+    let container = $(parent + ' .class-icon-container')
+    for (let i = 0; i < 9; i++) {
+      let name = CLASS_NAMES[i];
+      container.append('<div><img class="SelectedClassIcon" src="https://data.project-ascension.com/files/images/icons/classes/' + name + '.png" alt="class icon"></div>')
+
+      /* Give Each icon a click handler that will load corresponding data*/
+      $(container).children()[i].onclick = function () {
+        loadBackground(name, '.talents'); /*Load background images*/
+
+        loadTalents(name);
+        loadAbilities(name);
+        /*Close modal*/
+        // $('#' + modalId).toggle();
+
+        $('#selectedClassIcon').attr('src', name)/*Change icon image*/
+        SELECTED = name;
+      }
+    }
   }
   function createMobileElements(parent) {
     $(parent).empty();
     $(parent).append('<div class="talentsBtn">Talents</div>')
-    $(parent).append('<div><img src="images/class_icon/' + SELECTED + '.png" alt="class icon" id="selectedClassIcon"></div>')
+    $(parent).append('<div><img class="SelectedClassIcon" src="https://data.project-ascension.com/files/images/icons/classes/' + SELECTED + '.png" alt="class icon"></div>')
     $(parent).append('<div class="abilitiesBtn">Abilities</div>')
 
     // Display talent tree, hide abilities tree in mobile view
@@ -522,8 +531,8 @@ function Modal() {
 
 //   //   let ClassIcons = [];
 //   //   /* Replace placeholder with appropriate class icons and give click functionality*/
-//   //   for (let i = 0; i < class_names.length; i++) {
-//   //     let icon = new ClassIcon(class_names[i], elements[i], modalId)
+//   //   for (let i = 0; i < CLASS_NAMES.length; i++) {
+//   //     let icon = new ClassIcon(CLASS_NAMES[i], elements[i], modalId)
 //   //     ClassIcons.push(icon);
 //   //   }
 //   // }
@@ -536,14 +545,15 @@ function Modal() {
 //     let elements = $('.modal-content2').children().toArray();
 //     let ClassIcons = [];
 //     /* Replace placeholder with appropriate class icons and give click functionality*/
-//     for (let i = 0; i < class_names.length; i++) {
-//       let icon = new ClassIcon(class_names[i], elements[i])
+//     for (let i = 0; i < CLASS_NAMES.length; i++) {
+//       let icon = new ClassIcon(CLASS_NAMES[i], elements[i])
 //       ClassIcons.push(icon);
 //     }
 //   }
 
 // }
 
+// Helper Functions
 function showTree(target) {
   $('.' + target).css('visibility', 'visible');
   $('.' + target).css('position', 'static');
@@ -571,8 +581,6 @@ function Page() {
   let modal = new Modal();
   let components = [header, footer, modal];
 
-
-
   function setState(state) {
     if (state.matches) { // If desktop size
       initDesktopLayout()
@@ -586,26 +594,15 @@ function Page() {
     header.initDesktop()
     footer.initDesktop()
 
-
-
-
   }
   function initMobileLayout() {
     console.log("Mobile")
     header.initMobile()
     footer.initMobile()
-
-
-
-
   }
   setState(state)
   state.addListener(setState)
-}
 
-
-getMap();
-$(document).ready(function () { //check document is loaded
   /* Init Modal and class Icons */
   // let classModal = new Modal('modal');
   // classModal.initIcons();
@@ -617,6 +614,12 @@ $(document).ready(function () { //check document is loaded
 
   // let modal2 = new Modal2()
   // modal2.initIcons();
+}
+
+
+
+getMap();
+$(document).ready(function () { //check document is loaded
 
   document.addEventListener('mapLoaded', function () {
     /* waits untill the map is loaded before other assets are loaded*/
