@@ -1,24 +1,26 @@
 /* TODOS
- fix layout
  refactor code
- add abilities to desktop layout
   Desktop Layout:
-    Display abilities on left hand side
-    Make Header display all class icons and footer information
-    display abilities vertically
     choose different background for abilities
-  
-
-  
+    refactor talent and ability loader
  
  */
-var SELECTED = 'druid';
+var SELECTED = {
+  class: 'druid',
+  previous: null,
+  update: function (next) {
+    this.previous = this.class;
+    this.class = next;
+    let classChanged = new Event('classChanged')
+    document.dispatchEvent(classChanged)
+  }
+};
+var MODAL, HEADER, FOOTER;
 
 var TALENT_MAP = []
 var ABILITY_MAP = []
 
 var CLASS_NAMES = ['druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'shaman', 'warlock', 'warrior'];
-
 
 var TREE_NAMES = {
   'druid': ['Balance', 'Feral', 'Restoration'],
@@ -32,10 +34,19 @@ var TREE_NAMES = {
   'warrior': ['Arms', 'Fury', 'Protection']
 }
 
-
 var LEGACY_WOW_API = {
-  // append class name and talent tree index. e.g balance druid = 'druid0.png'
-  spec_icon: 'https://legacy-wow.com/talentcalcs/vanilla/shared/global/talents/images/talents/trees/'
+  spec_icon: 'https://legacy-wow.com/talentcalcs/vanilla/shared/global/talents/images/talents/trees/' // + class_name + index + '.png'
+}
+
+var EVOWOW_API = {
+  background_image: 'https://wotlk.evowow.com/static/images/wow/talents/backgrounds/' // + class_name + '_' + index + '.jpg'
+}
+
+var ASCENSION_API = {
+  spell_tooltip: 'https://data.project-ascension.com/api/spells/',// + id + '/tooltip.html'
+  spell_icon: 'https://data.project-ascension.com/files/images/icons/',// + image_name;
+  class_icon: 'https://data.project-ascension.com/files/images/icons/classes/' // + image_name + .png
+
 }
 
 /* Get Locations from JSON FIle*/
@@ -64,7 +75,7 @@ function Tree(class_name, spec_name, element, index, target) {
   this.class_name = class_name
   this.spec_name = spec_name
   this.body = element;
-  this.image = 'https://wotlk.evowow.com/static/images/wow/talents/backgrounds/' + class_name + '_' + index + '.jpg'
+  this.image = EVOWOW_API.background_image + class_name + '_' + index + '.jpg'
   /*Update background image css*/
   $(this.body).css('background-image', 'url(' + this.image + ')');
   this.target = target;
@@ -82,44 +93,7 @@ function Tree(class_name, spec_name, element, index, target) {
 
   }
   buildHeader();
-
 }
-
-//ClassIcon Blue Print
-function ClassIcon(element) {
-  this.element = element;
-  this.image = 'https://data.project-ascension.com/files/images/icons/classes/' + name + '.png';
-  element.src = this.image;
-  element.name = name /*Image name*/
-
-  element.onclick = function () {
-    loadBackground(element.name, '.talents'); /*Load background images*/
-    loadBackground(element.name, '.abilities'); /*Load background images*/
-
-    loadTalents(name);
-    loadAbilities(name);
-    /*Close modal*/
-    // $('#' + modalId).toggle();
-
-    $('#selectedClassIcon').attr('src', element.src)/*Change icon image*/
-    SELECTED = element.name;
-
-
-  }
-  this.initIcons = function () {
-    // Get placeholder divs
-    let elements = $('.modal-content').children().toArray();
-
-    let ClassIcons = [];
-    /* Replace placeholder with appropriate class icons and give click functionality*/
-    for (let i = 0; i < CLASS_NAMES.length; i++) {
-      let icon = new ClassIcon(CLASS_NAMES[i], elements[i], modalId)
-      ClassIcons.push(icon);
-    }
-  }
-
-}
-
 //Ability Blue Print
 function Ability(id, element) {
   this.id = id;
@@ -194,7 +168,7 @@ function Ability(id, element) {
 
   getToolTip = function (self) {
     let id = self.id
-    let url = 'https://data.project-ascension.com/api/spells/' + id + '/tooltip.html'
+    let url = ASCENSION_API.spell_tooltip + id + '/tooltip.html'
 
     let request = $.ajax({
       url: url,
@@ -213,7 +187,6 @@ function Ability(id, element) {
   this.loadEvents(self);
 
 }
-
 //Talent Blue Print
 function Talent(id, element, nRanks) {
   this.id = id;
@@ -326,7 +299,7 @@ function Talent(id, element, nRanks) {
 
   getToolTip = function (self) {
     let id = self.id
-    let url = 'https://data.project-ascension.com/api/spells/' + id + '/tooltip.html'
+    let url = ASCENSION_API.spell_tooltip + id + '/tooltip.html'
 
     let request = $.ajax({
       url: url,
@@ -365,7 +338,7 @@ function loadAbilities(selectedclass) {
       let ability = new Ability(item.id, grids[i])
       let image_name = item.image;
       let imgElement = document.createElement("img");
-      imgElement.src = 'https://data.project-ascension.com/files/images/icons/' + image_name;
+      imgElement.src = ASCENSION_API.spell_icon + image_name;
       grids[i].appendChild(imgElement)
     })
   }
@@ -391,7 +364,7 @@ function loadTalents(selectedclass) {
       if (TALENT_MAP[index].data[0] != undefined) {
         let image_name = TALENT_MAP[index].data[0].image;
         let imgElement = document.createElement("img");
-        imgElement.src = 'https://data.project-ascension.com/files/images/icons/' + image_name;
+        imgElement.src = ASCENSION_API.spell_icon + image_name;
         grids[i].appendChild(imgElement)
 
         let id = TALENT_MAP[index].data[0].id;
@@ -415,7 +388,6 @@ function loadTalents(selectedclass) {
     }
   }
 }
-
 /*Load background*/
 function loadBackground(class_name, target) {
   //Select div that holds talent trees and populate with relevant data
@@ -427,46 +399,28 @@ function loadBackground(class_name, target) {
   }
 }
 
-
 function Header() {
+  let self = this;
   this.initDesktop = function () {
     createDesktopElements('header')
   }
   this.initMobile = function () {
     createMobileElements('header')
   }
-
   function createDesktopElements(parent) {
     $(parent).empty();
     $(parent).append('<div class="tallyBox"></div>')
     $(parent).append('<div class="class-icon-container"></div>')
 
     showTree('abilities')
+    self.loadIcons($(parent + ' .class-icon-container'))
 
-    /* Create Icons and load them into header */
-    let container = $(parent + ' .class-icon-container')
-    for (let i = 0; i < 9; i++) {
-      let name = CLASS_NAMES[i];
-      container.append('<div><img class="SelectedClassIcon" src="https://data.project-ascension.com/files/images/icons/classes/' + name + '.png" alt="class icon"></div>')
-
-      /* Give Each icon a click handler that will load corresponding data*/
-      $(container).children()[i].onclick = function () {
-        loadBackground(name, '.talents'); /*Load background images*/
-
-        loadTalents(name);
-        loadAbilities(name);
-        /*Close modal*/
-        // $('#' + modalId).toggle();
-
-        $('#selectedClassIcon').attr('src', name)/*Change icon image*/
-        SELECTED = name;
-      }
-    }
   }
   function createMobileElements(parent) {
     $(parent).empty();
+    let url = ASCENSION_API.class_icon + SELECTED.class + '.png'
     $(parent).append('<div class="talentsBtn">Talents</div>')
-    $(parent).append('<div><img class="SelectedClassIcon" src="https://data.project-ascension.com/files/images/icons/classes/' + SELECTED + '.png" alt="class icon"></div>')
+    $(parent).append('<div id="selectedClassIcon"><img class="classIcon" src ="' + url + '" alt = "class icon" ></div > ')
     $(parent).append('<div class="abilitiesBtn">Abilities</div>')
 
     // Display talent tree, hide abilities tree in mobile view
@@ -474,16 +428,45 @@ function Header() {
     hideTree('abilities')
 
     // Add functionality to buttons
-    $('.abilitiesBtn').on('click', function () {
-      toggleTree('abilities')
-    })
     $('.talentsBtn').on('click', function () {
       toggleTree('talents')
     })
+    $('#selectedClassIcon').on('click', function () {
+      MODAL.toggle()
+
+    })
+    $('.abilitiesBtn').on('click', function () {
+      toggleTree('abilities')
+    })
+
+    document.addEventListener('classChanged', function () {
+      let url = ASCENSION_API.class_icon + SELECTED.class + '.png'
+      $('#selectedClassIcon > img').attr('src', url)/*Change icon image*/
+    })
+
   }
 
+}
+Header.prototype.loadIcons = function (target) {
+  /* Create Icons and load them into header */
+  let container = target
+  for (let i = 0; i < 9; i++) {
+    let name = CLASS_NAMES[i];
+    container.append('<div><img class="classIcon" src="' + ASCENSION_API.class_icon + name + '.png" alt="class icon"></div>')
 
+    /* Give Each icon a click handler that will load corresponding data*/
+    $(container).children()[i].onclick = function () {
+      loadBackground(name, '.talents'); /*Load background images*/
 
+      loadTalents(name);
+      loadAbilities(name);
+      /*Close modal*/
+      $('#modal').toggle();
+
+      // SELECTED.class = name;
+      SELECTED.update(name)
+    }
+  }
 }
 function Footer() {
 
@@ -506,52 +489,30 @@ function Footer() {
   }
 }
 function Modal() {
+  this.modal = $('#modal');
+  this.isOpen = false;
+  this.open_button
+  let self = this;
+  this.hide = function () {
+    this.modal.css('display', 'none');
+    this.modal.isOpen = false;
+  }
+  this.show = function () {
+    this.modal.css('display', 'block');
+    this.modal.isOpen = true;
+  }
+  this.toggle = function () {
+    if (this.modal.isOpen) { //Close Modal
+      self.hide()
+    }
+    else { //Open
+      self.show()
+    }
+  }
+
 
 }
-
-
-// function Modal(modalId) {
-//   this.modal = $('#' + modalId);
-//   this.isOpen = false;
-//   this.open_button
-//   this.toggle = function () {
-//     if (this.modal.isOpen) { //Close Modal
-//       this.modal.css('display', 'none');
-//       this.modal.isOpen = false;
-//     }
-//     else { //Open
-//       this.modal.css('display', 'block');
-//       this.modal.isOpen = true;
-//     }
-//   }
-
-//   // this.initIcons = function () {
-//   //   // Get placeholder divs
-//   //   let elements = $('.modal-content').children().toArray();
-
-//   //   let ClassIcons = [];
-//   //   /* Replace placeholder with appropriate class icons and give click functionality*/
-//   //   for (let i = 0; i < CLASS_NAMES.length; i++) {
-//   //     let icon = new ClassIcon(CLASS_NAMES[i], elements[i], modalId)
-//   //     ClassIcons.push(icon);
-//   //   }
-//   // }
-
-// }
-// function Modal2() {
-
-//   this.initIcons = function () {
-//     // Get placeholder divs
-//     let elements = $('.modal-content2').children().toArray();
-//     let ClassIcons = [];
-//     /* Replace placeholder with appropriate class icons and give click functionality*/
-//     for (let i = 0; i < CLASS_NAMES.length; i++) {
-//       let icon = new ClassIcon(CLASS_NAMES[i], elements[i])
-//       ClassIcons.push(icon);
-//     }
-//   }
-
-// }
+Modal.prototype = Object.create(Header.prototype); //Give Load icons function to Modal
 
 // Helper Functions
 function showTree(target) {
@@ -576,10 +537,10 @@ function toggleTree(target) {
 function Page() {
   var state = window.matchMedia("(min-width: 600px)")
 
-  let footer = new Footer();
-  let header = new Header();
-  let modal = new Modal();
-  let components = [header, footer, modal];
+  FOOTER = new Footer();
+  HEADER = new Header();
+  MODAL = new Modal();
+  MODAL.loadIcons($('.modal-content')); //Load Modal Icons
 
   function setState(state) {
     if (state.matches) { // If desktop size
@@ -590,30 +551,17 @@ function Page() {
   }
 
   function initDesktopLayout() {
-    console.log("Desktop")
-    header.initDesktop()
-    footer.initDesktop()
+    HEADER.initDesktop()
+    FOOTER.initDesktop()
+    MODAL.hide()
 
   }
   function initMobileLayout() {
-    console.log("Mobile")
-    header.initMobile()
-    footer.initMobile()
+    HEADER.initMobile()
+    FOOTER.initMobile()
   }
   setState(state)
   state.addListener(setState)
-
-  /* Init Modal and class Icons */
-  // let classModal = new Modal('modal');
-  // classModal.initIcons();
-
-  // //Toggle modal display on ClassIcon click
-  // $('#selectedClassIcon').on('click', function () {
-  //   classModal.toggle()
-  // })
-
-  // let modal2 = new Modal2()
-  // modal2.initIcons();
 }
 
 
@@ -626,11 +574,11 @@ $(document).ready(function () { //check document is loaded
     Page()
 
     /* Initialize Default Settings */
-    loadBackground(SELECTED, '.talents');
-    // loadBackground(SELECTED, '.abilities');
+    loadBackground(SELECTED.class, '.talents');
+    // loadBackground(SELECTED.class, '.abilities');
 
-    loadTalents(SELECTED);
-    loadAbilities(SELECTED);
+    loadTalents(SELECTED.class);
+    loadAbilities(SELECTED.class);
 
 
   })

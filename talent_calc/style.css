@@ -107,7 +107,7 @@ header > .tallyBox{
   text-align: center;
 }
 */
-.SelectedClassIcon{
+.classIcon{
   height: 10vh;
   width: auto;
   z-index: 2;
