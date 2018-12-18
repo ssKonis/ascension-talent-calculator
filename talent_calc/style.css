@@ -87,11 +87,16 @@ header{
   background-color: #ff0000;
 }
 
+
+header > .tallyBox{
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr;
+}
 /*On Desktop/ipad*/
 @media only screen and (min-width:600px){
   header{
     grid-template-rows: 1fr;
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 3fr;
   }
 }
 /* header > div{

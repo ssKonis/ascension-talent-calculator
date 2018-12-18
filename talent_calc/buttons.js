@@ -12,8 +12,9 @@
   
  
  */
+var SELECTED = 'druid';
 
-var screenBreakpoint;
+var screenStates = ['mobile', 'desktop']
 var talentMap = []
 var abilityMap = []
 
@@ -104,7 +105,20 @@ function ClassIcon(name, element) {
     // $('#' + modalId).toggle();
 
     $('#selectedClassIcon').attr('src', element.src)/*Change icon image*/
-    selected_class = element.name;
+    SELECTED = element.name;
+
+
+  }
+  this.initIcons = function () {
+    // Get placeholder divs
+    let elements = $('.modal-content').children().toArray();
+
+    let ClassIcons = [];
+    /* Replace placeholder with appropriate class icons and give click functionality*/
+    for (let i = 0; i < class_names.length; i++) {
+      let icon = new ClassIcon(class_names[i], elements[i], modalId)
+      ClassIcons.push(icon);
+    }
   }
 
 }
@@ -420,48 +434,115 @@ function loadBackground(class_name, target) {
   }
 }
 
-function Modal(modalId) {
-  this.modal = $('#' + modalId);
-  this.isOpen = false;
-  this.open_button
-  this.toggle = function () {
-    if (this.modal.isOpen) { //Close Modal
-      this.modal.css('display', 'none');
-      this.modal.isOpen = false;
-    }
-    else { //Open
-      this.modal.css('display', 'block');
-      this.modal.isOpen = true;
-    }
-  }
-
-  this.initIcons = function () {
-    // Get placeholder divs
-    let elements = $('.modal-content').children().toArray();
-
-    let ClassIcons = [];
-    /* Replace placeholder with appropriate class icons and give click functionality*/
-    for (let i = 0; i < class_names.length; i++) {
-      let icon = new ClassIcon(class_names[i], elements[i], modalId)
-      ClassIcons.push(icon);
-    }
-  }
+function Component() {
 
 }
-function Modal2() {
 
-  this.initIcons = function () {
-    // Get placeholder divs
-    let elements = $('.modal-content2').children().toArray();
-    let ClassIcons = [];
-    /* Replace placeholder with appropriate class icons and give click functionality*/
-    for (let i = 0; i < class_names.length; i++) {
-      let icon = new ClassIcon(class_names[i], elements[i])
-      ClassIcons.push(icon);
-    }
+function Header() {
+  this.initDesktop = function () {
+    createDesktopElements('header')
+  }
+  this.initMobile = function () {
+    createMobileElements('header')
   }
 
+
+  function createDesktopElements(parent) {
+    $(parent).empty();
+    $(parent).append('<div class="tallyBox"></div>')
+    $(parent).append('<div>Class icons</div>')
+
+    showTree('abilities')
+  }
+  function createMobileElements(parent) {
+    $(parent).empty();
+    $(parent).append('<div class="talentsBtn">Talents</div>')
+    $(parent).append('<div><img src="images/class_icon/' + SELECTED + '.png" alt="class icon" id="selectedClassIcon"></div>')
+    $(parent).append('<div class="abilitiesBtn">Abilities</div>')
+
+    // Display talent tree, hide abilities tree in mobile view
+    showTree('talents')
+    hideTree('abilities')
+
+    // Add functionality to buttons
+    $('.abilitiesBtn').on('click', function () {
+      toggleTree('abilities')
+    })
+    $('.talentsBtn').on('click', function () {
+      toggleTree('talents')
+    })
+  }
+
+
+
 }
+function Footer() {
+
+  this.initDesktop = function () {
+    createElements('header > .tallyBox')
+    removeElements('footer')
+  }
+  this.initMobile = function () {
+    createElements('footer')
+    removeElements('header > .tallyBox')
+  }
+
+  function createElements(parent) {
+    $(parent).append('<div>Ability Points Remaining</div>')
+    $(parent).append('<div>Level Required</div>')
+    $(parent).append('<div>Talent Points Remaining</div>')
+  }
+  function removeElements(parent) {
+    $(parent).empty();
+  }
+}
+function Modal() {
+
+}
+
+
+// function Modal(modalId) {
+//   this.modal = $('#' + modalId);
+//   this.isOpen = false;
+//   this.open_button
+//   this.toggle = function () {
+//     if (this.modal.isOpen) { //Close Modal
+//       this.modal.css('display', 'none');
+//       this.modal.isOpen = false;
+//     }
+//     else { //Open
+//       this.modal.css('display', 'block');
+//       this.modal.isOpen = true;
+//     }
+//   }
+
+//   // this.initIcons = function () {
+//   //   // Get placeholder divs
+//   //   let elements = $('.modal-content').children().toArray();
+
+//   //   let ClassIcons = [];
+//   //   /* Replace placeholder with appropriate class icons and give click functionality*/
+//   //   for (let i = 0; i < class_names.length; i++) {
+//   //     let icon = new ClassIcon(class_names[i], elements[i], modalId)
+//   //     ClassIcons.push(icon);
+//   //   }
+//   // }
+
+// }
+// function Modal2() {
+
+//   this.initIcons = function () {
+//     // Get placeholder divs
+//     let elements = $('.modal-content2').children().toArray();
+//     let ClassIcons = [];
+//     /* Replace placeholder with appropriate class icons and give click functionality*/
+//     for (let i = 0; i < class_names.length; i++) {
+//       let icon = new ClassIcon(class_names[i], elements[i])
+//       ClassIcons.push(icon);
+//     }
+//   }
+
+// }
 
 function showTree(target) {
   $('.' + target).css('visibility', 'visible');
@@ -483,23 +564,43 @@ function toggleTree(target) {
 }
 
 function Page() {
-  function toggleHeaderLayout(desktopSize) {
-    if (desktopSize.matches) { // If media query matches
-      $('.abilitiesBtn').hide()
-      $('.talentsBtn').hide()
-      showTree('abilities')
-    } else {
-      $('.abilitiesBtn').show()
-      $('.talentsBtn').show()
-      showTree('talents')
-      hideTree('abilities')
+  var state = window.matchMedia("(min-width: 600px)")
 
+  let footer = new Footer();
+  let header = new Header();
+  let modal = new Modal();
+  let components = [header, footer, modal];
+
+
+
+  function setState(state) {
+    if (state.matches) { // If desktop size
+      initDesktopLayout()
+    } else {
+      initMobileLayout()
     }
   }
 
-  var desktopSize = window.matchMedia("(min-width: 600px)")
-  toggleHeaderLayout(desktopSize) // Call listener function at run time
-  desktopSize.addListener(toggleHeaderLayout) // Attach listener function on state changes
+  function initDesktopLayout() {
+    console.log("Desktop")
+    header.initDesktop()
+    footer.initDesktop()
+
+
+
+
+  }
+  function initMobileLayout() {
+    console.log("Mobile")
+    header.initMobile()
+    footer.initMobile()
+
+
+
+
+  }
+  setState(state)
+  state.addListener(setState)
 }
 
 
@@ -514,29 +615,21 @@ $(document).ready(function () { //check document is loaded
   //   classModal.toggle()
   // })
 
-  let modal2 = new Modal2()
-  modal2.initIcons();
+  // let modal2 = new Modal2()
+  // modal2.initIcons();
 
   document.addEventListener('mapLoaded', function () {
     /* waits untill the map is loaded before other assets are loaded*/
     Page()
 
     /* Initialize Default Settings */
-    let selected_class = 'druid';
-    loadBackground(selected_class, '.talents');
-    // loadBackground(selected_class, '.abilities');
+    loadBackground(SELECTED, '.talents');
+    // loadBackground(SELECTED, '.abilities');
 
-    loadTalents(selected_class);
-    loadAbilities(selected_class);
+    loadTalents(SELECTED);
+    loadAbilities(SELECTED);
 
-    $('.abilitiesBtn').on('click', function () {
-      toggleTree('abilities')
 
-    })
-    $('.talentsBtn').on('click', function () {
-      toggleTree('talents')
-
-    })
   })
 
 
