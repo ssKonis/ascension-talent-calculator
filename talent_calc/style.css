@@ -173,7 +173,6 @@ header > .tallyBox{
   grid-template-columns: repeat(3, 100% );
   grid-template-rows: 1fr 1fr;
 
-  max-height: 90vh;
 
 }
 
@@ -182,7 +181,7 @@ header > .tallyBox{
   .trees{
     /*Display all trees*/
     grid-template-columns: repeat(3, minmax(240px, 1fr));
-      
+    max-height: 90vh;
   }
 }
 
@@ -219,7 +218,7 @@ header > .tallyBox{
 .tree{
   scroll-snap-align:end;
   background-repeat: no-repeat;
-  background-size: 100% 100%;
+  background-size: 100%, 100%;
   background-clip: content-box;
   background-color: black;
   display: grid;

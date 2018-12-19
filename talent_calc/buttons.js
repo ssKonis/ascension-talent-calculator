@@ -77,7 +77,8 @@ function Tree(class_name, spec_name, element, index, target) {
   this.body = element;
   this.image = EVOWOW_API.background_image + class_name + '_' + index + '.jpg'
   /*Update background image css*/
-  $(this.body).css('background-image', 'url(' + this.image + ')');
+  $(this.body).css('background-image', 'none') //Remove previous
+  $(this.body).css('background-image', 'url(' + this.image + ')'); //Add new background
   this.target = target;
   let self = this;
 
@@ -350,7 +351,7 @@ function loadTalents(selectedclass) {
   for (let j = 0; j < 3; j++) {/*For each tree*/
     let selector = $('.trees.talents').find('#tree' + j)
 
-    $(selector).children().empty(); /*Clear previous talents*/
+    $(selector).empty(); /*Clear previous talents*/
 
     /*Dynamically generate icons*/
     for (let i = 0; i < n; i++) {
@@ -394,6 +395,7 @@ function loadBackground(class_name, target) {
 
   let trees = $('.trees' + target + ' > .tree');
   for (let i = 0; i < 3; i++) {
+    console.log((trees)[i])
     let spec_name = TREE_NAMES[class_name][i]
     let tree = new Tree(class_name, spec_name, trees[i], i + 1, target)
   }
@@ -433,7 +435,6 @@ function Header() {
     })
     $('#selectedClassIcon').on('click', function () {
       MODAL.toggle()
-
     })
     $('.abilitiesBtn').on('click', function () {
       toggleTree('abilities')
@@ -460,8 +461,8 @@ Header.prototype.loadIcons = function (target) {
 
       loadTalents(name);
       loadAbilities(name);
-      /*Close modal*/
-      $('#modal').toggle();
+      /*Close modal after selecting a new class*/
+      MODAL.hide();
 
       // SELECTED.class = name;
       SELECTED.update(name)
