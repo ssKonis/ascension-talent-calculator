@@ -5,7 +5,7 @@
     refactor talent and ability loader
 
   Both:
-    Display Tooltips
+    Display Tooltips -use jquery plugin 'tooltipster'
     Design better layout
     get tallybox to display how many talent/ability points have been spent aswell as level required
  
@@ -76,18 +76,17 @@ function getMap() {
 }
 
 //Talent Tree object
-function Tree(class_name, spec_name, element, index) {
+function Tree(class_name, spec_name, element, index, target) {
   this.class_name = class_name
   this.spec_name = spec_name
   this.body = element;
   this.image = EVOWOW_API.background_image + class_name + '_' + index + '.jpg'
   /*Update background image css*/
+  this.target = target;
 
   this.grid;
 
   let self = this;
-
-
 
   (function buildHeader() {
     /*Assigns the correct header name to each tree*/
@@ -98,8 +97,7 @@ function Tree(class_name, spec_name, element, index) {
     $(header).append('<img src=' + "'" + logo + "'" + '/>')
     $(header).append('<div>' + spec_name + '</div>') /*Add Name of spec*/
     $(header).append('<span class="close">&times;' + '</span>')
-  })() //called on declaration
-  // buildHeader();
+  })()
 
   this.loadBackground = function () {
     $(this.body).css('background-image', 'none') //Remove previous
@@ -163,7 +161,6 @@ function Ability(id, element, image) {
     element.appendChild(img)
   })()
 
-
   this.loadEvents = function () {
 
     /*Prevent dev tool inspect on right click*/
@@ -175,7 +172,7 @@ function Ability(id, element, image) {
     element.onmousedown = function (event) {
       if (event.which == 1) {
         /* Add point on left click and remove gray filter*/
-        $(imageElement).css('filter', 'none')
+        $(this).find('img').css('filter', 'none')
         getToolTip(self)
         $('.tooltip').show()
 
@@ -183,7 +180,7 @@ function Ability(id, element, image) {
       if (event.which == 3) {
         /* Remove point on right click*/
         getToolTip(self)
-        $(imageElement).css('filter', 'grayscale(100)')
+        $(this).find('img').css('filter', 'grayscale(100)')
       }
     }
 
@@ -195,7 +192,7 @@ function Ability(id, element, image) {
     function touchstart(e) {
       /*On Each click, add an element */
 
-      $(imageElement).css('filter', 'none')
+      $(this).find('img').css('filter', 'none')
 
       e.preventDefault();
       if (lockTimer) {
@@ -220,7 +217,7 @@ function Ability(id, element, image) {
       console.log('Hold Triggered')
       // show tooltip
 
-      $(imageElement).css('filter', 'grayscale(100)')
+      $(this).find('img').css('filter', 'grayscale(100)')
     }
 
     element.addEventListener("touchstart", touchstart, false);
@@ -246,7 +243,6 @@ function Ability(id, element, image) {
   }
   this.loadEvents(self);
 
-
 }
 //Talent Blue Print
 function Talent(id, element, nRanks, image) {
@@ -262,9 +258,6 @@ function Talent(id, element, nRanks, image) {
     $(img).css('filter', 'grayscale(100)') /* make image grayscale*/
     element.appendChild(img)
   })()
-
-  // let imageElement = $(this.element).first().children();
-  // $(imageElement).css('filter', 'grayscale(100)') /* make image grayscale*/
 
   this.tooltip = "Example Text";
   this.nRanks = nRanks;
@@ -295,7 +288,7 @@ function Talent(id, element, nRanks, image) {
     element.onmousedown = function (event) {
       if (event.which == 1) {
         /* Add point on left click and remove gray filter*/
-        $(imageElement).css('filter', 'none')
+        $(this).find('img').css('filter', 'none')
         if (curRank < nRanks) {
           curRank += 1;
           updateState(self, curRank)
@@ -315,7 +308,7 @@ function Talent(id, element, nRanks, image) {
           $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
           /* If rank == 0, add greyscale filter */
           if (curRank == 0) {
-            $(imageElement).css('filter', 'grayscale(100)')
+            $(this).find('img').css('filter', 'grayscale(100)')
           }
         }
       }
@@ -329,7 +322,7 @@ function Talent(id, element, nRanks, image) {
     function touchstart(e) {
       /*On Each click, add an element */
 
-      $(imageElement).css('filter', 'none')
+      $(this).find('img').css('filter', 'none')
       if (curRank < nRanks) {
         curRank += 1;
         $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
@@ -359,7 +352,7 @@ function Talent(id, element, nRanks, image) {
 
       curRank -= 1;
       $(element).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
-      $(imageElement).css('filter', 'grayscale(100)')
+      $(this).find('img').css('filter', 'grayscale(100)')
     }
 
     element.addEventListener("touchstart", touchstart, false);
@@ -377,7 +370,7 @@ function Talent(id, element, nRanks, image) {
     });
 
     request.done(function (msg) {
-      // console.log($(msg).find('.ascension-tooltip-spell-tooltip-text').text());
+      console.log($(msg).find('.ascension-tooltip-spell-tooltip-text').text());
     })
   }
   /* On mouse over show tooltip */
@@ -561,7 +554,7 @@ function main() {
     for (let i = 0; i < 3; i++) {
       let spec_name = TREE_NAMES[class_name][i]
       let specData = abilityClassData.filter(ability => ability.spec == spec_name)
-      let abilityTree = new Tree(class_name, spec_name, abilityTrees[i], i + 1)
+      let abilityTree = new Tree(class_name, spec_name, abilityTrees[i], i + 1, '.abilities')
       abilityTree.loadCells(specData.length)
       abilityTree.createAbilityIcons(specData)
     }
@@ -575,8 +568,7 @@ function main() {
       let end = (((i + 1) * n) + p);
       let talentdata = TALENT_MAP.slice(start, end)
       let spec_name = TREE_NAMES[class_name][i]
-      console.log(talentdata)
-      let talentTree = new Tree(class_name, spec_name, talentTrees[i], i + 1)
+      let talentTree = new Tree(class_name, spec_name, talentTrees[i], i + 1, '.talents')
       talentTree.loadCells(n)
       talentTree.createTalentIcons(talentdata)
       talentTree.loadBackground()
@@ -585,8 +577,6 @@ function main() {
 
 
 }
-
-
 
 getMap();
 $(document).ready(function () { //check document is loaded
