@@ -106,17 +106,47 @@ function Tree(class_name, spec_name, element, index) {
     $(this.body).css('background-image', 'url(' + this.image + ')'); //Add new background
   }
 
-  this.loadCells = function (data) {
-    let n = data.length
+  this.loadCells = function (n) {
     $(element).empty(); /*Clear previous talents*/
     /*Dynamically generate icons*/
     for (let i = 0; i < n; i++) {
       $(element).append('<div class="icon"></div>')
     }
     self.grid = $(element).children().toArray()
+
+  }
+
+  this.createAbilityIcons = function (data) {
     data.forEach(function (item, i) {
       new Ability(item.id, self.grid[i], item.image)
     })
+  }
+
+  this.createTalentIcons = function (data) {
+
+    data.forEach(function (item, i) {
+      if (item.data[0] != undefined) {
+        let image = item.data[0].image;
+        let id = item.data[0].id;
+        let element = self.grid[i];
+        let maxRank = item.max_rank;
+        let talent = new Talent(id, element, maxRank, image)
+        for (let k = 0; k < maxRank; k++) {
+          let state = {}
+          if (item.data[k] == undefined) {
+            state.id = item.data[0].id + k;
+            state.rank = item.data[0].rank + k;
+          }
+          else {
+            state.id = item.data[k].id
+            state.rank = item.data[k].rank
+          }
+
+          talent.states.push(state)
+        }
+      }
+    })
+
   }
 }
 //Ability Blue Print
@@ -219,14 +249,22 @@ function Ability(id, element, image) {
 
 }
 //Talent Blue Print
-function Talent(id, element, nRanks) {
+function Talent(id, element, nRanks, image) {
   this.id = id;
   let self = this
   this.element = element;
   this.states = [] // Holds array of ids for each rank
+  this.image = image;
 
-  let imageElement = $(this.element).first().children();
-  $(imageElement).css('filter', 'grayscale(100)') /* make image grayscale*/
+  (function () { //Create Image Element
+    let img = document.createElement("img")
+    img.src = ASCENSION_API.spell_icon + image;
+    $(img).css('filter', 'grayscale(100)') /* make image grayscale*/
+    element.appendChild(img)
+  })()
+
+  // let imageElement = $(this.element).first().children();
+  // $(imageElement).css('filter', 'grayscale(100)') /* make image grayscale*/
 
   this.tooltip = "Example Text";
   this.nRanks = nRanks;
@@ -348,91 +386,6 @@ function Talent(id, element, nRanks) {
   }
   this.loadEvents(self);
 }
-
-function loadAbilities(selectedclass) {
-  let classData = ABILITY_MAP.filter(ability => ability.class_name == selectedclass);
-  for (let j = 0; j < 3; j++) {/*For each tree*/
-    let spec_name = TREE_NAMES[selectedclass][j]
-    // spec_name = spec_name.charAt(0).toUpperCase() + spec_name.slice(1)//capitalise first letter
-    let specData = classData.filter(ability => ability.spec == spec_name)
-    let selector = $('.trees.abilities').find('#tree' + j)
-
-    $(selector).empty(); /*Clear previous talents*/
-
-    let n = specData.length
-    /*Dynamically generate icons*/
-    for (let i = 0; i < n; i++) {
-      $(selector).append('<div class="icon"></div>')
-    }
-    let grids = $(selector).children().toArray(); //Select empty grid elements
-    specData.forEach(function (item, i) {
-      let ability = new Ability(item.id, grids[i])
-      let image_name = item.image;
-      let imgElement = document.createElement("img");
-      imgElement.src = ASCENSION_API.spell_icon + image_name;
-      grids[i].appendChild(imgElement)
-    })
-  }
-}
-function loadTalents(selectedclass) {
-  let n = 44; /* Number of grids per talent tree */
-
-  let placeholder = CLASS_NAMES.indexOf(selectedclass) * n * 3;
-  for (let j = 0; j < 3; j++) {/*For each tree*/
-    let selector = $('.trees.talents').find('#tree' + j)
-
-    $(selector).empty(); /*Clear previous talents*/
-
-    /*Dynamically generate icons*/
-    for (let i = 0; i < n; i++) {
-      $(selector).append('<div class="icon"></div>')
-    }
-
-    let grids = $(selector).children().toArray();
-    let p = placeholder + (j * n);
-    for (let i = 0; i < n; i++) {
-      let index = i + p;
-      if (TALENT_MAP[index].data[0] != undefined) {
-        let image_name = TALENT_MAP[index].data[0].image;
-        let imgElement = document.createElement("img");
-        imgElement.src = ASCENSION_API.spell_icon + image_name;
-        grids[i].appendChild(imgElement)
-
-        let id = TALENT_MAP[index].data[0].id;
-        let element = grids[i];
-        let maxRank = TALENT_MAP[index].max_rank;
-        let talent = new Talent(id, element, maxRank)
-        for (let k = 0; k < maxRank; k++) {
-          let state = {}
-          if (TALENT_MAP[index].data[k] == undefined) {
-            state.id = TALENT_MAP[index].data[0].id + k;
-            state.rank = TALENT_MAP[index].data[0].rank + k;
-          }
-          else {
-            state.id = TALENT_MAP[index].data[k].id
-            state.rank = TALENT_MAP[index].data[k].rank
-          }
-
-          talent.states.push(state)
-        }
-      }
-    }
-  }
-}
-/*Load background*/
-// function loadBackground(class_name, target) {
-//   //Select div that holds talent trees and populate with relevant data
-
-//   let trees = $('.trees' + target + ' > .tree');
-//   for (let i = 0; i < 3; i++) {
-//     console.log((trees)[i])
-//     let spec_name = TREE_NAMES[class_name][i]
-
-//     let tree = new Tree(class_name, spec_name, trees[i], i + 1, target)
-//   }
-// }
-
-
 function Header() {
   let self = this;
   this.initDesktop = function () {
@@ -569,13 +522,15 @@ function toggleTree(target) {
   }
 }
 
-function Page() {
+function main() {
   var state = window.matchMedia("(min-width: 600px)")
 
+  dispatchMapContent();
   FOOTER = new Footer();
   HEADER = new Header();
   MODAL = new Modal();
   MODAL.loadIcons($('.modal-content')); //Load Modal Icons
+
 
   function setState(state) {
     if (state.matches) { // If desktop size
@@ -584,12 +539,10 @@ function Page() {
       initMobileLayout()
     }
   }
-
   function initDesktopLayout() {
     HEADER.initDesktop()
     FOOTER.initDesktop()
     MODAL.hide()
-
   }
   function initMobileLayout() {
     HEADER.initMobile()
@@ -598,19 +551,39 @@ function Page() {
   setState(state)
   state.addListener(setState)
 
-  this.loadClassContent = function () {
-    //Select div that holds talent trees and populate with relevant data
+  function dispatchMapContent() {
+    /*This function passes the data from the talent and ability map to each icon constructor*/
     let class_name = SELECTED.class;
-    let abilityClassData = ABILITY_MAP.filter(ability => ability.class_name == class_name);
 
-    let trees = $('.trees' + '.abilities' + ' > .tree');
+    //Load Ability Data
+    let abilityClassData = ABILITY_MAP.filter(ability => ability.class_name == class_name);
+    let abilityTrees = $('.trees' + '.abilities' + ' > .tree');
     for (let i = 0; i < 3; i++) {
       let spec_name = TREE_NAMES[class_name][i]
       let specData = abilityClassData.filter(ability => ability.spec == spec_name)
-      let tree = new Tree(class_name, spec_name, trees[i], i + 1)
-      tree.loadCells(specData)
+      let abilityTree = new Tree(class_name, spec_name, abilityTrees[i], i + 1)
+      abilityTree.loadCells(specData.length)
+      abilityTree.createAbilityIcons(specData)
+    }
+
+    //load Talent Data
+    let n = 44 // number of grids in a talent tree
+    let talentTrees = $('.trees' + '.talents' + ' > .tree');
+    let p = CLASS_NAMES.indexOf(class_name) * n * 3; /*Used as an offset for determining icon locations*/
+    for (let i = 0; i < 3; i++) {
+      let start = ((i * n) + p);
+      let end = (((i + 1) * n) + p);
+      let talentdata = TALENT_MAP.slice(start, end)
+      let spec_name = TREE_NAMES[class_name][i]
+      console.log(talentdata)
+      let talentTree = new Tree(class_name, spec_name, talentTrees[i], i + 1)
+      talentTree.loadCells(n)
+      talentTree.createTalentIcons(talentdata)
+      talentTree.loadBackground()
     }
   }
+
+
 }
 
 
@@ -620,17 +593,7 @@ $(document).ready(function () { //check document is loaded
 
   document.addEventListener('mapLoaded', function () {
     /* waits untill the map is loaded before other assets are loaded*/
-    Page()
-
-    /* Initialize Default Settings */
-    // loadBackground(SELECTED.class, '.talents');
-    // loadBackground(SELECTED.class, '.abilities');
-
-    // loadTalents(SELECTED.class);
-    // loadAbilities(SELECTED.class);
-
-
-
+    main()
   })
 
 
