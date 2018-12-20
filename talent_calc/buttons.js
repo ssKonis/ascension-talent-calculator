@@ -3,6 +3,7 @@
   Desktop Layout:
     choose different background for abilities
     refactor talent and ability loader
+    add horitonzal scroll boxes for abilities, dont allow size to be laarger than talent trees
 
   Both:
     Display Tooltips -use jquery plugin 'tooltipster'
@@ -359,7 +360,7 @@ function Talent(id, element, nRanks, image) {
     element.addEventListener("touchstart", touchstart, false);
     element.addEventListener("touchend", touchend, false);
   }
-
+  this.tooltip;
   getToolTip = function (self) {
     let id = self.id
     let url = ASCENSION_API.spell_tooltip + id + '/tooltip.html'
@@ -371,12 +372,15 @@ function Talent(id, element, nRanks, image) {
     });
 
     request.done(function (msg) {
-      console.log($(msg).find('.ascension-tooltip-spell-tooltip-text').text());
+      self.tooltip = $(msg).find('.ascension-tooltip-spell-tooltip-text').text();
+      $(element).find('img').attr({ 'title': self.tooltip, 'class': 'tooltip' });
+
     })
   }
+  getToolTip(self);
   /* On mouse over show tooltip */
   element.onmouseover = function () {
-    getToolTip(self)
+
   }
   this.loadEvents(self);
 }

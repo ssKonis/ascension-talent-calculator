@@ -275,14 +275,6 @@ header > .tallyBox{
 }
 
 
-.tooltip{
-  background-color: turquoise;
-  width: 80px;
-  height: 80px;
-  position: absolute;
-  float: right;
-
-}
 
 .rankBox{
   background-color: black;
@@ -291,10 +283,6 @@ header > .tallyBox{
   position: absolute;
   right:0;
   bottom:0;
-}
-
-.icon > .tooltip{
-
 }
 
 
