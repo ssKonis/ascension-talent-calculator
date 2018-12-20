@@ -11,19 +11,16 @@
  
  */
 var SELECTED = {
-  class: 'druid',
-  previous: null,
+  class: 'mage',
   update: function (next) {
-    this.previous = this.class;
     this.class = next;
     let classChanged = new Event('classChanged')
     document.dispatchEvent(classChanged)
   }
 };
+
 var MODAL, HEADER, FOOTER;
 
-var TALENT_MAP = []
-var ABILITY_MAP = []
 
 var CLASS_NAMES = ['druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'shaman', 'warlock', 'warrior'];
 
@@ -54,26 +51,30 @@ var ASCENSION_API = {
 
 }
 
-/* Get Locations from JSON FIle*/
-function getMap() {
-  /*Get locations*/
-  $.getJSON("talents.json", function (talent) {
-    talent.forEach(element => {
-      TALENT_MAP.push(element);
-    });
+$(document).ready(function () { //check document is loaded
+  /* Get Locations from JSON FIle*/
+  (function getMap() { //IIFE
+    let talent_map = []
+    let ability_map = []
 
-    $.getJSON("abilities.json", function (ability) {
-      ability.forEach(element => {
-        ABILITY_MAP.push(element);
+    /*Get locations*/
+    $.getJSON("talents.json", function (talent) {
+      talent.forEach(element => {
+        talent_map.push(element);
       });
-      let event = new Event('mapLoaded');
-      document.dispatchEvent(event);
+
+      $.getJSON("abilities.json", function (ability) {
+        ability.forEach(element => {
+          ability_map.push(element);
+        });
+
+        main(talent_map, ability_map) // Run after JSON loaded
+      })
 
     })
 
-  })
-
-}
+  })()
+});
 
 //Talent Tree object
 function Tree(class_name, spec_name, element, index, target) {
@@ -438,14 +439,10 @@ Header.prototype.loadIcons = function (target) {
 
       // /*Instead of modifying page, send an event and have this chage on page object*/
       // loadBackground(name, '.talents'); /*Load background images*/
-
       // loadTalents(name);
       // loadAbilities(name);
-      // /*Close modal after selecting a new class*/
-      // MODAL.hide();
-
-      // // SELECTED.class = name;
-      // SELECTED.update(name)
+      /*Close modal after selecting a new class*/
+      SELECTED.update(name)
     }
   }
 }
@@ -515,7 +512,7 @@ function toggleTree(target) {
   }
 }
 
-function main() {
+function main(talent_map, ability_map) {
   var state = window.matchMedia("(min-width: 600px)")
 
   dispatchMapContent();
@@ -544,12 +541,17 @@ function main() {
   setState(state)
   state.addListener(setState)
 
+  document.addEventListener('classChanged', function () {
+    dispatchMapContent();
+    MODAL.hide();
+  })
+
   function dispatchMapContent() {
     /*This function passes the data from the talent and ability map to each icon constructor*/
     let class_name = SELECTED.class;
 
     //Load Ability Data
-    let abilityClassData = ABILITY_MAP.filter(ability => ability.class_name == class_name);
+    let abilityClassData = ability_map.filter(ability => ability.class_name == class_name);
     let abilityTrees = $('.trees' + '.abilities' + ' > .tree');
     for (let i = 0; i < 3; i++) {
       let spec_name = TREE_NAMES[class_name][i]
@@ -566,7 +568,7 @@ function main() {
     for (let i = 0; i < 3; i++) {
       let start = ((i * n) + p);
       let end = (((i + 1) * n) + p);
-      let talentdata = TALENT_MAP.slice(start, end)
+      let talentdata = talent_map.slice(start, end)
       let spec_name = TREE_NAMES[class_name][i]
       let talentTree = new Tree(class_name, spec_name, talentTrees[i], i + 1, '.talents')
       talentTree.loadCells(n)
@@ -578,15 +580,5 @@ function main() {
 
 }
 
-getMap();
-$(document).ready(function () { //check document is loaded
-
-  document.addEventListener('mapLoaded', function () {
-    /* waits untill the map is loaded before other assets are loaded*/
-    main()
-  })
-
-
-});
 
 
