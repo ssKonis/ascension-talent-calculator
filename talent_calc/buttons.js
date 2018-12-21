@@ -155,6 +155,7 @@ function Ability(id, element, image) {
   let self = this;
   this.element = element;
   this.image = image;
+  $(element).tooltipster();
 
   (function () { //Create Image Element
     let img = document.createElement("img")
@@ -176,7 +177,6 @@ function Ability(id, element, image) {
         /* Add point on left click and remove gray filter*/
         $(this).find('img').css('filter', 'none')
         getToolTip(self)
-        $('.tooltip').show()
 
       }
       if (event.which == 3) {
@@ -236,12 +236,16 @@ function Ability(id, element, image) {
     });
 
     request.done(function (msg) {
-      // console.log($(msg).find('.ascension-tooltip-spell-tooltip-text').text());
+      self.tooltip = $(msg).find('.ascension-tooltip-spell-tooltip-text').text();
+      $(element).tooltipster('content', self.tooltip); //adds tooltipster styles when hovered
     })
   }
+  getToolTip(self)
+
   /* On mouse over show tooltip */
   element.onmouseover = function () {
-    getToolTip(self)
+
+
   }
   this.loadEvents(self);
 
@@ -261,14 +265,50 @@ function Talent(id, element, nRanks, image) {
     element.appendChild(img)
   })()
 
-  this.tooltip = "Example Text";
   this.nRanks = nRanks;
   let curRank = 0;
 
   // Add Rank Box
   $(this.element).append("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
 
+  //add toltip
+  this.tooltip
 
+  createToolTipContainer = function (self) {
+    if (self.tooltip != undefined) {
+      console.log('destroyed')
+      //If tooltip was previously created, remove that tooltip
+      $(self.tooltip).tooltipster('destroy');
+    }
+    let div = document.createElement("div")
+    $(div).attr('class', 'tooltip-container')
+    self.element.appendChild(div)
+    self.tooltip = $(div)
+  }
+
+  // Makes an ajax call to fetch tooltip data
+  updateToolTip = function (self) {
+    createToolTipContainer(self);// Recreate tooltip div
+    $(self.tooltip).tooltipster({
+      content: 'Loading...',
+      functionBefore: function (instance, helper) {
+        console.log('fetching new data')
+        var $origin = $(helper.origin);
+        if ($origin.data('loaded') != true) {
+          let id = self.id
+          let url = ASCENSION_API.spell_tooltip + id + '/tooltip.html'
+
+          $.get(url, function (data) {
+            let tooltip = $(data).find('.ascension-tooltip-spell-tooltip-text').text();
+            instance.content(tooltip);
+            $origin.data('loaded', true);
+          })
+        }
+      }
+    })
+  }
+
+  updateToolTip(self) // Load on instantiation
   updateState = function (self, index) {
     if (index > 0) {
       index -= 1
@@ -294,8 +334,8 @@ function Talent(id, element, nRanks, image) {
         if (curRank < nRanks) {
           curRank += 1;
           updateState(self, curRank)
-          getToolTip(self)
-          $('.tooltip').show()
+          updateToolTip(self)
+
           $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
         }
 
@@ -305,7 +345,7 @@ function Talent(id, element, nRanks, image) {
         if (curRank > 0) {
           curRank -= 1;
           updateState(self, curRank)
-          getToolTip(self)
+          // getToolTip(self)
 
           $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
           /* If rank == 0, add greyscale filter */
@@ -360,27 +400,11 @@ function Talent(id, element, nRanks, image) {
     element.addEventListener("touchstart", touchstart, false);
     element.addEventListener("touchend", touchend, false);
   }
-  this.tooltip;
-  getToolTip = function (self) {
-    let id = self.id
-    let url = ASCENSION_API.spell_tooltip + id + '/tooltip.html'
 
-    let request = $.ajax({
-      url: url,
-      type: 'GET',
-      dataType: 'html'
-    });
 
-    request.done(function (msg) {
-      self.tooltip = $(msg).find('.ascension-tooltip-spell-tooltip-text').text();
-      $(element).find('img').attr({ 'title': self.tooltip, 'class': 'tooltip' });
 
-    })
-  }
-  getToolTip(self);
   /* On mouse over show tooltip */
   element.onmouseover = function () {
-
   }
   this.loadEvents(self);
 }
@@ -579,7 +603,11 @@ function main(talent_map, ability_map) {
       talentTree.createTalentIcons(talentdata)
       talentTree.loadBackground()
     }
+
+
   }
+
+
 
 
 }

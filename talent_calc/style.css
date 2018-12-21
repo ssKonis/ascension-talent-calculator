@@ -159,6 +159,12 @@ header > .tallyBox{
   position: absolute; */
 }
 
+.tooltip-container{
+  position:absolute;
+  height: 100%;
+  width:100%;
+}
+
 .abilities{
   position: absolute;
   visibility: hidden;
