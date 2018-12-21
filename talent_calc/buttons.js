@@ -152,17 +152,15 @@ function Tree(class_name, spec_name, element, index, target) {
 //Ability Blue Print
 function Ability(id, element, image) {
   this.id = id;
-  let self = this;
+  this.image = image
   this.element = element;
-  this.image = image;
-  $(element).tooltipster();
 
-  (function () { //Create Image Element
-    let img = document.createElement("img")
-    img.src = ASCENSION_API.spell_icon + image;
-    $(img).css('filter', 'grayscale(100)') /* make image grayscale*/
-    element.appendChild(img)
-  })()
+  let self = this;
+  this.createImageElement(self);
+
+  this.tooltip
+
+  this.updateToolTip(this) // Load on instantiation
 
   this.loadEvents = function () {
 
@@ -176,12 +174,10 @@ function Ability(id, element, image) {
       if (event.which == 1) {
         /* Add point on left click and remove gray filter*/
         $(this).find('img').css('filter', 'none')
-        getToolTip(self)
 
       }
       if (event.which == 3) {
         /* Remove point on right click*/
-        getToolTip(self)
         $(this).find('img').css('filter', 'grayscale(100)')
       }
     }
@@ -225,22 +221,7 @@ function Ability(id, element, image) {
     element.addEventListener("touchstart", touchstart, false);
     element.addEventListener("touchend", touchend, false);
   }
-  getToolTip = function (self) {
-    let id = self.id
-    let url = ASCENSION_API.spell_tooltip + id + '/tooltip.html'
 
-    let request = $.ajax({
-      url: url,
-      type: 'GET',
-      dataType: 'html'
-    });
-
-    request.done(function (msg) {
-      self.tooltip = $(msg).find('.ascension-tooltip-spell-tooltip-text').text();
-      $(element).tooltipster('content', self.tooltip); //adds tooltipster styles when hovered
-    })
-  }
-  getToolTip(self)
 
   /* On mouse over show tooltip */
   element.onmouseover = function () {
@@ -250,20 +231,51 @@ function Ability(id, element, image) {
   this.loadEvents(self);
 
 }
+Ability.prototype.createImageElement = function (self) { //Create Image Element
+  let img = document.createElement("img")
+  img.src = ASCENSION_API.spell_icon + self.image;
+  $(img).css('filter', 'grayscale(100)') /* make image grayscale*/
+  self.element.appendChild(img)
+}
+Ability.prototype.createToolTipContainer = function (self) {
+  if (self.tooltip != undefined) {
+    console.log('destroyed')
+    //If tooltip was previously created, remove that tooltip
+    $(self.tooltip).tooltipster('destroy');
+  }
+  let div = document.createElement("div")
+  $(div).attr('class', 'tooltip-container')
+  self.element.appendChild(div)
+  self.tooltip = $(div)
+}
+Ability.prototype.updateToolTip = function (self) {
+  self.createToolTipContainer(self);// Recreate tooltip div
+  $(self.tooltip).tooltipster({
+    content: 'Loading...',
+    functionBefore: function (instance, helper) {
+      var $origin = $(helper.origin);
+      if ($origin.data('loaded') != true) {
+        let id = self.id
+        let url = ASCENSION_API.spell_tooltip + id + '/tooltip.html'
+
+        $.get(url, function (data) {
+          let tooltip = $(data).find('.ascension-tooltip-spell-tooltip-text').text();
+          instance.content(tooltip);
+          $origin.data('loaded', true);
+        })
+      }
+    }
+  })
+}
 //Talent Blue Print
 function Talent(id, element, nRanks, image) {
   this.id = id;
-  let self = this
   this.element = element;
   this.states = [] // Holds array of ids for each rank
   this.image = image;
+  let self = this
 
-  (function () { //Create Image Element
-    let img = document.createElement("img")
-    img.src = ASCENSION_API.spell_icon + image;
-    $(img).css('filter', 'grayscale(100)') /* make image grayscale*/
-    element.appendChild(img)
-  })()
+  this.createImageElement(self);
 
   this.nRanks = nRanks;
   let curRank = 0;
@@ -273,42 +285,7 @@ function Talent(id, element, nRanks, image) {
 
   //add toltip
   this.tooltip
-
-  createToolTipContainer = function (self) {
-    if (self.tooltip != undefined) {
-      console.log('destroyed')
-      //If tooltip was previously created, remove that tooltip
-      $(self.tooltip).tooltipster('destroy');
-    }
-    let div = document.createElement("div")
-    $(div).attr('class', 'tooltip-container')
-    self.element.appendChild(div)
-    self.tooltip = $(div)
-  }
-
-  // Makes an ajax call to fetch tooltip data
-  updateToolTip = function (self) {
-    createToolTipContainer(self);// Recreate tooltip div
-    $(self.tooltip).tooltipster({
-      content: 'Loading...',
-      functionBefore: function (instance, helper) {
-        console.log('fetching new data')
-        var $origin = $(helper.origin);
-        if ($origin.data('loaded') != true) {
-          let id = self.id
-          let url = ASCENSION_API.spell_tooltip + id + '/tooltip.html'
-
-          $.get(url, function (data) {
-            let tooltip = $(data).find('.ascension-tooltip-spell-tooltip-text').text();
-            instance.content(tooltip);
-            $origin.data('loaded', true);
-          })
-        }
-      }
-    })
-  }
-
-  updateToolTip(self) // Load on instantiation
+  this.updateToolTip(this)
   updateState = function (self, index) {
     if (index > 0) {
       index -= 1
@@ -401,13 +378,12 @@ function Talent(id, element, nRanks, image) {
     element.addEventListener("touchend", touchend, false);
   }
 
-
-
   /* On mouse over show tooltip */
   element.onmouseover = function () {
   }
   this.loadEvents(self);
 }
+Talent.prototype = Object.create(Ability.prototype);
 function Header() {
   let self = this;
   this.initDesktop = function () {
