@@ -159,9 +159,7 @@ function Ability(id, element, image) {
   this.createImageElement(self);
 
   this.tooltip
-
   this.updateToolTip(this) // Load on instantiation
-
   this.loadEvents = function () {
 
     /*Prevent dev tool inspect on right click*/
@@ -222,11 +220,8 @@ function Ability(id, element, image) {
     element.addEventListener("touchend", touchend, false);
   }
 
-
   /* On mouse over show tooltip */
   element.onmouseover = function () {
-
-
   }
   this.loadEvents(self);
 
@@ -270,22 +265,23 @@ Ability.prototype.updateToolTip = function (self) {
 //Talent Blue Print
 function Talent(id, element, nRanks, image) {
   this.id = id;
-  this.element = element;
-  this.states = [] // Holds array of ids for each rank
   this.image = image;
+  this.element = element;
+
   let self = this
-
   this.createImageElement(self);
-
-  this.nRanks = nRanks;
-  let curRank = 0;
-
-  // Add Rank Box
-  $(this.element).append("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
 
   //add toltip
   this.tooltip
   this.updateToolTip(this)
+
+  this.nRanks = nRanks;
+  let curRank = 0;
+  // Add Rank Box
+  $(this.element).append("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
+
+
+  this.states = [] // Holds array of ids for each rank
   updateState = function (self, index) {
     if (index > 0) {
       index -= 1
@@ -322,7 +318,7 @@ function Talent(id, element, nRanks, image) {
         if (curRank > 0) {
           curRank -= 1;
           updateState(self, curRank)
-          // getToolTip(self)
+          updateToolTip(self)
 
           $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
           /* If rank == 0, add greyscale filter */
