@@ -158,7 +158,7 @@ function Ability(id, element, image) {
   let self = this;
   this.createImageElement(self);
 
-  this.tooltip
+  this.tooltipActivator
   this.updateToolTip(this) // Load on instantiation
   this.loadEvents = function () {
 
@@ -232,20 +232,20 @@ Ability.prototype.createImageElement = function (self) { //Create Image Element
   $(img).css('filter', 'grayscale(100)') /* make image grayscale*/
   self.element.appendChild(img)
 }
-Ability.prototype.createToolTipContainer = function (self) {
-  if (self.tooltip != undefined) {
+Ability.prototype.createToolTipActivator = function (self) {
+  if (self.tooltipActivator != undefined) {
     console.log('destroyed')
     //If tooltip was previously created, remove that tooltip
-    $(self.tooltip).tooltipster('destroy');
+    $(self.tooltipActivator).tooltipster('destroy');
   }
   let div = document.createElement("div")
-  $(div).attr('class', 'tooltip-container')
+  $(div).attr('class', 'tooltip-activator')
   self.element.appendChild(div)
-  self.tooltip = $(div)
+  self.tooltipActivator = $(div)
 }
 Ability.prototype.updateToolTip = function (self) {
-  self.createToolTipContainer(self);// Recreate tooltip div
-  $(self.tooltip).tooltipster({
+  self.createToolTipActivator(self);// Recreate tooltip div
+  $(self.tooltipActivator).tooltipster({
     content: 'Loading...',
     functionBefore: function (instance, helper) {
       var $origin = $(helper.origin);
@@ -254,12 +254,30 @@ Ability.prototype.updateToolTip = function (self) {
         let url = ASCENSION_API.spell_tooltip + id + '/tooltip.html'
 
         $.get(url, function (data) {
-          let tooltip = $(data).find('.ascension-tooltip-spell-tooltip-text').text();
-          instance.content(tooltip);
+          let content = {} //Get Meta data
+          content.name = $(data).find('.ascension-tooltip-spell-name').text();
+          content.rank = $(data).find('.ascension-tooltip-spell-rank').text();
+          content.levelReq = $(data).find('.ascension-tooltip-spell-level-requirement').text();
+          content.description = $(data).find('.ascension-tooltip-spell-tooltip-text').text();
+          content.spellEssenceCost = $(data).find('.ascension-tooltip-spell-essence-cost').text();
+          self.tooltipContent = content;
+
+          //Fill tooltip with related metadata as divs
+          $('.tooltip_content').empty();
+          Object.keys(content).forEach(key => {
+            let div = document.createElement("div")
+            $(div).append(content[key])
+            $('.tooltip_content').append(div)
+          })
+
+
+          instance.content($('.tooltip_content'))
           $origin.data('loaded', true);
         })
       }
-    }
+    },
+    contentCloning: true,
+    animation: 'fade'
   })
 }
 //Talent Blue Print
@@ -272,7 +290,7 @@ function Talent(id, element, nRanks, image) {
   this.createImageElement(self);
 
   //add toltip
-  this.tooltip
+  this.tooltipActivator
   this.updateToolTip(this)
 
   this.nRanks = nRanks;
@@ -307,7 +325,7 @@ function Talent(id, element, nRanks, image) {
         if (curRank < nRanks) {
           curRank += 1;
           updateState(self, curRank)
-          updateToolTip(self)
+          self.updateToolTip(self)
 
           $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
         }
@@ -318,7 +336,7 @@ function Talent(id, element, nRanks, image) {
         if (curRank > 0) {
           curRank -= 1;
           updateState(self, curRank)
-          updateToolTip(self)
+          self.updateToolTip(self)
 
           $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
           /* If rank == 0, add greyscale filter */

@@ -152,18 +152,20 @@ header > .tallyBox{
   border-radius: 10px;
   
 }
-/* Content */
+/*Tooltips*/
+.tooltip-activator{
+  position:absolute;
+  height: 100%;
+  width:100%;
+}
 
+
+/* Content */
 .talents{
   /* visibility: hidden;
   position: absolute; */
 }
 
-.tooltip-container{
-  position:absolute;
-  height: 100%;
-  width:100%;
-}
 
 .abilities{
   position: absolute;
