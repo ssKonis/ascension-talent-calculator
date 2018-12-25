@@ -8,10 +8,35 @@
   display: none; 
 }
 
+@font-face {
+  font-family: 'Friz Quadrata Regular OS';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Friz Quadrata Regular OS'), url('fonts/friz-quadrata-regular-os-5870333951e7c.woff') format('woff');
+  }
+  
+  
+  @font-face {
+  font-family: 'Friz Quadrata Bold Italic OS';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Friz Quadrata Bold Italic OS'), url('fonts/friz-quadrata-bold-italic-os-5870341205e0f.woff') format('woff');
+  }
+
+  @font-face {
+    font-family: 'Semplicit';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Semplicit'), url('fonts/Semplicita-Medium.woff') format('woff');
+    }
+  
+
 /* Body */
 *{
   padding: 0;margin:0;;box-sizing: border-box; 
-  font-family: "Arial Narrow", Arial, sans-serif;
+  font-family: "Open Sans",'Arial','Helvetica', 'sans-serif';
+  font-weight: 400;
+
 }
 body{
   background: black;
@@ -160,6 +185,18 @@ header > .tallyBox{
 }
 
 
+.tooltip_content >div:nth-child(1){
+  display: inline;
+  font-size: 150%;
+}
+.tooltip_content > div:nth-child(2){
+  float:right;
+  display:inline;
+  font-size: 120%;
+}
+
+
+
 /* Content */
 .talents{
   /* visibility: hidden;
@@ -286,8 +323,8 @@ header > .tallyBox{
 
 .rankBox{
   background-color: black;
-  height:20px;
-  width:30px;
+  height:24px;
+  width:40px;
   position: absolute;
   right:0;
   bottom:0;
