@@ -39,7 +39,7 @@
 
 }
 body{
-  background: black;
+  background: rgb(33, 21, 16);
 }
 
 
@@ -67,7 +67,7 @@ body{
   display: grid;
   grid-template-rows: var(--header-height) auto; /*1vh = the header, auto = footer + body */
   height: calc(100vh - (var(--footer-height))); /* height = size of page minus footer*/
-  background: black;
+  background: rgb(33, 21, 16);
 }
 
 /*On desktop/ipad*/
@@ -109,7 +109,8 @@ header{
   display: grid;
   grid-template-columns: 2fr 1fr 2fr;
   /* z-index: 1; */
-  background-color: #ff0000;
+  background-color: rgb(33, 21, 16);
+  color: #ffd800
 }
 
 
@@ -163,7 +164,7 @@ header > .tallyBox{
 
 /* Modal Content/Box */
 .modal-content {
-  background-color: black;
+  background-color: rgb(33, 21, 16);
   margin: 15% auto; /* 15% from the top and centered */
   padding: 20px;
   width: 80%; /* Could be more or less, depending on screen size */
@@ -194,13 +195,15 @@ header > .tallyBox{
   float:right;
   display:inline;
   font-size: 120%;
+  color:grey;
 } 
+
+.tooltip_content > div:nth-child(4){
+  color:#ffd800
+}
 .tooltip_content > div:nth-child(n+5){
  display:inline;
 }
-
-
-
 
 
 
@@ -225,7 +228,6 @@ header > .tallyBox{
   overflow-x:scroll;
   grid-template-columns: repeat(3, 100% );
   grid-template-rows: 1fr 1fr;
-
 
 }
 
@@ -252,13 +254,17 @@ header > .tallyBox{
 }
 
 .trees > .spec-banner{
-  background-color: blue;
+  background-color: black;
+  border-radius: 5px;
   max-height:50px;
   margin: 10px;
+  padding:10px;
   display:grid;
   grid-template-columns: 1fr 9fr 1fr;
   justify-items: center;
   align-items: center;
+  color: #ffd800;
+  font-size: 150%;
 }
 
 /*On desktop/ipad*/
@@ -331,11 +337,12 @@ header > .tallyBox{
 
 .rankBox{
   background-color: black;
-  height:24px;
-  width:40px;
+  height:20px;
+  width:34px;
   position: absolute;
   right:0;
   bottom:0;
+  color:grey;
 }
 
 

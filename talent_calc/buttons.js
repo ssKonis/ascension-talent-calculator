@@ -22,7 +22,6 @@ var SELECTED = {
 
 var MODAL, HEADER, FOOTER;
 
-
 var CLASS_NAMES = ['druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'shaman', 'warlock', 'warrior'];
 
 var TREE_NAMES = {
@@ -54,6 +53,11 @@ var ASCENSION_API = {
 
 }
 
+var TallyBox = {
+  talentPointsRemaining: 0,
+  abilityPointsRemaining: 0,
+  levelReq: 0
+}
 $(document).ready(function () { //check document is loaded
   /* Get Locations from JSON FIle*/
   (function getMap() { //IIFE
@@ -78,6 +82,8 @@ $(document).ready(function () { //check document is loaded
 
   })()
 });
+
+//Holds information about required level, talent points spent and ability points spent
 
 //Talent Tree object
 function Tree(class_name, spec_name, element, index, target) {
@@ -151,6 +157,7 @@ function Tree(class_name, spec_name, element, index, target) {
 
   }
 }
+
 //Ability Blue Print
 function Ability(id, element, image) {
   this.id = id;
@@ -270,7 +277,6 @@ Ability.prototype.updateToolTip = function (self) {
           content.abilityEssenceCost = essenceCost.split(' ')[16]
           content.talentEssenceCost = essenceCost.split(' ')[18]
 
-
           populateTooltip(content);
 
           instance.content($('.tooltip_content'))
@@ -310,6 +316,7 @@ Ability.prototype.updateToolTip = function (self) {
     self.tooltipContent = content;
   }
 }
+
 //Talent Blue Print
 function Talent(id, element, nRanks, image) {
   this.id = id;
@@ -430,6 +437,7 @@ function Talent(id, element, nRanks, image) {
   this.loadEvents(self);
 }
 Talent.prototype = Object.create(Ability.prototype);
+
 function Header() {
   let self = this;
   this.initDesktop = function () {
@@ -496,6 +504,7 @@ Header.prototype.loadIcons = function (target) {
     }
   }
 }
+
 function Footer() {
 
   this.initDesktop = function () {
@@ -508,14 +517,15 @@ function Footer() {
   }
 
   function createElements(parent) {
-    $(parent).append('<div>Ability Points Remaining</div>')
-    $(parent).append('<div>Level Required</div>')
-    $(parent).append('<div>Talent Points Remaining</div>')
+    $(parent).append('<div>AP</div>')
+    $(parent).append('<div>Level</div>')
+    $(parent).append('<div>TP</div>')
   }
   function removeElements(parent) {
     $(parent).empty();
   }
 }
+
 function Modal() {
   this.modal = $('#modal');
   this.isOpen = false;
