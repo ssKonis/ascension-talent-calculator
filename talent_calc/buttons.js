@@ -8,7 +8,7 @@
   Both:
     Display Tooltips -use jquery plugin 'tooltipster'
     Design better layout
-    get tallybox to display how many talent/ability points have been spent aswell as level required
+    get resourceCounter to display how many talent/ability points have been spent aswell as level required
  
  */
 var SELECTED = {
@@ -53,11 +53,22 @@ var ASCENSION_API = {
 
 }
 
-var TallyBox = {
+var resourceCounter = {
   //Max TP = 51, max AP = 59, max level = 60
-  talentPointsRequired: 51,
-  abilityPointsRequired: 59,
-  levelReq: 0
+  talentPointsRequired: { current: 0, max: 51 },
+  abilityPointsRequired: { current: 0, max: 59 },
+  levelRequired: { current: 0, max: 60 },
+  levelCostCandidates: [],
+  updateEssence: function (resource, cost) {
+    /*Accepts arguemtn "talent" or 'ability'*/
+    this[resource + 'PointsRequired'].current += cost
+    let event = new Event(resource + 'CountChanged')
+    event.newVal = this[resource + 'PointsRequired'].current
+    document.dispatchEvent(event)
+  },
+  updateLevel: function () {
+
+  }
 }
 $(document).ready(function () { //check document is loaded
   /* Get Locations from JSON FIle*/
@@ -173,7 +184,7 @@ function Ability(id, element, image) {
 
 
 
-  this.updateToolTip(this) // Load on instantiation
+  this.updateToolTip(this)
   this.loadEvents = function () {
 
     /*Prevent dev tool inspect on right click*/
@@ -248,9 +259,8 @@ Ability.prototype.createImageElement = function (self) { //Create Image Element
 }
 Ability.prototype.createToolTipActivator = function (self) {
   if (self.tooltipActivator != undefined) {
-    console.log('destroyed')
     //If tooltip was previously created, remove that tooltip
-    $(self.tooltipActivator).tooltipster('destroy');
+    $(self.tooltipActivator).tooltipster('close');
   }
   let div = document.createElement("div")
   $(div).attr('class', 'tooltip-activator')
@@ -279,7 +289,6 @@ Ability.prototype.updateToolTip = function (self) {
           content.talentEssenceCost = essenceCost.split(' ')[18]
 
           populateTooltip(content);
-
           instance.content($('.tooltip_content'))
           $origin.data('loaded', true);
 
@@ -330,7 +339,6 @@ function Talent(id, element, nRanks, image) {
   //add toltip
   this.tooltipActivator
   this.tooltipContent;
-
   this.updateToolTip(this)
 
   this.nRanks = nRanks;
@@ -350,23 +358,23 @@ function Talent(id, element, nRanks, image) {
     self.id = self.states[index].id
     self.curRank = self.states[index].rank
   }
-  this.loadEvents = function () {
+  element.loadEvents = function () {
 
     /*Prevent dev tool inspect on right click*/
-    element.addEventListener('contextmenu', function (e) {
+    this.addEventListener('contextmenu', function (e) {
       e.preventDefault();
     });
 
     /*Handle left click and right click for desktop*/
-    element.onmousedown = function (event) {
+    this.onmousedown = function (event) {
       if (event.which == 1) {
         /* Add point on left click and remove gray filter*/
         $(this).find('img').css('filter', 'none')
         if (curRank < nRanks) {
           curRank += 1;
+          console.log(self.tooltipContent)
           updateState(self, curRank)
           self.updateToolTip(self)
-
           $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
         }
 
@@ -389,15 +397,16 @@ function Talent(id, element, nRanks, image) {
 
     /*Handle touch hold for mobile users */
 
-    let onlongtouch;
     let timer, lockTimer;
+    let start_touch, end_touch;
     let touchduration = 600; //length of time we want the user to touch before we do something
-    function touchstart(e) {
+    let touchstart = (e) => {
+      console.log($(this))
       /*On Each click, add an element */
-
-      $(this).find('img').css('filter', 'none')
+      start_touch = e.changedTouches[0];
       if (curRank < nRanks) {
         curRank += 1;
+        $(this).find('img').css('filter', 'none')
         $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
       }
 
@@ -409,7 +418,18 @@ function Talent(id, element, nRanks, image) {
       lockTimer = true;
     }
 
-    function touchend() {
+    let touchend = (e) => {
+      //This prevents accidental selecting of icons when scrolling
+      end_touch = e.changedTouches[0];
+      let x_distance = start_touch.clientX - end_touch.clientX
+      let y_distance = start_touch.clientY - end_touch.clientY
+      if (Math.abs(x_distance || y_distance) > 50) {
+        $(this).find('img').css('filter', 'grayscale(100)')
+        curRank -= 1;
+        $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
+
+      }
+
       //stops short touches from firing the event
       if (timer) {
         clearTimeout(timer); // clearTimeout, not cleartimeout..
@@ -419,12 +439,13 @@ function Talent(id, element, nRanks, image) {
       }
     }
 
-    onlongtouch = function () {
+    let onlongtouch = () => {
+      console.log('asds')
       /* on long hold, remove all points from an icon*/
       // show tooltip
 
       curRank -= 1;
-      $(element).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
+      $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
       $(this).find('img').css('filter', 'grayscale(100)')
     }
 
@@ -433,9 +454,9 @@ function Talent(id, element, nRanks, image) {
   }
 
   /* On mouse over show tooltip */
-  element.onmouseover = function () {
+  element.onmouseover = () => {
   }
-  this.loadEvents(self);
+  element.loadEvents();
 }
 Talent.prototype = Object.create(Ability.prototype);
 
@@ -449,7 +470,7 @@ function Header() {
   }
   function createDesktopElements(parent) {
     $(parent).empty();
-    $(parent).append('<div class="tallyBox"></div>')
+    $(parent).append('<div class="resourceCounter"></div>')
     $(parent).append('<div class="class-icon-container"></div>')
 
     showTree('abilities')
@@ -509,22 +530,30 @@ Header.prototype.loadIcons = function (target) {
 function Footer() {
 
   this.initDesktop = function () {
-    createElements('header > .tallyBox')
+    createElements('header > .resourceCounter')
     removeElements('footer')
   }
   this.initMobile = function () {
     createElements('footer')
-    removeElements('header > .tallyBox')
+    removeElements('header > .resourceCounter')
   }
 
   function createElements(parent) {
-    $(parent).append('<div>AP</div>')
-    $(parent).append('<div>Level</div>')
-    $(parent).append('<div>TP</div>')
+    $(parent).append('<div> AP/TP <div id="abilityPointsCounter">  0 </div>  <div id="talentPointsCounter"> 0 </div>  </div>')
+    $(parent).append('<div> Reset </div>')
+    $(parent).append('<div> Level <div id ="levelCounter"> 1 </div>  </div>')
   }
   function removeElements(parent) {
     $(parent).empty();
   }
+
+
+  document.addEventListener('abilityCountChanged', (e) => {
+    $('#abilityPointsCounter').text(e.newVal)
+  })
+  document.addEventListener('talentCountChanged', (e) => {
+    $('#talentPointsCounter').text(e.newVal)
+  })
 }
 
 function Modal() {
