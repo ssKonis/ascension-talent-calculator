@@ -48,7 +48,9 @@ var EVOWOW_API = {
 var ASCENSION_API = {
   spell_tooltip: 'https://data.project-ascension.com/api/spells/',// + id + '/tooltip.html'
   spell_icon: 'https://data.project-ascension.com/files/images/icons/',// + image_name;
-  class_icon: 'https://data.project-ascension.com/files/images/icons/classes/' // + image_name + .png
+  class_icon: 'https://data.project-ascension.com/files/images/icons/classes/', // + image_name + .png
+  talentEssenceIcon: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAAOAA4DASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAwUGB//EACIQAAMAAgICAgMBAAAAAAAAAAECAwQGBRIHEQgTISIkMv/EABUBAQEAAAAAAAAAAAAAAAAAAAUG/8QAHREAAgEEAwAAAAAAAAAAAAAAAREDAAIEIRITQf/aAAwDAQACEQMRAD8Am/i1wPkvz1rGbhcF5O2PX78TnPAQTksrGw4Y0pgY05FK9V7M7IZTkFVIqxIPoUXeXMDZte3E6ttGyZ24wxYimRLmOVvn4+PlAL6+mFy/odaOBY9i37AGRDzOG+IflRm+B+QzDiLl0ysi8b5FIhAK461n/KPf+A0g5NfTMGCKgQfY1A858j575uz85yMc63IvCs62P1hKDunWip+WmX6lmmHZFcuU9B+q110kRx+KCQ826GtEnYwds1//2Q==',
+  abilityEssenceIcon: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAAOAA4DASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAABgf/xAAiEAACAgEEAgMBAAAAAAAAAAABAgMEBQYHERIIEwAhIhT/xAAVAQEBAAAAAAAAAAAAAAAAAAAFBv/EAB4RAAIBAwUAAAAAAAAAAAAAAAEDEQASIQJBUXGR/9oADAMBAAIRAxEAPwAt4y4bcne2fNYjBbn6k07Jhbs0davDl7UdKvDDyIIin2ihjIEWOP8AISu3aPkKWnvmbX1foaOrpLNawy2qrFW1HJabNZaezBDKID0/ngsOQQwdy057MWBRREqsZwm0vlNe2QzVjN4jGjIZDLzGSWSzIY+lBZjzXULyAz+sEue3HVQB+nLEt292shv3kxYyRks3YZGKTyFK6tECeG9aq3R3ZmdlVuvYs32zE/HtbVlFo4EYz7VkGKKQCBbA2zPdf//Z'
 
 }
 
@@ -159,6 +161,10 @@ function Ability(id, element, image) {
   this.createImageElement(self);
 
   this.tooltipActivator
+  this.tooltipContent
+
+
+
   this.updateToolTip(this) // Load on instantiation
   this.loadEvents = function () {
 
@@ -259,26 +265,50 @@ Ability.prototype.updateToolTip = function (self) {
           content.rank = $(data).find('.ascension-tooltip-spell-rank').text();
           content.levelReq = $(data).find('.ascension-tooltip-spell-level-requirement').text();
           content.description = $(data).find('.ascension-tooltip-spell-tooltip-text').text();
-          content.spellEssenceCost = $(data).find('.ascension-tooltip-spell-essence-cost').text();
-          self.tooltipContent = content;
 
-          //Fill tooltip with related metadata as divs
-          $('.tooltip_content').empty();
-          Object.keys(content).forEach(key => {
-            let div = document.createElement("div")
-            $(div).append(content[key])
-            $('.tooltip_content').append(div)
-          })
+          let essenceCost = $(data).find('.ascension-tooltip-spell-essence-cost').text();
+          content.abilityEssenceCost = essenceCost.split(' ')[16]
+          content.talentEssenceCost = essenceCost.split(' ')[18]
 
+
+          populateTooltip(content);
 
           instance.content($('.tooltip_content'))
           $origin.data('loaded', true);
+
         })
+
       }
     },
     contentCloning: true,
     animation: 'fade'
+
   })
+  function populateTooltip(content) {
+    //Fill tooltip with related metadata as divs
+    $('.tooltip_content').empty();
+    Object.keys(content).forEach(key => {
+      let div = document.createElement("div")
+      $(div).append(content[key])
+      $('.tooltip_content').append(div)
+    })
+
+    {
+      let img = document.createElement("img")
+      img.src = ASCENSION_API.talentEssenceIcon
+      let div = document.createElement('div')
+      $(div).append(img)
+      $('.tooltip_content > div:nth-child(5)').after(div)
+    }
+    {
+      let img = document.createElement("img")
+      img.src = ASCENSION_API.abilityEssenceIcon
+      let div = document.createElement('div')
+      $(div).append(img)
+      $('.tooltip_content').append(div)
+    }
+    self.tooltipContent = content;
+  }
 }
 //Talent Blue Print
 function Talent(id, element, nRanks, image) {
@@ -291,6 +321,8 @@ function Talent(id, element, nRanks, image) {
 
   //add toltip
   this.tooltipActivator
+  this.tooltipContent;
+
   this.updateToolTip(this)
 
   this.nRanks = nRanks;

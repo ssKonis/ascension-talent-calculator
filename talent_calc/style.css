@@ -185,6 +185,7 @@ header > .tallyBox{
 }
 
 
+
 .tooltip_content >div:nth-child(1){
   display: inline;
   font-size: 150%;
@@ -193,7 +194,14 @@ header > .tallyBox{
   float:right;
   display:inline;
   font-size: 120%;
+} 
+.tooltip_content > div:nth-child(n+5){
+ display:inline;
 }
+
+
+
+
 
 
 
