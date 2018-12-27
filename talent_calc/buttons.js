@@ -1,5 +1,7 @@
 /* TODOS
- refactor code
+ refactor code:
+  merge load events
+  get rid of self reference, use arrow functions
   Desktop Layout:
     choose different background for abilities
     refactor talent and ability loader
@@ -9,7 +11,9 @@
     Display Tooltips -use jquery plugin 'tooltipster'
     Design better layout
     get resourceCounter to display how many talent/ability points have been spent aswell as level required
- 
+  Finish resource counter:
+    add ability to reset abilities and talents
+
  */
 var SELECTED = {
   class: 'mage',
@@ -180,11 +184,11 @@ function Ability(id, element, image) {
   this.createImageElement(self);
 
   this.tooltipActivator
-  this.tooltipContent
+  this.toolTipContent
 
 
 
-  this.updateToolTip(this)
+  this.initToolTip(self)
   this.loadEvents = function () {
 
     /*Prevent dev tool inspect on right click*/
@@ -235,7 +239,6 @@ function Ability(id, element, image) {
 
     onlongtouch = function () {
       /* on long hold, remove all points from an icon*/
-      console.log('Hold Triggered')
       // show tooltip
 
       $(this).find('img').css('filter', 'grayscale(100)')
@@ -268,7 +271,7 @@ Ability.prototype.createToolTipActivator = function (self) {
   self.tooltipActivator = $(div)
 }
 Ability.prototype.updateToolTip = function (self) {
-  self.createToolTipActivator(self);// Recreate tooltip div
+  self.createToolTipActivator(self)
   $(self.tooltipActivator).tooltipster({
     content: 'Loading...',
     functionBefore: function (instance, helper) {
@@ -278,17 +281,10 @@ Ability.prototype.updateToolTip = function (self) {
         let url = ASCENSION_API.spell_tooltip + id + '/tooltip.html'
 
         $.get(url, function (data) {
-          let content = {} //Get Meta data
-          content.name = $(data).find('.ascension-tooltip-spell-name').text();
-          content.rank = $(data).find('.ascension-tooltip-spell-rank').text();
-          content.levelReq = $(data).find('.ascension-tooltip-spell-level-requirement').text();
-          content.description = $(data).find('.ascension-tooltip-spell-tooltip-text').text();
 
-          let essenceCost = $(data).find('.ascension-tooltip-spell-essence-cost').text();
-          content.abilityEssenceCost = essenceCost.split(' ')[16]
-          content.talentEssenceCost = essenceCost.split(' ')[18]
-
-          populateTooltip(content);
+          self.requestToolTipMetaData(data)
+          console.log(self.toolTipContent)
+          populateTooltip(self);
           instance.content($('.tooltip_content'))
           $origin.data('loaded', true);
 
@@ -300,8 +296,10 @@ Ability.prototype.updateToolTip = function (self) {
     animation: 'fade'
 
   })
-  function populateTooltip(content) {
+  function populateTooltip(self) {
+    let content = self.toolTipContent;
     //Fill tooltip with related metadata as divs
+    console.log(self.toolTipContent)
     $('.tooltip_content').empty();
     Object.keys(content).forEach(key => {
       let div = document.createElement("div")
@@ -323,8 +321,31 @@ Ability.prototype.updateToolTip = function (self) {
       $(div).append(img)
       $('.tooltip_content').append(div)
     }
-    self.tooltipContent = content;
+
   }
+}
+Ability.prototype.requestToolTipMetaData = function (data) {
+  let content = {} //Get Meta data
+  content.name = $(data).find('.ascension-tooltip-spell-name').text();
+  content.rank = $(data).find('.ascension-tooltip-spell-rank').text();
+  content.levelReq = $(data).find('.ascension-tooltip-spell-level-requirement').text();
+  content.description = $(data).find('.ascension-tooltip-spell-tooltip-text').text();
+
+  let essenceCost = $(data).find('.ascension-tooltip-spell-essence-cost').text();
+  content.abilityEssenceCost = essenceCost.split(' ')[16]
+  content.talentEssenceCost = essenceCost.split(' ')[18]
+  this.toolTipContent = content;
+
+}
+Ability.prototype.initToolTip = function (self) {
+  self.updateToolTip(self);
+  let url = ASCENSION_API.spell_tooltip + self.id + '/tooltip.html'
+  $.ajax({
+    url: url,
+    success: function (data) {
+      self.requestToolTipMetaData(data);
+    }
+  })
 }
 
 //Talent Blue Print
@@ -338,8 +359,9 @@ function Talent(id, element, nRanks, image) {
 
   //add toltip
   this.tooltipActivator
-  this.tooltipContent;
-  this.updateToolTip(this)
+  this.toolTipContent;
+
+  this.initToolTip(self)
 
   this.nRanks = nRanks;
   let curRank = 0;
@@ -372,7 +394,6 @@ function Talent(id, element, nRanks, image) {
         $(this).find('img').css('filter', 'none')
         if (curRank < nRanks) {
           curRank += 1;
-          console.log(self.tooltipContent)
           updateState(self, curRank)
           self.updateToolTip(self)
           $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
@@ -401,7 +422,6 @@ function Talent(id, element, nRanks, image) {
     let start_touch, end_touch;
     let touchduration = 600; //length of time we want the user to touch before we do something
     let touchstart = (e) => {
-      console.log($(this))
       /*On Each click, add an element */
       start_touch = e.changedTouches[0];
       if (curRank < nRanks) {
@@ -440,7 +460,6 @@ function Talent(id, element, nRanks, image) {
     }
 
     let onlongtouch = () => {
-      console.log('asds')
       /* on long hold, remove all points from an icon*/
       // show tooltip
 
