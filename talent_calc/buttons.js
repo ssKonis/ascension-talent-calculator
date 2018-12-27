@@ -54,8 +54,9 @@ var ASCENSION_API = {
 }
 
 var TallyBox = {
-  talentPointsRemaining: 0,
-  abilityPointsRemaining: 0,
+  //Max TP = 51, max AP = 59, max level = 60
+  talentPointsRequired: 51,
+  abilityPointsRequired: 59,
   levelReq: 0
 }
 $(document).ready(function () { //check document is loaded

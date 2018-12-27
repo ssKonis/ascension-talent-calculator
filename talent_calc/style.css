@@ -39,7 +39,7 @@
 
 }
 body{
-  background: rgb(33, 21, 16);
+  background: black;
 }
 
 
@@ -67,7 +67,7 @@ body{
   display: grid;
   grid-template-rows: var(--header-height) auto; /*1vh = the header, auto = footer + body */
   height: calc(100vh - (var(--footer-height))); /* height = size of page minus footer*/
-  background: rgb(33, 21, 16);
+  background: black
 }
 
 /*On desktop/ipad*/
@@ -205,8 +205,7 @@ header > .tallyBox{
  display:inline;
 }
 
-
-
+.tooltip_wrapper{visibility: hidden;}
 
 /* Content */
 .talents{
@@ -240,6 +239,21 @@ header > .tallyBox{
   }
 }
 
+.trees.abilities {
+  background-color: rgb(33, 21, 16);
+
+}
+.trees.abilities > .spec-banner{
+  color: #ffd800;
+
+}
+.trees.abilities > .spec-banner > img{
+  visibility: hidden;
+}
+.trees.abilities > .spec-banner > span{
+  visibility: hidden;
+}
+
 /*On desktop/ipad*/
 @media only screen and (min-width: 600px) {
   .trees.abilities{
@@ -249,12 +263,13 @@ header > .tallyBox{
     overflow-x: visible;
     scroll-snap-type: none;
     position:static;
+    background-color: #000000;
       
   }
 }
 
-.trees > .spec-banner{
-  background-color: black;
+.trees.talents > .spec-banner{
+  background-color: rgb(33, 21, 16);
   border-radius: 5px;
   max-height:50px;
   margin: 10px;
@@ -269,9 +284,7 @@ header > .tallyBox{
 
 /*On desktop/ipad*/
 @media only screen and (min-width: 600px) {
-  .trees.abilities > .spec-banner{
-      
-  }
+ 
 }
 
 .tree{
