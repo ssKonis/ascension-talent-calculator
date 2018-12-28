@@ -281,9 +281,7 @@ Ability.prototype.updateToolTip = function (self) {
         let url = ASCENSION_API.spell_tooltip + id + '/tooltip.html'
 
         $.get(url, function (data) {
-
           self.requestToolTipMetaData(data)
-          console.log(self.toolTipContent)
           populateTooltip(self);
           instance.content($('.tooltip_content'))
           $origin.data('loaded', true);
@@ -299,7 +297,6 @@ Ability.prototype.updateToolTip = function (self) {
   function populateTooltip(self) {
     let content = self.toolTipContent;
     //Fill tooltip with related metadata as divs
-    console.log(self.toolTipContent)
     $('.tooltip_content').empty();
     Object.keys(content).forEach(key => {
       let div = document.createElement("div")
