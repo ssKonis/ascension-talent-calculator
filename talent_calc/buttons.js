@@ -59,8 +59,8 @@ var ASCENSION_API = {
 
 var resourceCounter = {
   //Max TP = 51, max AP = 59, max level = 60
-  talentPointsRequired: { current: 0, max: 51, maxed: false },
-  abilityPointsRequired: { current: 0, max: 59, maxed: false },
+  talentPointsRequired: { current: 0, max: 5, maxed: false },
+  abilityPointsRequired: { current: 0, max: 5, maxed: false },
   levelRequired: { current: 0, max: 60 },
   levelCostCandidates: [],
   updateEssence: function (tooltip, operation = 'add') {
@@ -84,6 +84,8 @@ var resourceCounter = {
       this.triggerCountChange();
     }
     else {
+      console.log('maxed')
+
       this.triggerIconLock('talent')
     }
 
@@ -93,8 +95,12 @@ var resourceCounter = {
   },
   checkIfMaxed: function (property, cost) {
     let p = this[property + 'PointsRequired']
-    if (p.current + cost == p.max) {
+    if ((p.current + cost) == p.max) {
       p.maxed = true
+    }
+    if ((p.current + cost) > p.max) {
+      p.maxed = true
+      return false;
     }
     else {
       p.maxed = false
@@ -108,7 +114,8 @@ var resourceCounter = {
     document.dispatchEvent(event)
   },
   triggerIconLock: function (property) {
-    let event = new Event(property + 'IsMaxed')
+    let event = new Event('IsMaxed')
+    event.spellType = property
     document.dispatchEvent(event)
   }
 }
@@ -150,7 +157,7 @@ function Tree(class_name, spec_name, element, index, target) {
 
   this.grid;
 
-  this.spellObjects = [] // Holds all talents or abilities related to tree
+  this.spellObjects = { values: [], type: '' } // Holds all talents or abilities related to tree
 
   let self = this;
 
@@ -183,8 +190,9 @@ function Tree(class_name, spec_name, element, index, target) {
   this.createAbilityIcons = function (data) {
     data.forEach(function (item, i) {
       let ability = new Ability(item.id, self.grid[i], item.image)
-      self.spellObjects.push(ability)
+      self.spellObjects.values.push(ability)
     })
+    self.spellObjects.type = 'ability'
   }
 
   this.createTalentIcons = function (data) {
@@ -196,7 +204,7 @@ function Tree(class_name, spec_name, element, index, target) {
         let element = self.grid[i];
         let maxRank = item.max_rank;
         let talent = new Talent(id, element, maxRank, image)
-        self.spellObjects.push(talent)
+        self.spellObjects.values.push(talent)
         for (let k = 0; k < maxRank; k++) {
           let state = {}
           if (item.data[k] == undefined) {
@@ -212,19 +220,26 @@ function Tree(class_name, spec_name, element, index, target) {
         }
       }
     })
+    self.spellObjects.type = 'talent'
 
   }
 
-  document.addEventListener('talentIsMaxed', () => {
-    this.spellObjects.forEach((object) => {
-      object.locked = true;
-    })
-  })
-  document.addEventListener('talentIsNotMaxed', () => {
-    this.spellObjects.forEach((object) => {
-      object.locked = false;
-    })
-  })
+  // document.addEventListener('IsMaxed', (e) => {
+  //   if (e.spellType == this.spellObjects.type) {
+  //     this.spellObjects.values.forEach((object) => {
+  //       object.locked = true;
+  //     })
+  //   }
+
+  // })
+  // document.addEventListener('IsNotMaxed', (e) => {
+  //   if (e.spellType == this.spellObjects.type) {
+  //     this.spellObjects.values.forEach((object) => {
+  //       object.locked = false;
+  //     })
+  //   }
+
+  // })
 }
 function Spell() {
   //Parent class of abilities and talents
@@ -330,6 +345,7 @@ function Ability(id, element, image) {
 
   this.tooltipActivator
   this.toolTipContent
+  this.locked = false;
 
 
 
@@ -341,18 +357,26 @@ function Ability(id, element, image) {
       e.preventDefault();
     });
 
-    /*Handle left click and right click for desktop*/
-    element.onmousedown = function (event) {
-      if (event.which == 1) {
-        /* Add point on left click and remove gray filter*/
-        $(this).find('img').css('filter', 'none')
+    // /*Handle left click and right click for desktop*/
+    // element.onmousedown = function (event) {
+    //   if (event.which == 1 && self.locked == false) {
+    //     /* Add point on left click and remove gray filter*/
+    //     $(this).find('img').css('filter', 'none')
+    //     resourceCounter.updateEssence(self.toolTipContent)
 
-      }
-      if (event.which == 3) {
-        /* Remove point on right click*/
-        $(this).find('img').css('filter', 'grayscale(100)')
-      }
-    }
+
+    //   }
+    //   if (event.which == 3) {
+    //     if (self.locked == true) {
+    //       let event = new Event('IsNotMaxed')
+    //       document.dispatchEvent(event)
+    //     }
+    //     /* Remove point on right click*/
+    //     resourceCounter.updateEssence(self.toolTipContent, 'remove')
+
+    //     $(this).find('img').css('filter', 'grayscale(100)')
+    //   }
+    // }
 
     /*Handle touch hold for mobile users */
 
@@ -456,12 +480,13 @@ function Talent(id, element, nRanks, image) {
 
       }
       if (event.which == 3) {
-        if (self.locked == true) {
-          let event = new Event('talentIsNotMaxed')
-          document.dispatchEvent(event)
-        }
         /* Remove point on right click*/
         if (curRank > 0) {
+          if (self.locked == true) {
+            let event = new Event('IsNotMaxed')
+            event.spellType = 'talent'
+            document.dispatchEvent(event)
+          }
           curRank -= 1;
           updateState(self, curRank)
           self.updateToolTip(self)
@@ -473,6 +498,8 @@ function Talent(id, element, nRanks, image) {
           if (curRank == 0) {
             $(this).find('img').css('filter', 'grayscale(100)')
           }
+
+
         }
       }
     }
