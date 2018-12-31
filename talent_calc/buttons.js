@@ -72,52 +72,26 @@ var resourceCounter = {
       t = t * -1
     }
 
-    if (this.checkIfMaxed('ability', a) == false) {
-      this.abilityPointsRequired.current += a
-      this.triggerCountChange()
-    }
-    else {
-      this.triggerIconLock('ability')
-    }
-    if (this.checkIfMaxed('talent', t) == false) {
-      this.talentPointsRequired.current += t
-      this.triggerCountChange();
-    }
-    else {
-      console.log('maxed')
+    this.abilityPointsRequired.current += a
+    this.talentPointsRequired.current += t
 
-      this.triggerIconLock('talent')
-    }
+    //checkmax
+    this.triggerCountChange();
 
   },
   updateLevel: function () {
 
   },
-  checkIfMaxed: function (property, cost) {
-    let p = this[property + 'PointsRequired']
-    if ((p.current + cost) == p.max) {
-      p.maxed = true
-    }
-    if ((p.current + cost) > p.max) {
-      p.maxed = true
-      return false;
-    }
-    else {
-      p.maxed = false
-    }
-    return p.maxed;
+  checkIfMaxed: function () {
+    // if max - current > 5?
   },
   triggerCountChange: function () {
     let event = new Event('CountChanged')
-    event.T = this.talentPointsRequired.current
-    event.A = this.abilityPointsRequired.current
+    event.T = this.talentPointsRequired
+    event.A = this.abilityPointsRequired
     document.dispatchEvent(event)
   },
-  triggerIconLock: function (property) {
-    let event = new Event('IsMaxed')
-    event.spellType = property
-    document.dispatchEvent(event)
-  }
+
 }
 $(document).ready(function () { //check document is loaded
   /* Get Locations from JSON FIle*/
@@ -224,22 +198,31 @@ function Tree(class_name, spec_name, element, index, target) {
 
   }
 
-  // document.addEventListener('IsMaxed', (e) => {
-  //   if (e.spellType == this.spellObjects.type) {
-  //     this.spellObjects.values.forEach((object) => {
-  //       object.locked = true;
-  //     })
-  //   }
+  document.addEventListener('CountChanged', (e) => {
+    let t = e.T.current;
+    let tx = e.T.max;
+    let tOffset = tx - t;
 
-  // })
-  // document.addEventListener('IsNotMaxed', (e) => {
-  //   if (e.spellType == this.spellObjects.type) {
-  //     this.spellObjects.values.forEach((object) => {
-  //       object.locked = false;
-  //     })
-  //   }
+    let a = e.A.current;
+    let ax = e.A.max;
+    let aOffset = ax - a;
 
-  // })
+    this.spellObjects.values.forEach((object) => {
+      let ty = object.toolTipContent.talentEssenceCost
+      let ay = object.toolTipContent.abilityEssenceCost
+      console.log(ay, aOffset)
+      // Work out if there are enough points left to spend on an talent/ability
+      if ((ay > aOffset) || (ty > tOffset)) {
+        //If Not, lock that icon
+        object.locked = true;
+      }
+      else {
+        object.locked = false;
+      }
+    })
+
+  })
+
 }
 function Spell() {
   //Parent class of abilities and talents
@@ -357,26 +340,26 @@ function Ability(id, element, image) {
       e.preventDefault();
     });
 
-    // /*Handle left click and right click for desktop*/
-    // element.onmousedown = function (event) {
-    //   if (event.which == 1 && self.locked == false) {
-    //     /* Add point on left click and remove gray filter*/
-    //     $(this).find('img').css('filter', 'none')
-    //     resourceCounter.updateEssence(self.toolTipContent)
+    /*Handle left click and right click for desktop*/
+    element.onmousedown = function (event) {
+      if (event.which == 1 && self.locked == false) {
+        /* Add point on left click and remove gray filter*/
+        $(this).find('img').css('filter', 'none')
+        resourceCounter.updateEssence(self.toolTipContent)
 
 
-    //   }
-    //   if (event.which == 3) {
-    //     if (self.locked == true) {
-    //       let event = new Event('IsNotMaxed')
-    //       document.dispatchEvent(event)
-    //     }
-    //     /* Remove point on right click*/
-    //     resourceCounter.updateEssence(self.toolTipContent, 'remove')
+      }
+      if (event.which == 3) {
+        if (self.locked == true) {
+          let event = new Event('IsNotMaxed')
+          document.dispatchEvent(event)
+        }
+        /* Remove point on right click*/
+        resourceCounter.updateEssence(self.toolTipContent, 'remove')
 
-    //     $(this).find('img').css('filter', 'grayscale(100)')
-    //   }
-    // }
+        $(this).find('img').css('filter', 'grayscale(100)')
+      }
+    }
 
     /*Handle touch hold for mobile users */
 
@@ -482,11 +465,6 @@ function Talent(id, element, nRanks, image) {
       if (event.which == 3) {
         /* Remove point on right click*/
         if (curRank > 0) {
-          if (self.locked == true) {
-            let event = new Event('IsNotMaxed')
-            event.spellType = 'talent'
-            document.dispatchEvent(event)
-          }
           curRank -= 1;
           updateState(self, curRank)
           self.updateToolTip(self)
@@ -658,8 +636,8 @@ function Footer() {
 
 
   document.addEventListener('CountChanged', (e) => {
-    $('#abilityPointsCounter').text(e.A)
-    $('#talentPointsCounter').text(e.T)
+    $('#abilityPointsCounter').text(e.A.current)
+    $('#talentPointsCounter').text(e.T.current)
   })
 
 }
