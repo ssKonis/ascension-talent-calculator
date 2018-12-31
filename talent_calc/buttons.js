@@ -63,14 +63,13 @@ var resourceCounter = {
   abilityPointsRequired: { current: 0, max: 5, maxed: false },
   levelRequired: { current: 0, max: 60 },
   levelCostCandidates: [],
-  updateCounter: function (tooltip, operation = 'add', multiplier = 1) {
-    this.updateEssence(tooltip, operation, multiplier)
-    this.updateLevel(tooltip, operation, multiplier)
+  updateCounter: function (tooltip, operation = 'add') {
+    this.updateEssence(tooltip, operation)
+    this.updateLevel(tooltip, operation)
   },
-  updateEssence: function (tooltip, operation, multiplier) {
-    let a = tooltip.abilityEssenceCost * multiplier
-    let t = tooltip.talentEssenceCost * multiplier
-
+  updateEssence: function (tooltip, operation) {
+    let a = tooltip.abilityEssenceCost
+    let t = tooltip.talentEssenceCost
 
     if (operation == 'remove') {
       a = a * -1
@@ -84,26 +83,22 @@ var resourceCounter = {
     this.triggerCounterChange();
 
   },
-  updateLevel: function (tooltip, operation, multiplier) {
-    let level = parseInt(tooltip.levelReq.split(' ')[2]);
+  updateLevel: function (tooltip, operation) {
+    let level = tooltip.levelReqLogical
     if (operation == 'add') {
       this.levelCostCandidates.push(level)
     }
     if (operation == 'remove') {
-      for (let j = 0; j < multiplier; j++) {
-        for (let i = 0; i < this.levelCostCandidates.length; i++) {
-          //remove first instance of that level
-          if (this.levelCostCandidates[i] == level) {
-            this.levelCostCandidates.splice(i, 1);
-            break;
-          }
+      for (let i = 0; i < this.levelCostCandidates.length; i++) {
+        //remove first instance of that level
+        if (this.levelCostCandidates[i] == level) {
+          this.levelCostCandidates.splice(i, 1);
+          break;
         }
       }
     }
     let maxLevel = Math.max(...this.levelCostCandidates)
-    // if max level > 0, use max level, else use 0
-
-    this.levelRequired.current = (maxLevel > 0) ? maxLevel : 1
+    this.levelRequired.current = maxLevel
     this.triggerCounterChange()
   },
   triggerCounterChange: function () {
@@ -319,6 +314,7 @@ Spell.prototype.requestToolTipMetaData = function (data) {
   content.name = $(data).find('.ascension-tooltip-spell-name').text();
   content.rank = $(data).find('.ascension-tooltip-spell-rank').text();
   content.levelReq = $(data).find('.ascension-tooltip-spell-level-requirement').text();
+  content.levelReqLogical = parseInt(content.levelReq.split(' ')[2]);
   content.description = $(data).find('.ascension-tooltip-spell-tooltip-text').text();
 
   let essenceCost = $(data).find('.ascension-tooltip-spell-essence-cost').text();
@@ -337,17 +333,6 @@ Spell.prototype.initToolTip = function (self) {
     }
   })
 }
-Spell.prototype.addPoint = function (self) {
-  $(self.element).find('img').css('filter', 'none')
-  resourceCounter.updateCounter(self.toolTipContent)
-}
-Spell.prototype.removePoint = function (self, mult = 1, state = 0) {
-  resourceCounter.updateCounter(self.toolTipContent, 'remove', mult)
-  if (state == 0) {
-    $(self.element).find('img').css('filter', 'grayscale(100)')
-  }
-}
-
 //Ability Blue Print
 function Ability(id, element, image) {
   this.id = id
@@ -361,12 +346,8 @@ function Ability(id, element, image) {
   this.toolTipContent
   this.locked = false;
 
-  this.nRanks = 1
-  this.curRank = 0;
-
-
   this.initToolTip(self)
-  element.loadEvents = function () {
+  this.loadEvents = function () {
 
     /*Prevent dev tool inspect on right click*/
     element.addEventListener('contextmenu', function (e) {
@@ -376,16 +357,17 @@ function Ability(id, element, image) {
     /*Handle left click and right click for desktop*/
     element.onmousedown = function (event) {
       if (event.which == 1 && self.locked == false) {
-        if (self.curRank < self.nRanks) {
-          self.addPoint(self)
-        }
+        /* Add point on left click and remove gray filter*/
+        $(this).find('img').css('filter', 'none')
+        resourceCounter.updateCounter(self.toolTipContent)
+
+
       }
       if (event.which == 3) {
         /* Remove point on right click*/
-        if (curRank > 0) {
-          self.removePoint(self)
+        resourceCounter.updateCounter(self.toolTipContent, 'remove')
 
-        }
+        $(this).find('img').css('filter', 'grayscale(100)')
       }
     }
 
@@ -396,10 +378,8 @@ function Ability(id, element, image) {
     let touchduration = 600; //length of time we want the user to touch before we do something
     function touchstart(e) {
       /*On Each click, add an element */
-      if (self.locked == false) {
-        self.addPoint(self)
 
-      }
+      $(this).find('img').css('filter', 'none')
 
       e.preventDefault();
       if (lockTimer) {
@@ -421,7 +401,9 @@ function Ability(id, element, image) {
 
     onlongtouch = function () {
       /* on long hold, remove all points from an icon*/
-      self.removePoint(self)
+      // show tooltip
+
+      $(this).find('img').css('filter', 'grayscale(100)')
     }
 
     element.addEventListener("touchstart", touchstart, false);
@@ -431,7 +413,7 @@ function Ability(id, element, image) {
   /* On mouse over show tooltip */
   element.onmouseover = function () {
   }
-  element.loadEvents(self);
+  this.loadEvents(self);
 
 }
 Ability.prototype = Object.create(Spell.prototype)
@@ -453,61 +435,59 @@ function Talent(id, element, nRanks, image) {
   this.initToolTip(self)
 
   this.nRanks = nRanks;
-  this.curRank = 0
-  // this.curRank;
-  // let curRank = 0;
+  let curRank = 0;
   // Add Rank Box
-  $(this.element).append("<div class=rankBox>" + this.curRank + " / " + this.nRanks + "</div>")
+  $(this.element).append("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
 
 
   this.states = [] // Holds array of ids for each rank
-  const updateState = () => {
-    let index = self.curRank
+  updateState = function (self, index) {
     if (index > 0) {
       index -= 1
     }
     else (
       index = 0
     )
-    console.log(index)
-    console.log(this)
-    this.id = this.states[index].id
-    this.curRank = this.states[index].rank
+    self.id = self.states[index].id
+    self.curRank = self.states[index].rank
   }
-  const updateRankBox = () => {
-    updateState()
-    this.updateToolTip(self)
-    $(this.element).find('.rankBox').html("<div class=rankBox>" + this.curRank + " / " + this.nRanks + "</div>")
-
-  }
-
-  element.loadEvents = function (self) {
+  element.loadEvents = function () {
 
     /*Prevent dev tool inspect on right click*/
-    element.addEventListener('contextmenu', function (e) {
+    this.addEventListener('contextmenu', function (e) {
       e.preventDefault();
     });
 
     /*Handle left click and right click for desktop*/
-    element.onmousedown = function (event) {
+    this.onmousedown = function (event) {
       if (event.which == 1 && self.locked == false) {
-        if (self.curRank < self.nRanks) {
-          self.curRank += 1;
-          self.addPoint(self)
-          updateRankBox()
-
+        /* Add point on left click and remove gray filter*/
+        $(this).find('img').css('filter', 'none')
+        if (curRank < nRanks) {
+          curRank += 1;
+          updateState(self, curRank)
+          self.updateToolTip(self)
+          resourceCounter.updateCounter(self.toolTipContent)
+          $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
         }
+
       }
       if (event.which == 3) {
         /* Remove point on right click*/
-        if (self.curRank > 0) {
-          self.curRank -= 1;
-          self.removePoint(self, 1, self.curRank)
-          updateRankBox()
+        if (curRank > 0) {
+          curRank -= 1;
+          updateState(self, curRank)
+          self.updateToolTip(self)
+          resourceCounter.updateCounter(self.toolTipContent, 'remove')
 
+
+          $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
+          /* If rank == 0, add greyscale filter */
+          if (curRank == 0) {
+            $(this).find('img').css('filter', 'grayscale(100)')
+          }
         }
       }
-
     }
 
 
@@ -518,15 +498,12 @@ function Talent(id, element, nRanks, image) {
     let touchduration = 600; //length of time we want the user to touch before we do something
     let touchstart = (e) => {
       /*On Each click, add an element */
-      if (self.locked == false) {
-        start_touch = e.changedTouches[0];
-        if (curRank < nRanks) {
-          curRank += 1;
-          $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
-          self.addPoint(self)
-        }
+      start_touch = e.changedTouches[0];
+      if (curRank < nRanks) {
+        curRank += 1;
+        $(this).find('img').css('filter', 'none')
+        $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
       }
-
 
       e.preventDefault();
       if (lockTimer) {
@@ -538,17 +515,15 @@ function Talent(id, element, nRanks, image) {
 
     let touchend = (e) => {
       //This prevents accidental selecting of icons when scrolling
-      if (self.locked == false) {
-        end_touch = e.changedTouches[0];
-        let x_distance = start_touch.clientX - end_touch.clientX
-        let y_distance = start_touch.clientY - end_touch.clientY
-        if (Math.abs(x_distance || y_distance) > 50) {
-          curRank -= 1;
-          $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
-          self.removePoint(self)
-        }
-      }
+      end_touch = e.changedTouches[0];
+      let x_distance = start_touch.clientX - end_touch.clientX
+      let y_distance = start_touch.clientY - end_touch.clientY
+      if (Math.abs(x_distance || y_distance) > 50) {
+        $(this).find('img').css('filter', 'grayscale(100)')
+        curRank -= 1;
+        $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
 
+      }
 
       //stops short touches from firing the event
       if (timer) {
@@ -562,17 +537,21 @@ function Talent(id, element, nRanks, image) {
     let onlongtouch = () => {
       /* on long hold, remove all points from an icon*/
       // show tooltip
-      let mult = (0 - curRank) * -1 //get number of ranks that were selected
-      curRank = 0;
+
+      curRank -= 1;
       $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
-      self.removePoint(self, mult)
+      $(this).find('img').css('filter', 'grayscale(100)')
     }
 
     element.addEventListener("touchstart", touchstart, false);
     element.addEventListener("touchend", touchend, false);
   }
 
-  element.loadEvents(self);
+
+  /* On mouse over show tooltip */
+  element.onmouseover = () => {
+  }
+  element.loadEvents();
 }
 Talent.prototype = Object.create(Ability.prototype);
 
