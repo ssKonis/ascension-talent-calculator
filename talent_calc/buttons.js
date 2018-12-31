@@ -63,7 +63,11 @@ var resourceCounter = {
   abilityPointsRequired: { current: 0, max: 5, maxed: false },
   levelRequired: { current: 0, max: 60 },
   levelCostCandidates: [],
-  updateEssence: function (tooltip, operation = 'add') {
+  updateCounter: function (tooltip, operation = 'add') {
+    this.updateEssence(tooltip, operation)
+    this.updateLevel(tooltip, operation)
+  },
+  updateEssence: function (tooltip, operation) {
     let a = tooltip.abilityEssenceCost
     let t = tooltip.talentEssenceCost
 
@@ -76,19 +80,32 @@ var resourceCounter = {
     this.talentPointsRequired.current += t
 
     //checkmax
-    this.triggerCountChange();
+    this.triggerCounterChange();
 
   },
-  updateLevel: function () {
-
+  updateLevel: function (tooltip, operation) {
+    let level = tooltip.levelReqLogical
+    if (operation == 'add') {
+      this.levelCostCandidates.push(level)
+    }
+    if (operation == 'remove') {
+      for (let i = 0; i < this.levelCostCandidates.length; i++) {
+        //remove first instance of that level
+        if (this.levelCostCandidates[i] == level) {
+          this.levelCostCandidates.splice(i, 1);
+          break;
+        }
+      }
+    }
+    let maxLevel = Math.max(...this.levelCostCandidates)
+    this.levelRequired.current = maxLevel
+    this.triggerCounterChange()
   },
-  checkIfMaxed: function () {
-    // if max - current > 5?
-  },
-  triggerCountChange: function () {
-    let event = new Event('CountChanged')
+  triggerCounterChange: function () {
+    let event = new Event('CounterChanged')
     event.T = this.talentPointsRequired
     event.A = this.abilityPointsRequired
+    event.L = this.levelRequired
     document.dispatchEvent(event)
   },
 
@@ -166,7 +183,6 @@ function Tree(class_name, spec_name, element, index, target) {
       let ability = new Ability(item.id, self.grid[i], item.image)
       self.spellObjects.values.push(ability)
     })
-    self.spellObjects.type = 'ability'
   }
 
   this.createTalentIcons = function (data) {
@@ -194,11 +210,11 @@ function Tree(class_name, spec_name, element, index, target) {
         }
       }
     })
-    self.spellObjects.type = 'talent'
 
   }
 
-  document.addEventListener('CountChanged', (e) => {
+  document.addEventListener('CounterChanged', (e) => {
+
     let t = e.T.current;
     let tx = e.T.max;
     let tOffset = tx - t;
@@ -210,8 +226,7 @@ function Tree(class_name, spec_name, element, index, target) {
     this.spellObjects.values.forEach((object) => {
       let ty = object.toolTipContent.talentEssenceCost
       let ay = object.toolTipContent.abilityEssenceCost
-      console.log(ay, aOffset)
-      // Work out if there are enough points left to spend on an talent/ability
+      // Work out if there are enough points left to spend on an talent or ability or
       if ((ay > aOffset) || (ty > tOffset)) {
         //If Not, lock that icon
         object.locked = true;
@@ -299,6 +314,7 @@ Spell.prototype.requestToolTipMetaData = function (data) {
   content.name = $(data).find('.ascension-tooltip-spell-name').text();
   content.rank = $(data).find('.ascension-tooltip-spell-rank').text();
   content.levelReq = $(data).find('.ascension-tooltip-spell-level-requirement').text();
+  content.levelReqLogical = parseInt(content.levelReq.split(' ')[2]);
   content.description = $(data).find('.ascension-tooltip-spell-tooltip-text').text();
 
   let essenceCost = $(data).find('.ascension-tooltip-spell-essence-cost').text();
@@ -330,8 +346,6 @@ function Ability(id, element, image) {
   this.toolTipContent
   this.locked = false;
 
-
-
   this.initToolTip(self)
   this.loadEvents = function () {
 
@@ -345,17 +359,13 @@ function Ability(id, element, image) {
       if (event.which == 1 && self.locked == false) {
         /* Add point on left click and remove gray filter*/
         $(this).find('img').css('filter', 'none')
-        resourceCounter.updateEssence(self.toolTipContent)
+        resourceCounter.updateCounter(self.toolTipContent)
 
 
       }
       if (event.which == 3) {
-        if (self.locked == true) {
-          let event = new Event('IsNotMaxed')
-          document.dispatchEvent(event)
-        }
         /* Remove point on right click*/
-        resourceCounter.updateEssence(self.toolTipContent, 'remove')
+        resourceCounter.updateCounter(self.toolTipContent, 'remove')
 
         $(this).find('img').css('filter', 'grayscale(100)')
       }
@@ -457,7 +467,7 @@ function Talent(id, element, nRanks, image) {
           curRank += 1;
           updateState(self, curRank)
           self.updateToolTip(self)
-          resourceCounter.updateEssence(self.toolTipContent)
+          resourceCounter.updateCounter(self.toolTipContent)
           $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
         }
 
@@ -468,7 +478,7 @@ function Talent(id, element, nRanks, image) {
           curRank -= 1;
           updateState(self, curRank)
           self.updateToolTip(self)
-          resourceCounter.updateEssence(self.toolTipContent, 'remove')
+          resourceCounter.updateCounter(self.toolTipContent, 'remove')
 
 
           $(this).find('.rankBox').html("<div class=rankBox>" + curRank + " / " + nRanks + "</div>")
@@ -476,8 +486,6 @@ function Talent(id, element, nRanks, image) {
           if (curRank == 0) {
             $(this).find('img').css('filter', 'grayscale(100)')
           }
-
-
         }
       }
     }
@@ -635,9 +643,10 @@ function Footer() {
   }
 
 
-  document.addEventListener('CountChanged', (e) => {
+  document.addEventListener('CounterChanged', (e) => {
     $('#abilityPointsCounter').text(e.A.current)
     $('#talentPointsCounter').text(e.T.current)
+    $('#levelCounter').text(e.L.current)
   })
 
 }
