@@ -469,6 +469,8 @@ function Talent(id, element, nRanks, image) {
     else (
       index = 0
     )
+    console.log(index)
+    console.log(this)
     this.id = this.states[index].id
     this.curRank = this.states[index].rank
   }
@@ -500,12 +502,11 @@ function Talent(id, element, nRanks, image) {
         /* Remove point on right click*/
         if (self.curRank > 0) {
           self.curRank -= 1;
-          self.removePoint(self)
+          self.removePoint(self, 1, self.curRank)
           updateRankBox()
 
         }
       }
-      console.log(self.curRank)
 
     }
 
