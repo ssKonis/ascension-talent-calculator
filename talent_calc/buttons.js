@@ -721,7 +721,6 @@ function toggleTree(target) {
 }
 
 function main(talent_map, ability_map) {
-  var state = window.matchMedia("(min-width: 600px)")
 
   dispatchMapContent();
   FOOTER = new Footer();
@@ -729,14 +728,6 @@ function main(talent_map, ability_map) {
   MODAL = new Modal();
   MODAL.loadIcons($('.modal-content')); //Load Modal Icons
 
-
-  function setState(state) {
-    if (state.matches) { // If desktop size
-      initDesktopLayout()
-    } else {
-      initMobileLayout()
-    }
-  }
   function initDesktopLayout() {
     HEADER.initDesktop()
     FOOTER.initDesktop()
@@ -746,8 +737,12 @@ function main(talent_map, ability_map) {
     HEADER.initMobile()
     FOOTER.initMobile()
   }
-  setState(state)
-  state.addListener(setState)
+
+  function initTabletLayout() {
+    HEADER.initDesktop()
+    FOOTER.initMobile()
+    MODAL.hide();
+  }
 
   document.addEventListener('classChanged', function () {
     dispatchMapContent();
@@ -786,6 +781,51 @@ function main(talent_map, ability_map) {
 
 
   }
+
+
+  var states = [
+    window.matchMedia("(min-width: 1101px)"),
+    window.matchMedia("(min-width: 768px) and (max-width: 1100px)"),
+    window.matchMedia("(max-width:767px)")
+  ]
+
+  function isDesktop() {
+    let state = states[0]
+    return state.matches
+  }
+  function isTablet() {
+    let state = states[1]
+    return state.matches
+  }
+  function isMobile() {
+    let state = states[2]
+    return state.matches
+  }
+
+  function setState() {
+    console.log('====')
+    if (isDesktop()) {
+      console.log('is desktop')
+      initDesktopLayout()
+    }
+    else if (isTablet()) {
+      console.log('is tablet')
+      initTabletLayout()
+    }
+    else if (isMobile()) {
+      console.log('is mobile')
+      initMobileLayout()
+    }
+    else {
+      console.log('fallback')
+      initMobileLayout()
+    }
+  }
+
+  setState()
+  states.forEach(state => {
+    state.addListener(setState)
+  });
 
 
 

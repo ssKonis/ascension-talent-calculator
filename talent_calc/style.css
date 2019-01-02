@@ -53,7 +53,7 @@ body{
   height: 100vh;
 }
 /*On desktop*/
-@media only screen and (min-width: 1224px) {
+@media only screen and (min-width: 1101px) {
   .wrapper{
     /*Swaps sides of column layour*/
     /* direction: rtl; */
@@ -73,7 +73,7 @@ body{
 }
 
 /*On desktop*/
-@media only screen and (min-width: 1224px) {
+@media only screen and (min-width: 1101px) {
   .panel{
     /*Swaps sides of column layout back to normal*/
     direction: ltr;
@@ -85,7 +85,6 @@ body{
 
 .panel-body {
   /* grid-template-rows: 1fr 9fr; */
-
   overflow-y: auto;
   display: grid;
   justify-content: center;
@@ -93,17 +92,19 @@ body{
 
 }
 
-
 /*On Tablet*/
-/* @media only screen and (min-width: 768px) {
+@media only screen and (min-width: 768px) and (max-width: 1100px){
   .panel-body{
-    grid-template-columns: 1fr 1fr 1fr;
+    background:blueviolet !important;
+    display:grid;
+    grid-template-columns: 1fr;
     justify-content: auto;
     align-content: auto;
+    overflow-x: auto;
   }
-} */
+}
 /*On desktop*/
-@media only screen and (min-width: 1224px) {
+@media only screen and (min-width: 1101px) {
   .panel-body{
     display:grid;
     grid-template-columns: 1fr 3fr;
@@ -125,25 +126,27 @@ header{
   justify-items: center;
   align-items: center;
 }
-
-/*On Tablet*/
-@media only screen and (min-width: 768px) {
-  header{
-    background:blueviolet !important
-  }
-}
 header >div:hover{
   color:#ba0000;
   cursor: pointer;
 }
 
-
 header > .resourceCounter{
   display: grid;
   grid-template-columns: 2fr 1fr 2fr;
 }
+/*On Tablet*/
+@media only screen and (min-width: 768px) and (max-width: 1100px){
+  header{
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr;
+    justify-items: initial;
+    align-items: initial;
+  }
+}
+
 /*On desktop*/
-@media only screen and (min-width:1224px){
+@media only screen and (min-width:1101px){
   header{
     grid-template-rows: 1fr;
     grid-template-columns: 1fr 3fr;
@@ -263,7 +266,7 @@ header > .resourceCounter{
 }
 
 /*On desktop*/
-@media only screen and (min-width: 1224px) {
+@media only screen and (min-width: 1101px) {
   .trees.talents{
     /*Display all trees*/
     grid-template-columns: repeat(3, 1fr);
@@ -290,7 +293,7 @@ header > .resourceCounter{
 }
 
 /*On desktop*/
-@media only screen and (min-width: 1224px) {
+@media only screen and (min-width: 1101px) {
   .trees.abilities{
     /*Display all trees*/
     grid-template-rows: auto;
@@ -323,7 +326,7 @@ header > .resourceCounter{
 }
 
 /*On desktop*/
-@media only screen and (min-width: 1224px) {
+@media only screen and (min-width: 1101px) {
  
 }
 
@@ -343,7 +346,7 @@ header > .resourceCounter{
 }
 
 /*On desktop*/
-@media only screen and (min-width: 1224px) {
+@media only screen and (min-width: 1101px) {
   .trees.abilities > .tree{
     scroll-snap-align:none;
     grid-template-columns: repeat(auto-fill, 48px );
@@ -378,7 +381,7 @@ header > .resourceCounter{
 }
 
 /*Desktop screens*/
-@media only screen and (min-width: 1224px) {
+@media only screen and (min-width: 1101px) {
   .icon > img{
     max-width: 48px;
     max-height:48px;
@@ -409,7 +412,7 @@ footer {
 
 }
 /*Desktop screens*/
-@media only screen and (min-width: 1224px) {
+@media only screen and (min-width: 1101px) {
   footer{
     /*grid-template-rows: repeat(5, 100px); need to change to relative values*/
     /* grid-row: 2/ -1;
