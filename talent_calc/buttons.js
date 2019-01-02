@@ -245,35 +245,38 @@ function Tree(class_name, spec_name, element, index, target) {
 function Spell() {
   //Parent class of abilities and talents
 }
-Spell.prototype.createImageElement = function (self) { //Create Image Element
+Spell.prototype.createImageElement = function () { //Create Image Element
   let img = document.createElement("img")
-  img.src = ASCENSION_API.spell_icon + self.image;
+  img.src = ASCENSION_API.spell_icon + this.image;
   $(img).css('filter', 'grayscale(100)') /* make image grayscale*/
-  self.element.appendChild(img)
+  this.element.appendChild(img)
 }
-Spell.prototype.createToolTipActivator = function (self) {
-  if (self.tooltipActivator != undefined) {
+Spell.prototype.createToolTipActivator = function () {
+  if (this.tooltipActivator != undefined) {
     //If tooltip was previously created, remove that tooltip
-    $(self.tooltipActivator).tooltipster('close');
+    $(this.tooltipActivator).tooltipster('close');
   }
   let div = document.createElement("div")
   $(div).attr('class', 'tooltip-activator')
-  self.element.appendChild(div)
-  self.tooltipActivator = $(div)
+  this.element.appendChild(div)
+  this.tooltipActivator = $(div)
 }
-Spell.prototype.updateToolTip = function (self) {
-  self.createToolTipActivator(self)
-  $(self.tooltipActivator).tooltipster({
+Spell.prototype.updateToolTip = function () {
+  this.createToolTipActivator()
+  $(this.tooltipActivator).tooltipster({
     content: 'Loading...',
-    functionBefore: function (instance, helper) {
+    functionBefore: (instance, helper) => {
+      console.log(this)
+      console.log('test2')
       var $origin = $(helper.origin);
       if ($origin.data('loaded') != true) {
-        let id = self.id
+        let id = this.id
         let url = ASCENSION_API.spell_tooltip + id + '/tooltip.html'
 
-        $.get(url, function (data) {
-          self.requestToolTipMetaData(data)
-          populateTooltip(self);
+        $.get(url, (data) => {
+
+          this.requestToolTipMetaData(data)
+          populateTooltip(this);
           instance.content($('.tooltip_content'))
           $origin.data('loaded', true);
 
@@ -290,8 +293,8 @@ Spell.prototype.updateToolTip = function (self) {
 
 
   })
-  function populateTooltip(self) {
-    let content = self.toolTipContent;
+  const populateTooltip = () => {
+    let content = this.toolTipContent;
     //Fill tooltip with related metadata as divs
     $('.tooltip_content').empty();
     Object.keys(content).forEach(key => {
@@ -340,6 +343,17 @@ Spell.prototype.initToolTip = function (self) {
     }
   })
 }
+Spell.prototype.toggleIconFilter = function (setting) {
+  if (setting == 'on') {
+    $(this.element).find('img').css('filter', 'grayscale(100)')
+
+  }
+  else if (setting == 'off') {
+    $(this.element).find('img').css('filter', 'none')
+
+  }
+
+}
 //Ability Blue Print
 function Ability(id, element, image) {
   this.id = id
@@ -347,7 +361,7 @@ function Ability(id, element, image) {
   this.element = element;
 
   let self = this;
-  this.createImageElement(self);
+  this.createImageElement();
 
   this.tooltipActivator
   this.toolTipContent
@@ -368,7 +382,7 @@ function Ability(id, element, image) {
     this.onmousedown = function (event) {
       if (event.which == 1 && self.locked == false && self.curRank == 0) {
         /* Add point on left click and remove gray filter*/
-        $(this).find('img').css('filter', 'none')
+        self.toggleIconFilter('off')
         resourceCounter.updateCounter(self.toolTipContent)
         self.curRank = 1;
         console.log('clicked')
@@ -377,7 +391,7 @@ function Ability(id, element, image) {
       if (event.which == 3 && self.curRank == 1) {
         /* Remove point on right click*/
         resourceCounter.updateCounter(self.toolTipContent, 'remove')
-        $(this).find('img').css('filter', 'grayscale(100)')
+        self.toggleIconFilter('on')
         self.curRank = 0;
       }
     }
@@ -394,7 +408,7 @@ function Talent(id, element, nRanks, image) {
   this.element = element;
 
   let self = this
-  this.createImageElement(self);
+  this.createImageElement();
 
   //add toltip
   this.tooltipActivator
@@ -410,59 +424,52 @@ function Talent(id, element, nRanks, image) {
 
 
   this.states = [] // Holds array of ids for each rank
-  updateState = function (self, index) {
+  const updateState = (index) => {
+    console.log(this)
     if (index > 0) {
       index -= 1
     }
     else (
       index = 0
     )
-    self.id = self.states[index].id
-    // self.curRank = self.states[index].rank
+    this.id = this.states[index].id
   }
-  element.loadClickEvents = function () {
 
-    /*Prevent dev tool inspect on right click*/
-    this.addEventListener('contextmenu', function (e) {
-      e.preventDefault();
-    });
+  /*Prevent dev tool inspect on right click*/
+  element.addEventListener('contextmenu', function (e) {
+    e.preventDefault();
+  });
 
-    /*Handle left click and right click for desktop*/
-    this.onmousedown = function (event) {
-      if (event.which == 1 && self.locked == false) {
-        /* Add point on left click and remove gray filter*/
-        $(this).find('img').css('filter', 'none')
-        if (self.curRank < self.nRanks) {
-          self.curRank += 1;
-          updateState(self, self.curRank)
-          self.updateToolTip(self)
-          resourceCounter.updateCounter(self.toolTipContent)
-          $(this).find('.rankBox').html("<div class=rankBox>" + self.curRank + " / " + self.nRanks + "</div>")
-        }
-
+  /*Handle left click and right click for desktop*/
+  element.onmousedown = (event) => {
+    if (event.which == 1 && self.locked == false) {
+      /* Add point on left click and remove gray filter*/
+      this.toggleIconFilter('off')
+      if (this.curRank < this.nRanks) {
+        this.curRank += 1;
+        updateState(this.curRank)
+        this.updateToolTip()
+        resourceCounter.updateCounter(this.toolTipContent)
+        $(this.element).find('.rankBox').html("<div class=rankBox>" + this.curRank + " / " + this.nRanks + "</div>")
       }
-      if (event.which == 3) {
-        /* Remove point on right click*/
-        if (self.curRank > 0) {
-          console.log(self.curRank)
-          self.curRank -= 1;
-          updateState(self, self.curRank)
-          self.updateToolTip(self)
-          resourceCounter.updateCounter(self.toolTipContent, 'remove')
 
-          $(this).find('.rankBox').html("<div class=rankBox>" + self.curRank + " / " + self.nRanks + "</div>")
-          /* If rank == 0, add greyscale filter */
-          if (self.curRank == 0) {
-            $(this).find('img').css('filter', 'grayscale(100)')
-          }
+    }
+    if (event.which == 3) {
+      /* Remove point on right click*/
+      if (self.curRank > 0) {
+        self.curRank -= 1;
+        updateState(self, self.curRank)
+        self.updateToolTip(self)
+        resourceCounter.updateCounter(self.toolTipContent, 'remove')
+
+        $(this).find('.rankBox').html("<div class=rankBox>" + self.curRank + " / " + self.nRanks + "</div>")
+        /* If rank == 0, add greyscale filter */
+        if (self.curRank == 0) {
+          self.toggleIconFilter('on')
         }
       }
     }
   }
-  /* On mouse over show tooltip */
-  element.onmouseover = () => {
-  }
-  element.loadClickEvents();
 }
 Talent.prototype = Object.create(Ability.prototype);
 
