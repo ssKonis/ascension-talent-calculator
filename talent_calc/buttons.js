@@ -15,6 +15,8 @@
     add ability to reset abilities and talents
 
  */
+
+
 var SELECTED = {
   class: 'mage',
   update: function (next) {
