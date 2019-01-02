@@ -357,7 +357,7 @@ function Ability(id, element, image) {
   this.nRanks = 1;
 
   this.initToolTip(self)
-  element.loadEvents = function () {
+  element.loadClickEvents = function () {
 
     /*Prevent dev tool inspect on right click*/
     this.addEventListener('contextmenu', function (e) {
@@ -381,61 +381,8 @@ function Ability(id, element, image) {
         self.curRank = 0;
       }
     }
-    /*Handle touch hold for mobile users */
-
-    let timer, lockTimer;
-    let start_touch, end_touch;
-    let touchduration = 600; //length of time we want the user to touch before we do something
-    let touchstart = (e) => {
-      console.log('touched')
-      /*On Each click, add an element */
-      start_touch = e.changedTouches[0];
-      if (self.curRank < self.nRanks && self.locked == false) {
-        self.curRank += 1;
-        resourceCounter.updateCounter(self.toolTipContent)
-
-        $(this).find('img').css('filter', 'none')
-      }
-
-      e.preventDefault();
-      if (lockTimer) {
-        return;
-      }
-      timer = setTimeout(onlongtouch, touchduration);
-      lockTimer = true;
-    }
-
-    let touchend = (e) => {
-      //This prevents accidental selecting of icons when scrolling
-      end_touch = e.changedTouches[0];
-      let x_distance = start_touch.clientX - end_touch.clientX
-      let y_distance = start_touch.clientY - end_touch.clientY
-
-      if (Math.abs(x_distance || y_distance) > 50) {
-        $(this).find('img').css('filter', 'grayscale(100)')
-        self.curRank -= 1;
-        resourceCounter.updateCounter(self.toolTipContent, 'remove')
-      }
-      //stops short touches from firing the event
-      if (timer) {
-        clearTimeout(timer); // clearTimeout, not cleartimeout..
-        lockTimer = false;
-      }
-      else {
-      }
-    }
-
-    let onlongtouch = () => {
-      let mult = (0 - self.curRank) * -1
-      self.curRank = 0
-      resourceCounter.updateCounter(self.toolTipContent, 'remove', mult)
-      $(this).find('img').css('filter', 'grayscale(100)')
-
-    }
-    element.addEventListener("touchstart", touchstart, false);
-    element.addEventListener("touchend", touchend, false);
   }
-  element.loadEvents(self);
+  element.loadClickEvents(self);
 
 }
 Ability.prototype = Object.create(Spell.prototype)
@@ -473,7 +420,7 @@ function Talent(id, element, nRanks, image) {
     self.id = self.states[index].id
     // self.curRank = self.states[index].rank
   }
-  element.loadEvents = function () {
+  element.loadClickEvents = function () {
 
     /*Prevent dev tool inspect on right click*/
     this.addEventListener('contextmenu', function (e) {
@@ -511,74 +458,11 @@ function Talent(id, element, nRanks, image) {
         }
       }
     }
-    /*Handle touch hold for mobile users */
-
-    let timer, lockTimer;
-    let start_touch, end_touch;
-    let touchduration = 2000; //length of time we want the user to touch before we do something
-    let touchstart = (e) => {
-      /*On Each click, add an element */
-      start_touch = e.changedTouches[0];
-      if (self.curRank < self.nRanks && self.locked == false) {
-        self.curRank += 1;
-        updateState(self, self.curRank)
-        self.updateToolTip(self)
-        resourceCounter.updateCounter(self.toolTipContent)
-
-        $(this).find('img').css('filter', 'none')
-        $(this).find('.rankBox').html("<div class=rankBox>" + self.curRank + " / " + self.nRanks + "</div>")
-      }
-
-      e.preventDefault();
-      if (lockTimer) {
-        return;
-      }
-      timer = setTimeout(onlongtouch, touchduration);
-      lockTimer = true;
-    }
-
-    let touchend = (e) => {
-      //This prevents accidental selecting of icons when scrolling
-      end_touch = e.changedTouches[0];
-
-      let x_distance = start_touch.clientX - end_touch.clientX
-      let y_distance = start_touch.clientY - end_touch.clientY
-      if (Math.abs(x_distance || y_distance) > 50 && self.curRank > 0) {
-        $(this).find('img').css('filter', 'grayscale(100)')
-        self.curRank -= 1;
-        $(this).find('.rankBox').html("<div class=rankBox>" + self.curRank + " / " + self.nRanks + "</div>")
-        resourceCounter.updateCounter(self.toolTipContent, 'remove')
-      }
-      //stops short touches from firing the event
-      if (timer) {
-        clearTimeout(timer); // clearTimeout, not cleartimeout..
-        lockTimer = false;
-      }
-      else {
-      }
-    }
-
-    let onlongtouch = () => {
-      console.log('long trigger')
-      /* on long hold, remove all points from an icon*/
-      // show tooltip
-      // let mult = (0 - self.curRank) * -1
-      // self.curRank = 0
-      // resourceCounter.updateCounter(self.toolTipContent, 'remove', mult)
-      // $(this).find('.rankBox').html("<div class=rankBox>" + self.curRank + " / " + self.nRanks + "</div>")
-      // $(this).find('img').css('filter', 'grayscale(100)')
-
-    }
-
-    element.addEventListener("touchstart", touchstart, false);
-    element.addEventListener("touchend", touchend, false);
   }
-
-
   /* On mouse over show tooltip */
   element.onmouseover = () => {
   }
-  element.loadEvents();
+  element.loadClickEvents();
 }
 Talent.prototype = Object.create(Ability.prototype);
 
@@ -676,7 +560,6 @@ function Footer() {
     $(parent).empty();
   }
 
-
   document.addEventListener('CounterChanged', (e) => {
     $('#abilityPointsCounter').text(e.A.current)
     $('#talentPointsCounter').text(e.T.current)
@@ -706,8 +589,6 @@ function Modal() {
       self.show()
     }
   }
-
-
 }
 Modal.prototype = Object.create(Header.prototype); //Give Load icons function to Modal
 
@@ -806,10 +687,6 @@ function main(talent_map, ability_map) {
   }
   function isTablet() {
     let state = states[1]
-    return state.matches
-  }
-  function isMobile() {
-    let state = states[2]
     return state.matches
   }
 
