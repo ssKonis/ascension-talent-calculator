@@ -661,9 +661,16 @@ function Footer() {
   }
 
   function createElements(parent) {
-    $(parent).append('<div> AP/TP <div id="abilityPointsCounter">  0 </div>  <div id="talentPointsCounter"> 0 </div>  </div>')
+    $(parent).empty();
+    $(parent).append('<div> AP/TP <div id="abilityPointsCounter">' +
+      resourceCounter.abilityPointsRequired.current +
+      '</div>  <div id="talentPointsCounter">' +
+      resourceCounter.talentPointsRequired.current +
+      '</div>  </div>')
     $(parent).append('<div> Reset </div>')
-    $(parent).append('<div> Level <div id ="levelCounter"> 1 </div>  </div>')
+    $(parent).append('<div> Level <div id ="levelCounter">' +
+      resourceCounter.levelRequired.current +
+      '</div>  </div>')
   }
   function removeElements(parent) {
     $(parent).empty();
@@ -816,12 +823,8 @@ function main(talent_map, ability_map) {
       console.log('is tablet')
       initTabletLayout()
     }
-    else if (isMobile()) {
-      console.log('is mobile')
-      initMobileLayout()
-    }
     else {
-      console.log('fallback')
+      console.log('is mobile')
       initMobileLayout()
     }
   }
