@@ -1,18 +1,5 @@
 /* TODOS
- refactor code:
-  merge load events
-  get rid of self reference, use arrow functions
-  Desktop Layout:
-    choose different background for abilities
-    refactor talent and ability loader
-    add horitonzal scroll boxes for abilities, dont allow size to be laarger than talent trees
-
-  Both:
-    Display Tooltips -use jquery plugin 'tooltipster'
-    Design better layout
-    get resourceCounter to display how many talent/ability points have been spent aswell as level required
-  Finish resource counter:
-    add ability to reset abilities and talents
+ remove
 
  */
 
@@ -333,13 +320,14 @@ Spell.prototype.requestToolTipMetaData = function (data) {
   this.toolTipContent = content;
 
 }
-Spell.prototype.initToolTip = function (self) {
-  self.updateToolTip(self);
-  let url = ASCENSION_API.spell_tooltip + self.id + '/tooltip.html'
+Spell.prototype.initToolTip = function () {
+  this.updateToolTip();
+  let url = ASCENSION_API.spell_tooltip + this.id + '/tooltip.html'
   $.ajax({
     url: url,
-    success: function (data) {
-      self.requestToolTipMetaData(data);
+    success: (data) => {
+      this.requestToolTipMetaData(data);
+      this.loadClickEvents();
     }
   })
 }
@@ -370,33 +358,30 @@ function Ability(id, element, image) {
   this.curRank = 0;
   this.nRanks = 1;
 
-  this.initToolTip(self)
-  element.loadClickEvents = function () {
-
-    /*Prevent dev tool inspect on right click*/
-    this.addEventListener('contextmenu', function (e) {
-      e.preventDefault();
-    });
-
+  this.initToolTip()
+  /*Prevent dev tool inspect on right click*/
+  element.addEventListener('contextmenu', function (e) {
+    e.preventDefault();
+  });
+  this.loadClickEvents = () => {
     /*Handle left click and right click for desktop*/
-    this.onmousedown = function (event) {
-      if (event.which == 1 && self.locked == false && self.curRank == 0) {
+    element.onmousedown = (event) => {
+      if (event.which == 1 && this.locked == false && this.curRank == 0) {
         /* Add point on left click and remove gray filter*/
-        self.toggleIconFilter('off')
-        resourceCounter.updateCounter(self.toolTipContent)
-        self.curRank = 1;
-        console.log('clicked')
+        this.toggleIconFilter('off')
+        resourceCounter.updateCounter(this.toolTipContent)
+        this.curRank = 1;
 
       }
-      if (event.which == 3 && self.curRank == 1) {
+      if (event.which == 3 && this.curRank == 1) {
         /* Remove point on right click*/
-        resourceCounter.updateCounter(self.toolTipContent, 'remove')
-        self.toggleIconFilter('on')
-        self.curRank = 0;
+        resourceCounter.updateCounter(this.toolTipContent, 'remove')
+        this.toggleIconFilter('on')
+        this.curRank = 0;
       }
     }
   }
-  element.loadClickEvents(self);
+  this.loadClickEvents();
 
 }
 Ability.prototype = Object.create(Spell.prototype)
@@ -415,7 +400,7 @@ function Talent(id, element, nRanks, image) {
   this.toolTipContent;
   this.locked = false;
 
-  this.initToolTip(self)
+  this.initToolTip()
 
   this.nRanks = nRanks;
   this.curRank = 0;
@@ -440,36 +425,39 @@ function Talent(id, element, nRanks, image) {
     e.preventDefault();
   });
 
-  /*Handle left click and right click for desktop*/
-  element.onmousedown = (event) => {
-    if (event.which == 1 && self.locked == false) {
-      /* Add point on left click and remove gray filter*/
-      this.toggleIconFilter('off')
-      if (this.curRank < this.nRanks) {
-        this.curRank += 1;
-        updateState(this.curRank)
-        this.updateToolTip()
-        resourceCounter.updateCounter(this.toolTipContent)
-        $(this.element).find('.rankBox').html("<div class=rankBox>" + this.curRank + " / " + this.nRanks + "</div>")
+  this.loadClickEvents = () => {
+    /*Handle left click and right click for desktop*/
+    element.onmousedown = (event) => {
+      if (event.which == 1 && self.locked == false) {
+        /* Add point on left click and remove gray filter*/
+        this.toggleIconFilter('off')
+        if (this.curRank < this.nRanks) {
+          this.curRank += 1;
+          updateState(this.curRank)
+          this.updateToolTip()
+          resourceCounter.updateCounter(this.toolTipContent)
+          $(this.element).find('.rankBox').html("<div class=rankBox>" + this.curRank + " / " + this.nRanks + "</div>")
+        }
+
       }
+      if (event.which == 3) {
+        /* Remove point on right click*/
+        if (this.curRank > 0) {
+          this.curRank -= 1;
+          updateState(this.curRank)
+          this.updateToolTip()
+          resourceCounter.updateCounter(this.toolTipContent, 'remove')
 
-    }
-    if (event.which == 3) {
-      /* Remove point on right click*/
-      if (self.curRank > 0) {
-        self.curRank -= 1;
-        updateState(self, self.curRank)
-        self.updateToolTip(self)
-        resourceCounter.updateCounter(self.toolTipContent, 'remove')
-
-        $(this).find('.rankBox').html("<div class=rankBox>" + self.curRank + " / " + self.nRanks + "</div>")
-        /* If rank == 0, add greyscale filter */
-        if (self.curRank == 0) {
-          self.toggleIconFilter('on')
+          $(this.element).find('.rankBox').html("<div class=rankBox>" + this.curRank + " / " + this.nRanks + "</div>")
+          /* If rank == 0, add greyscale filter */
+          if (this.curRank == 0) {
+            this.toggleIconFilter('on')
+          }
         }
       }
     }
   }
+
 }
 Talent.prototype = Object.create(Ability.prototype);
 
