@@ -539,7 +539,7 @@ function Talent(id, element, nRanks, image) {
 
       let x_distance = start_touch.clientX - end_touch.clientX
       let y_distance = start_touch.clientY - end_touch.clientY
-      if (Math.abs(x_distance || y_distance) > 50) {
+      if (Math.abs(x_distance || y_distance) > 50 && self.curRank > 0) {
         $(this).find('img').css('filter', 'grayscale(100)')
         self.curRank -= 1;
         $(this).find('.rankBox').html("<div class=rankBox>" + self.curRank + " / " + self.nRanks + "</div>")
