@@ -52,18 +52,6 @@ body{
   grid-template-columns: 1fr;
   height: 100vh;
 }
-/*On desktop*/
-@media only screen and (min-width: 1101px) {
-  .wrapper{
-    /*Swaps sides of column layour*/
-    /* direction: rtl; */
-    /*actual layout is reverse of this*/
-    /* grid-template-columns: auto 10vw; 
-    grid-template-rows: 10vh auto; */
-    /* grid-template-columns: 3fr 1fr;
-    grid-template-rows: 1fr 1fr; */
-  }
-}
 
 .panel {
   display: grid;
@@ -241,7 +229,7 @@ header > .resourceCounter{
  display:inline;
 }
 
-.tooltip_wrapper{visibility: hidden;}
+.tooltip_wrapper{visibility: hidden;position: absolute; display:none}
 
 /* Content */
 .talents{
