@@ -61,8 +61,8 @@ var ASCENSION_API = {
 
 var resourceCounter = {
   //Max TP = 51, max AP = 59, max level = 60
-  talentPointsRequired: { current: 0, max: 5, maxed: false },
-  abilityPointsRequired: { current: 0, max: 5, maxed: false },
+  talentPointsRequired: { current: 0, max: 51, maxed: false },
+  abilityPointsRequired: { current: 0, max: 59, maxed: false },
   levelRequired: { current: 0, max: 60 },
   levelCostCandidates: [],
   updateCounter: function (tooltip, operation = 'add', multiplier = 1) {
@@ -368,9 +368,10 @@ function Ability(id, element, image) {
     this.onmousedown = function (event) {
       if (event.which == 1 && self.locked == false && self.curRank == 0) {
         /* Add point on left click and remove gray filter*/
-        $().find('img').css('filter', 'none')
+        $(this).find('img').css('filter', 'none')
         resourceCounter.updateCounter(self.toolTipContent)
         self.curRank = 1;
+        console.log('clicked')
 
       }
       if (event.which == 3 && self.curRank == 1) {
@@ -386,6 +387,7 @@ function Ability(id, element, image) {
     let start_touch, end_touch;
     let touchduration = 600; //length of time we want the user to touch before we do something
     let touchstart = (e) => {
+      console.log('touched')
       /*On Each click, add an element */
       start_touch = e.changedTouches[0];
       if (self.curRank < self.nRanks && self.locked == false) {
@@ -469,7 +471,7 @@ function Talent(id, element, nRanks, image) {
       index = 0
     )
     self.id = self.states[index].id
-    self.curRank = self.states[index].rank
+    // self.curRank = self.states[index].rank
   }
   element.loadEvents = function () {
 
@@ -495,11 +497,11 @@ function Talent(id, element, nRanks, image) {
       if (event.which == 3) {
         /* Remove point on right click*/
         if (self.curRank > 0) {
+          console.log(self.curRank)
           self.curRank -= 1;
           updateState(self, self.curRank)
           self.updateToolTip(self)
           resourceCounter.updateCounter(self.toolTipContent, 'remove')
-
 
           $(this).find('.rankBox').html("<div class=rankBox>" + self.curRank + " / " + self.nRanks + "</div>")
           /* If rank == 0, add greyscale filter */
