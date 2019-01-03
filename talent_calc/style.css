@@ -292,6 +292,10 @@ header > .resourceCounter{
     justify-self: center;
   }
 }
+.trees.talents > .spec-banner > span{
+  cursor: pointer;
+
+}
 
 .trees.abilities {
   background-color: rgb(33, 21, 16);

@@ -99,6 +99,14 @@ var resourceCounter = {
     event.L = this.levelRequired
     document.dispatchEvent(event)
   },
+  reset: function () {
+    this.talentPointsRequired.current = 0;
+    this.abilityPointsRequired.current = 0;
+    this.levelRequired.current = 1;
+    this.levelCostCandidates = [];
+    this.triggerCounterChange();
+
+  }
 
 }
 $(document).ready(function () { //check document is loaded
@@ -151,7 +159,10 @@ function Tree(class_name, spec_name, element, index, target) {
     let logo = LEGACY_WOW_API.spec_icon + class_name + (s % 3) + '.png' //get icon
     $(header).append('<img src=' + "'" + logo + "'" + '/>')
     $(header).append('<div>' + spec_name + '</div>') /*Add Name of spec*/
-    $(header).append('<span class="close">&times;' + '</span>')
+    $(header).append('<span class="close">&times;' + '</span>').on('click', () => {
+      console.log('spec reset button clicked')
+    })
+
   })()
 
   this.loadBackground = function () {
@@ -228,6 +239,25 @@ function Tree(class_name, spec_name, element, index, target) {
 
   })
 
+  document.addEventListener('resetAll', (e) => {
+    this.spellObjects.values.forEach(obj => {
+      obj.curRank = 0;
+      obj.toggleIconFilter('on');
+      try {
+        //If Talent Object
+        obj.updateState()
+        obj.updateRankBox()
+      }
+      catch (err) {
+        //Skip if ability object
+      }
+      resourceCounter.reset();
+    })
+  })
+
+  document.addEventListener('resetTree', (e) => {
+
+  })
 }
 function Spell() {
   //Parent class of abilities and talents
@@ -327,9 +357,12 @@ Spell.prototype.initToolTip = function () {
     url: url,
     success: (data) => {
       this.requestToolTipMetaData(data);
-      this.loadClickEvents();
     }
   })
+  console.log('done')
+
+  // this.loadClickEvents();
+
 }
 Spell.prototype.toggleIconFilter = function (setting) {
   if (setting == 'on') {
@@ -348,7 +381,6 @@ function Ability(id, element, image) {
   this.image = image
   this.element = element;
 
-  let self = this;
   this.createImageElement();
 
   this.tooltipActivator
@@ -392,7 +424,6 @@ function Talent(id, element, nRanks, image) {
   this.image = image;
   this.element = element;
 
-  let self = this
   this.createImageElement();
 
   //add toltip
@@ -409,8 +440,8 @@ function Talent(id, element, nRanks, image) {
 
 
   this.states = [] // Holds array of ids for each rank
-  const updateState = (index) => {
-    console.log(this)
+  this.updateState = () => {
+    let index = this.curRank
     if (index > 0) {
       index -= 1
     }
@@ -418,6 +449,10 @@ function Talent(id, element, nRanks, image) {
       index = 0
     )
     this.id = this.states[index].id
+  }
+
+  this.updateRankBox = () => {
+    $(this.element).find('.rankBox').html("<div class=rankBox>" + this.curRank + " / " + this.nRanks + "</div>")
   }
 
   /*Prevent dev tool inspect on right click*/
@@ -428,15 +463,15 @@ function Talent(id, element, nRanks, image) {
   this.loadClickEvents = () => {
     /*Handle left click and right click for desktop*/
     element.onmousedown = (event) => {
-      if (event.which == 1 && self.locked == false) {
+      if (event.which == 1 && this.locked == false) {
         /* Add point on left click and remove gray filter*/
         this.toggleIconFilter('off')
         if (this.curRank < this.nRanks) {
           this.curRank += 1;
-          updateState(this.curRank)
+          this.updateState()
           this.updateToolTip()
           resourceCounter.updateCounter(this.toolTipContent)
-          $(this.element).find('.rankBox').html("<div class=rankBox>" + this.curRank + " / " + this.nRanks + "</div>")
+          this.updateRankBox()
         }
 
       }
@@ -444,11 +479,11 @@ function Talent(id, element, nRanks, image) {
         /* Remove point on right click*/
         if (this.curRank > 0) {
           this.curRank -= 1;
-          updateState(this.curRank)
+          this.updateState()
           this.updateToolTip()
           resourceCounter.updateCounter(this.toolTipContent, 'remove')
 
-          $(this.element).find('.rankBox').html("<div class=rankBox>" + this.curRank + " / " + this.nRanks + "</div>")
+          this.updateRankBox()
           /* If rank == 0, add greyscale filter */
           if (this.curRank == 0) {
             this.toggleIconFilter('on')
@@ -457,6 +492,8 @@ function Talent(id, element, nRanks, image) {
       }
     }
   }
+  this.loadClickEvents();
+
 
 }
 Talent.prototype = Object.create(Ability.prototype);
@@ -469,16 +506,16 @@ function Header() {
   this.initMobile = function () {
     createMobileElements('header')
   }
-  function createDesktopElements(parent) {
+  const createDesktopElements = (parent) => {
     $(parent).empty();
     $(parent).append('<div class="resourceCounter"></div>')
     $(parent).append('<div class="class-icon-container"></div>')
 
     showTree('abilities')
-    self.loadIcons($(parent + ' .class-icon-container'))
+    this.loadIcons($(parent + ' .class-icon-container'))
 
   }
-  function createMobileElements(parent) {
+  const createMobileElements = (parent) => {
     $(parent).empty();
     let url = ASCENSION_API.class_icon + SELECTED.class + '.png'
     $(parent).append('<div class="talentsBtn">Talents</div>')
@@ -546,7 +583,11 @@ function Footer() {
       '</div>  <div id="talentPointsCounter">' +
       resourceCounter.talentPointsRequired.current +
       '</div>  </div>')
-    $(parent).append('<div> Reset </div>')
+    $(parent).append('<div> Reset </div>').on('click', () => {
+      console.log('reset all')
+      let event = new Event('resetAll')
+      document.dispatchEvent(event)
+    })
     $(parent).append('<div> Level <div id ="levelCounter">' +
       resourceCounter.levelRequired.current +
       '</div>  </div>')
