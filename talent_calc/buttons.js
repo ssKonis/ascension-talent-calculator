@@ -13,7 +13,7 @@ var SELECTED = {
   }
 };
 
-var savedIcons = [];
+var savedIcons = new Set();
 
 var MODAL, HEADER, FOOTER;
 
@@ -154,8 +154,27 @@ function Tree(class_name, spec_name, element, index, target) {
   this.spellObjects = { values: [], type: '' } // Holds all talents or abilities related to tree
 
   let self = this;
-
-  (function buildHeader() {
+  function removeIconsBySpec() {
+    self.spellObjects.values.forEach(obj => {
+      if ($(this).attr('class') == ('close ' + spec_name)) { //If item matches spec tre
+        if (obj.curRank > 0) { //If item had been selected
+          let mult = (0 - obj.curRank) * -1
+          resourceCounter.updateCounter(obj.toolTipContent, 'remove', mult)
+          removeIcon(obj)
+        }
+      }
+    })
+    savedIcons.forEach((icon) => {
+      if (icon.spec_name == self.spec_name
+        && icon.class_name == self.class_name
+        && ((icon instanceof Talent) && (self.target == '.talents')
+          || ((icon instanceof Ability) && (self.target == '.abilities')))) {
+        savedIcons.delete(icon)
+      }
+    }
+    )
+  }
+  function buildHeader() {
     /*Assigns the correct header name to each tree*/
     let s = TREE_NAMES[class_name].indexOf(spec_name);
     let header = $('.trees' + self.target + ' > .spec-banner')[s % 3];
@@ -164,19 +183,10 @@ function Tree(class_name, spec_name, element, index, target) {
     $(header).append('<img src=' + "'" + logo + "'" + '/>')
     $(header).append('<div>' + spec_name + '</div>') /*Add Name of spec*/
     $(header).append('<span class="close ' + spec_name + '" >&times;' + '</span>')
-    $(header).find('span').on('click', function () {
-      self.spellObjects.values.forEach(obj => {
-        if ($(this).attr('class') == ('close ' + spec_name)) { //If item matches spec tre
-          if (obj.curRank > 0) { //If item had been selected
-            let mult = (0 - obj.curRank) * -1
-            resourceCounter.updateCounter(obj.toolTipContent, 'remove', mult)
-            removeIcon(obj)
-          }
-        }
-      })
-    })
+    $(header).find('span').on('click', removeIconsBySpec)
+  }
+  buildHeader();
 
-  })()
 
   this.loadBackground = function () {
     $(this.body).css('background-image', 'none') //Remove previous
@@ -187,11 +197,6 @@ function Tree(class_name, spec_name, element, index, target) {
     $(element).empty(); /*Clear previous talents*/
     /*Dynamically generate icons*/
     for (let i = 0; i < n; i++) {
-      // savedIcons.forEach((icon) => {
-      //   if (i == icon.index && (this.spec_name == icon.spec_name) && (this.target == '.talents')) {
-
-      //   }
-      // })
       $(element).append('<div class="icon"></div>')
     }
     self.grid = $(element).children().toArray()
@@ -200,7 +205,7 @@ function Tree(class_name, spec_name, element, index, target) {
 
   this.createAbilityIcons = (data) => {
     data.forEach((item, i) => {
-      let ability = new Ability(item.id, this.grid[i], item.image)
+      let ability = new Ability(item.id, this.grid[i], item.image, i, class_name, spec_name)
       this.spellObjects.values.push(ability)
     })
   }
@@ -276,10 +281,8 @@ function Tree(class_name, spec_name, element, index, target) {
       removeIcon(obj);
     })
     resourceCounter.reset();
+    savedIcons.clear();
   })
-
-
-
 
 }
 function Spell() {
@@ -395,11 +398,50 @@ Spell.prototype.toggleIconFilter = function (setting) {
   }
 
 }
+Spell.prototype.loadSavedIcons = function () {
+  savedIcons.forEach((icon) => {
+    if (icon.index == this.index
+      && icon.class_name == this.class_name
+      && (icon instanceof Talent) === (this instanceof Talent))  //Check if they are both instances of talent, if not then they are abilities
+    {
+      this.curRank = icon.curRank;
+      try {
+        this.updateRankBox();
+      }
+      catch (err) {
+      }
+      this.toggleIconFilter('off')
+    }
+  })
+}
+Spell.prototype.saveIcon = function (operation) {
+  if (operation == 'add') {
+    savedIcons.add(this)
+
+  }
+  if (operation == 'remove') {
+    savedIcons.delete(this)
+    let newIcon = this
+    if (this instanceof Talent && this.curRank > 0) {
+      newIcon.updateState()
+      savedIcons.add(this)
+    }
+
+
+
+
+  }
+
+
+}
 //Ability Blue Print
-function Ability(id, element, image) {
+function Ability(id, element, image, i, class_name, spec_name) {
   this.id = id
   this.image = image
   this.element = element;
+  this.index = i
+  this.class_name = class_name;
+  this.spec_name = spec_name;
 
   this.createImageElement();
 
@@ -423,6 +465,7 @@ function Ability(id, element, image) {
         this.toggleIconFilter('off')
         resourceCounter.updateCounter(this.toolTipContent)
         this.curRank = 1;
+        this.saveIcon('add')
 
       }
       if (event.which == 3 && this.curRank == 1) {
@@ -430,10 +473,12 @@ function Ability(id, element, image) {
         resourceCounter.updateCounter(this.toolTipContent, 'remove')
         this.toggleIconFilter('on')
         this.curRank = 0;
+        this.saveIcon('remove')
       }
     }
   }
   this.loadClickEvents();
+  this.loadSavedIcons();
 
 }
 Ability.prototype = Object.create(Spell.prototype)
@@ -497,16 +542,7 @@ function Talent(id, element, nRanks, image, i, class_name, spec_name) {
           resourceCounter.updateCounter(this.toolTipContent)
           this.updateRankBox()
 
-
-          savedIcons.push(this)
-
-          savedIcons.forEach((item, i) => {
-            if (savedIcons.indexOf(item) != i) {
-              savedIcons.splice(i, 1)
-            }
-          });
-
-
+          this.saveIcon('add')
         }
 
       }
@@ -519,25 +555,19 @@ function Talent(id, element, nRanks, image, i, class_name, spec_name) {
           resourceCounter.updateCounter(this.toolTipContent, 'remove')
 
           this.updateRankBox()
+          this.saveIcon('remove')
           /* If rank == 0, add greyscale filter */
           if (this.curRank == 0) {
             this.toggleIconFilter('on')
           }
+
         }
       }
     }
   }
   this.loadClickEvents();
-  this.checkSaved = () => {
-    savedIcons.forEach((icon) => {
-      if (icon.index == this.index && icon.class_name == this.class_name) {
-        this.curRank = icon.curRank;
-        this.updateRankBox();
-        this.toggleIconFilter('off')
-      }
-    })
-  }
-  this.checkSaved();
+
+  this.loadSavedIcons();
 
 
 }
