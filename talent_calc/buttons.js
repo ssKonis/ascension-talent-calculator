@@ -159,8 +159,19 @@ function Tree(class_name, spec_name, element, index, target) {
     let logo = LEGACY_WOW_API.spec_icon + class_name + (s % 3) + '.png' //get icon
     $(header).append('<img src=' + "'" + logo + "'" + '/>')
     $(header).append('<div>' + spec_name + '</div>') /*Add Name of spec*/
-    $(header).append('<span class="close">&times;' + '</span>').on('click', () => {
+    $(header).append('<span class="close ' + spec_name + '" >&times;' + '</span>')
+    $(header).find('span').on('click', function () {
       console.log('spec reset button clicked')
+      self.spellObjects.values.forEach(obj => {
+        console.log(spec_name, $(this).attr('class'))
+        if ($(this).attr('class') == ('close ' + spec_name)) { //If item matches spec tre
+          if (obj.curRank > 0) { //If item had been selected
+            let mult = (0 - obj.curRank) * -1
+            resourceCounter.updateCounter(obj.toolTipContent, 'remove', mult)
+            removeIcon(obj)
+          }
+        }
+      })
     })
 
   })()
@@ -239,25 +250,27 @@ function Tree(class_name, spec_name, element, index, target) {
 
   })
 
+  const removeIcon = function (obj) {
+    obj.curRank = 0;
+    obj.toggleIconFilter('on');
+    try {
+      //If Talent Object
+      obj.updateState()
+      obj.updateRankBox()
+    }
+    catch (err) {
+      //Skip if ability object
+    }
+  }
+
   document.addEventListener('resetAll', (e) => {
     this.spellObjects.values.forEach(obj => {
-      obj.curRank = 0;
-      obj.toggleIconFilter('on');
-      try {
-        //If Talent Object
-        obj.updateState()
-        obj.updateRankBox()
-      }
-      catch (err) {
-        //Skip if ability object
-      }
-      resourceCounter.reset();
+      removeIcon(obj);
     })
+    resourceCounter.reset();
   })
 
-  document.addEventListener('resetTree', (e) => {
 
-  })
 }
 function Spell() {
   //Parent class of abilities and talents
@@ -583,7 +596,8 @@ function Footer() {
       '</div>  <div id="talentPointsCounter">' +
       resourceCounter.talentPointsRequired.current +
       '</div>  </div>')
-    $(parent).append('<div> Reset </div>').on('click', () => {
+    $(parent).append('<div class="reset"> Reset </div>')
+    $(parent).find('.reset').on('click', () => {
       console.log('reset all')
       let event = new Event('resetAll')
       document.dispatchEvent(event)

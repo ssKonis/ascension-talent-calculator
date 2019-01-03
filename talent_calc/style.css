@@ -305,12 +305,7 @@ header > .resourceCounter{
   color: #ffd800;
 
 }
-.trees.abilities > .spec-banner > img{
-  visibility: hidden;
-}
-.trees.abilities > .spec-banner > span{
-  visibility: hidden;
-}
+
 
 /*On desktop*/
 @media only screen and (min-width: 1101px) {
@@ -325,13 +320,19 @@ header > .resourceCounter{
     max-height: 200px;
       
   }
+  .trees.abilities > .spec-banner > img{
+    visibility: hidden;
+  }
+  .trees.abilities > .spec-banner > span{
+    visibility: hidden;
+  }
 }
 .spec-banner > span{
   color: #ba0000;
   font-weight: 900;
 }
 
-.trees.talents > .spec-banner{
+.spec-banner{
   background-color: rgb(33, 21, 16);
 
   border-radius: 5px;
@@ -461,6 +462,11 @@ footer > div{
   align-content: top;
   display:grid;
 } 
+
+footer > .reset {
+  cursor: pointer;
+
+}
 
 
 
