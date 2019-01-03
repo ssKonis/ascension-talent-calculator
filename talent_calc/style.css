@@ -37,6 +37,7 @@
   font-family: "Open Sans",'Arial','Helvetica', 'sans-serif';
   font-weight: 400;
 
+
 }
 body{
   background: black;
@@ -51,21 +52,24 @@ body{
   grid-template-rows: auto var(--footer-height); /*auto = the body+header, 10vh = the footer*/
   grid-template-columns: 1fr;
   height: 100vh;
+  position: fixed;
+
 }
 
 .panel {
   display: grid;
   grid-template-rows: var(--header-height) auto; /*1vh = the header, auto = footer + body */
   height: calc(100vh - (var(--footer-height))); /* height = size of page minus footer*/
-  background: black
+  background: black;
+
 }
 
 /*On desktop*/
-@media only screen and (min-width: 1101px) {
+@media only screen and (min-width: 1224px) {
   .panel{
     /*Swaps sides of column layout back to normal*/
     direction: ltr;
-    height: 100%; 
+    height: 100vh; 
     /* max-height: 875px; */
 
   }
@@ -81,7 +85,7 @@ body{
 }
 
 /*On Tablet*/
-@media only screen and (min-width: 768px) and (max-width: 1100px){
+@media only screen and (min-width: 768px) and (max-width: 1223px){
   .panel-body{
     justify-content: initial;
     align-content: initial;
@@ -93,11 +97,11 @@ body{
   }
 }
 /*On desktop*/
-@media only screen and (min-width: 1101px) {
+@media only screen and (min-width: 1224px) {
   .panel-body{
     display:grid;
     grid-template-columns: 1fr 3fr;
-    justify-content: auto;
+    justify-content:auto;
     align-content: start;
     /* direction:ltr; */
     /* width: 100vw; */
@@ -114,6 +118,7 @@ header{
   color: #ffd800;
   justify-items: center;
   align-items: center;
+
 }
 header >div:hover{
   color:#ba0000;
@@ -125,17 +130,17 @@ header > .resourceCounter{
   grid-template-columns: 2fr 1fr 2fr;
 }
 /*On Tablet*/
-@media only screen and (min-width: 768px) and (max-width: 1100px){
+@media only screen and (min-width: 768px) and (max-width: 1223px){
   header{
     grid-template-rows: 1fr;
     grid-template-columns: 1fr;
-    justify-items: initial;
-    align-items: initial;
+    justify-items: inherit;
+    align-items: inherit;
   }
 }
 
 /*On desktop*/
-@media only screen and (min-width:1101px){
+@media only screen and (min-width:1224px){
   header{
     grid-template-rows: 1fr;
     grid-template-columns: 1fr 3fr;
@@ -157,7 +162,8 @@ header > .resourceCounter{
 }
 */
 .classIcon{
-  /* height: 100%; */
+  height: 100%;
+  max-height: 10vh;
   width: auto;
   z-index: 2;
   cursor: pointer;
@@ -207,6 +213,7 @@ header > .resourceCounter{
   position:absolute;
   height: 100%;
   width:100%;
+
 }
 
 
@@ -252,21 +259,23 @@ header > .resourceCounter{
   grid-template-columns: repeat(3, 100% );
   grid-template-rows: 1fr 1fr;
 
+
 }
 
 /*On Tablet*/
-@media only screen and (min-width: 768px) and (max-width: 1100px){
+@media only screen and (min-width: 768px) and (max-width: 1223px){
   .trees{
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: auto;
     overflow-x:hidden;
     scroll-snap-type: none;
     /* direction: ltr; */
+
   }
 }
 
 /*On Tablet*/
-@media only screen and (min-width: 768px) and (max-width: 1100px){
+@media only screen and (min-width: 768px) and (max-width: 1223px){
   .trees.talents{
     order:1
 
@@ -280,16 +289,14 @@ header > .resourceCounter{
 }
 
 /*On desktop*/
-@media only screen and (min-width: 1101px) {
+@media only screen and (min-width: 1224px) {
   .trees.talents{
     /*Display all trees*/
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: auto;
-    /* max-height: 100vh; */
-    /* justify-items:center; */
-    justify-content:center;
-    max-width: 1200px;
     justify-self: center;
+    /* max-width: 1200px; */
+   
   }
 }
 .trees.talents > .spec-banner > span{
@@ -308,7 +315,7 @@ header > .resourceCounter{
 
 
 /*On desktop*/
-@media only screen and (min-width: 1101px) {
+@media only screen and (min-width: 1224px) {
   .trees.abilities{
     /*Display all trees*/
     grid-template-rows: auto;
@@ -319,12 +326,6 @@ header > .resourceCounter{
     background-color: #000000;
     max-height: 200px;
       
-  }
-  .trees.abilities > .spec-banner > img{
-    visibility: hidden;
-  }
-  .trees.abilities > .spec-banner > span{
-    visibility: hidden;
   }
 }
 .spec-banner > span{
@@ -348,7 +349,7 @@ header > .resourceCounter{
 }
 
 /*On desktop*/
-@media only screen and (min-width: 1101px) {
+@media only screen and (min-width: 1224px) {
  
 }
 
@@ -359,16 +360,18 @@ header > .resourceCounter{
   background-clip: content-box;
   background-color: black;
   display: grid;
+  grid-gap:10px;
+
   
 
-  grid-template-columns: repeat(4, minmax(48px,1fr)); /*change back to 1fr*/
-  grid-template-rows: repeat(11, minmax(48px,1fr));  
+  grid-template-columns: repeat(4, 1fr); /*change back to 1fr*/
+  grid-template-rows: repeat(11, 1fr);  
 
   /* box-shadow:  inset 0 0 20px 10px #000000; */
 }
 
 /*On desktop*/
-@media only screen and (min-width: 1101px) {
+@media only screen and (min-width: 1224px) {
   .trees.abilities > .tree{
     scroll-snap-align:none;
     grid-template-columns: repeat(auto-fill, 48px );
@@ -390,26 +393,23 @@ header > .resourceCounter{
   color: white;
   justify-content: center;
   align-items: center;
-  margin:10%;
   position: relative;
   cursor: pointer;
 }
 
 .icon > img{
-  
  max-width: 64px;
  max-height:64px;
 
 }
-
-/*Desktop screens*/
-@media only screen and (min-width: 1101px) {
+/* on tablet and Desktop*/
+@media only screen and (min-width: 768px){
   .icon > img{
     max-width: 48px;
     max-height:48px;
   }
-  
 }
+
 
 
 
@@ -432,9 +432,10 @@ footer {
   background-color: rgb(33, 21, 16);
   grid-template-columns: 2fr 1fr 2fr;
 
+
 }
 /*Desktop screens*/
-@media only screen and (min-width: 1101px) {
+@media only screen and (min-width: 1224px) {
   footer{
     /*grid-template-rows: repeat(5, 100px); need to change to relative values*/
     /* grid-row: 2/ -1;

@@ -726,8 +726,8 @@ function main(talent_map, ability_map) {
 
 
   var states = [
-    window.matchMedia("(min-width: 1101px)"),
-    window.matchMedia("(min-width: 768px) and (max-width: 1100px)"),
+    window.matchMedia("(min-width: 1224px)"),
+    window.matchMedia("(min-width: 768px) and (max-width: 1223px)"),
     window.matchMedia("(max-width:767px)")
   ]
 
