@@ -13,6 +13,8 @@ var SELECTED = {
   }
 };
 
+var savedIcons = [];
+
 var MODAL, HEADER, FOOTER;
 
 var CLASS_NAMES = ['druid', 'hunter', 'mage', 'paladin', 'priest', 'rogue', 'shaman', 'warlock', 'warrior'];
@@ -52,10 +54,12 @@ var resourceCounter = {
   abilityPointsRequired: { current: 0, max: 59, maxed: false },
   levelRequired: { current: 0, max: 60 },
   levelCostCandidates: [],
+
   updateCounter: function (tooltip, operation = 'add', multiplier = 1) {
     this.updateEssence(tooltip, operation, multiplier)
     this.updateLevel(tooltip, operation, multiplier)
   },
+
   updateEssence: function (tooltip, operation, multiplier) {
     let a = tooltip.abilityEssenceCost * multiplier
     let t = tooltip.talentEssenceCost * multiplier
@@ -161,9 +165,7 @@ function Tree(class_name, spec_name, element, index, target) {
     $(header).append('<div>' + spec_name + '</div>') /*Add Name of spec*/
     $(header).append('<span class="close ' + spec_name + '" >&times;' + '</span>')
     $(header).find('span').on('click', function () {
-      console.log('spec reset button clicked')
       self.spellObjects.values.forEach(obj => {
-        console.log(spec_name, $(this).attr('class'))
         if ($(this).attr('class') == ('close ' + spec_name)) { //If item matches spec tre
           if (obj.curRank > 0) { //If item had been selected
             let mult = (0 - obj.curRank) * -1
@@ -181,33 +183,39 @@ function Tree(class_name, spec_name, element, index, target) {
     $(this.body).css('background-image', 'url(' + this.image + ')'); //Add new background
   }
 
-  this.loadCells = function (n) {
+  this.loadCells = (n) => {
     $(element).empty(); /*Clear previous talents*/
     /*Dynamically generate icons*/
     for (let i = 0; i < n; i++) {
+      // savedIcons.forEach((icon) => {
+      //   if (i == icon.index && (this.spec_name == icon.spec_name) && (this.target == '.talents')) {
+
+      //   }
+      // })
       $(element).append('<div class="icon"></div>')
     }
     self.grid = $(element).children().toArray()
 
   }
 
-  this.createAbilityIcons = function (data) {
-    data.forEach(function (item, i) {
-      let ability = new Ability(item.id, self.grid[i], item.image)
-      self.spellObjects.values.push(ability)
+  this.createAbilityIcons = (data) => {
+    data.forEach((item, i) => {
+      let ability = new Ability(item.id, this.grid[i], item.image)
+      this.spellObjects.values.push(ability)
     })
   }
 
-  this.createTalentIcons = function (data) {
+  this.createTalentIcons = (data) => {
 
-    data.forEach(function (item, i) {
+    data.forEach((item, i) => {
+
       if (item.data[0] != undefined) {
         let image = item.data[0].image;
         let id = item.data[0].id;
-        let element = self.grid[i];
+        let element = this.grid[i];
         let maxRank = item.max_rank;
-        let talent = new Talent(id, element, maxRank, image)
-        self.spellObjects.values.push(talent)
+        talent = new Talent(id, element, maxRank, image, i, class_name, spec_name)
+        this.spellObjects.values.push(talent)
         for (let k = 0; k < maxRank; k++) {
           let state = {}
           if (item.data[k] == undefined) {
@@ -271,6 +279,8 @@ function Tree(class_name, spec_name, element, index, target) {
   })
 
 
+
+
 }
 function Spell() {
   //Parent class of abilities and talents
@@ -296,8 +306,7 @@ Spell.prototype.updateToolTip = function () {
   $(this.tooltipActivator).tooltipster({
     content: 'Loading...',
     functionBefore: (instance, helper) => {
-      console.log(this)
-      console.log('test2')
+
       var $origin = $(helper.origin);
       if ($origin.data('loaded') != true) {
         let id = this.id
@@ -372,8 +381,6 @@ Spell.prototype.initToolTip = function () {
       this.requestToolTipMetaData(data);
     }
   })
-  console.log('done')
-
   // this.loadClickEvents();
 
 }
@@ -432,10 +439,14 @@ function Ability(id, element, image) {
 Ability.prototype = Object.create(Spell.prototype)
 
 //Talent Blue Print
-function Talent(id, element, nRanks, image) {
+function Talent(id, element, nRanks, image, i, class_name, spec_name) {
   this.id = id;
   this.image = image;
   this.element = element;
+  this.index = i
+  this.class_name = class_name;
+  this.spec_name = spec_name;
+
 
   this.createImageElement();
 
@@ -485,6 +496,17 @@ function Talent(id, element, nRanks, image) {
           this.updateToolTip()
           resourceCounter.updateCounter(this.toolTipContent)
           this.updateRankBox()
+
+
+          savedIcons.push(this)
+
+          savedIcons.forEach((item, i) => {
+            if (savedIcons.indexOf(item) != i) {
+              savedIcons.splice(i, 1)
+            }
+          });
+
+
         }
 
       }
@@ -506,13 +528,22 @@ function Talent(id, element, nRanks, image) {
     }
   }
   this.loadClickEvents();
+  this.checkSaved = () => {
+    savedIcons.forEach((icon) => {
+      if (icon.index == this.index && icon.class_name == this.class_name) {
+        this.curRank = icon.curRank;
+        this.updateRankBox();
+        this.toggleIconFilter('off')
+      }
+    })
+  }
+  this.checkSaved();
 
 
 }
 Talent.prototype = Object.create(Ability.prototype);
 
 function Header() {
-  let self = this;
   this.initDesktop = function () {
     createDesktopElements('header')
   }
@@ -567,11 +598,6 @@ Header.prototype.loadIcons = function (target) {
 
     /* Give Each icon a click handler that will load corresponding data*/
     $(container).children()[i].onclick = function () {
-
-      // /*Instead of modifying page, send an event and have this chage on page object*/
-      // loadBackground(name, '.talents'); /*Load background images*/
-      // loadTalents(name);
-      // loadAbilities(name);
       /*Close modal after selecting a new class*/
       SELECTED.update(name)
     }
@@ -598,7 +624,6 @@ function Footer() {
       '</div>  </div>')
     $(parent).append('<div class="reset"> Reset </div>')
     $(parent).find('.reset').on('click', () => {
-      console.log('reset all')
       let event = new Event('resetAll')
       document.dispatchEvent(event)
     })
@@ -687,8 +712,8 @@ function main(talent_map, ability_map) {
   }
 
   document.addEventListener('classChanged', function () {
-    dispatchMapContent();
     MODAL.hide();
+    dispatchMapContent();
   })
 
   function dispatchMapContent() {
@@ -741,17 +766,13 @@ function main(talent_map, ability_map) {
   }
 
   function setState() {
-    console.log('====')
     if (isDesktop()) {
-      console.log('is desktop')
       initDesktopLayout()
     }
     else if (isTablet()) {
-      console.log('is tablet')
       initTabletLayout()
     }
     else {
-      console.log('is mobile')
       initMobileLayout()
     }
   }
