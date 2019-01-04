@@ -52,7 +52,7 @@ var resourceCounter = {
   //Max TP = 51, max AP = 59, max level = 60
   talentPointsRequired: { current: 0, max: 51, maxed: false },
   abilityPointsRequired: { current: 0, max: 59, maxed: false },
-  levelRequired: { current: 0, max: 60 },
+  levelRequired: { current: 1, max: 60 },
   levelCostCandidates: [],
 
   updateCounter: function (tooltip, operation = 'add', multiplier = 1) {
@@ -402,7 +402,8 @@ Spell.prototype.loadSavedIcons = function () {
   savedIcons.forEach((icon) => {
     if (icon.index == this.index
       && icon.class_name == this.class_name
-      && (icon instanceof Talent) === (this instanceof Talent))  //Check if they are both instances of talent, if not then they are abilities
+      && (icon instanceof Talent) === (this instanceof Talent) &&
+      icon.spec_name == this.spec_name)  //Check if they are both instances of talent, if not then they are abilities
     {
       this.curRank = icon.curRank;
       try {
@@ -647,28 +648,38 @@ function Footer() {
 
   function createElements(parent) {
     $(parent).empty();
-    $(parent).append('<div> AP/TP <div id="abilityPointsCounter">' +
+    $(parent).append(
+      '<div> ' +
+      '<div id="abilityPointsCounter">' +
+      'Ability Points Remaining: ' +
       resourceCounter.abilityPointsRequired.current +
-      '</div>  <div id="talentPointsCounter">' +
+      '</div> ' +
+      '<div id="talentPointsCounter">' +
+      'Talent Points Remaining: ' +
       resourceCounter.talentPointsRequired.current +
-      '</div>  </div>')
-    $(parent).append('<div class="reset"> Reset </div>')
+      '</div>' +
+      '<div id ="levelCounter">' +
+      'Level Required: ' +
+      resourceCounter.levelRequired.current +
+      '</div> ' +
+      ' </div>')
+    $(parent).append('<div class="reset"> Reset All</div>')
     $(parent).find('.reset').on('click', () => {
       let event = new Event('resetAll')
       document.dispatchEvent(event)
     })
-    $(parent).append('<div> Level <div id ="levelCounter">' +
-      resourceCounter.levelRequired.current +
-      '</div>  </div>')
+    // $(parent).append('<div> Level Required <div id ="levelCounter">' +
+    //   resourceCounter.levelRequired.current +
+    //   '</div>  </div>')
   }
   function removeElements(parent) {
     $(parent).empty();
   }
 
   document.addEventListener('CounterChanged', (e) => {
-    $('#abilityPointsCounter').text(e.A.current)
-    $('#talentPointsCounter').text(e.T.current)
-    $('#levelCounter').text(e.L.current)
+    $('#abilityPointsCounter').text('Ability Points Remaining: ' + e.A.current)
+    $('#talentPointsCounter').text('Talent Points Remaining: ' + e.T.current)
+    $('#levelCounter').text('Level Required: ' + e.L.current)
   })
 
 }
