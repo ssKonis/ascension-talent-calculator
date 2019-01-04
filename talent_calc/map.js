@@ -810,5 +810,3 @@ var map = []
 json.forEach(obj => {
   map.push(JSON.parse(String(obj)));
 });
-
-console.log(map);

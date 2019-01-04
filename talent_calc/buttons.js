@@ -331,7 +331,7 @@ Spell.prototype.updateToolTip = function () {
     triggerOpen: {
       mouseenter: true,
       touchstart: true,
-    }
+    },
 
 
   })

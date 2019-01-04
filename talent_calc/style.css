@@ -101,7 +101,7 @@ body{
 @media only screen and (min-width: 1224px) {
   .panel-body{
     display:grid;
-    grid-template-columns: 1fr 3fr;
+    grid-template-columns: 1fr 2fr;
     justify-content:auto;
     align-content: start;
     /* direction:ltr; */
@@ -158,7 +158,7 @@ header >div:hover{
 @media only screen and (min-width:1224px){
   header{
     grid-template-rows: 1fr;
-    grid-template-columns: 1fr 3fr;
+    grid-template-columns: 1fr 2fr;
     justify-items: initial;
     align-items: initial;
   }
@@ -232,6 +232,9 @@ header >div:hover{
 }
 
 
+.tooltip{
+  width:100px;
+}
 
 .tooltip_content >div:nth-child(1){
   display: inline;
@@ -358,7 +361,7 @@ header >div:hover{
 
 
 .tree{
-  padding:40px;
+  padding:30px;
   box-shadow:  inset 0 0 20px 10px #000000;
 }
 
