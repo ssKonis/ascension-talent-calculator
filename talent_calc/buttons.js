@@ -657,22 +657,22 @@ function Footer() {
     $(parent).append(
       '<div> ' +
       '<div id="abilityPointsCounter">' +
-      'Ability Points Remaining: ' +
-      resourceCounter.abilityPointsRequired.current +
+      'AP Remaining: ' +
+      (resourceCounter.abilityPointsRequired.max - resourceCounter.abilityPointsRequired.current) +
       '</div> ' +
       '<div id="talentPointsCounter">' +
-      'Talent Points Remaining: ' +
-      resourceCounter.talentPointsRequired.current +
-      '</div>' +
-      '<div id ="levelCounter">' +
-      'Level Required: ' +
-      resourceCounter.levelRequired.current +
-      '</div> ' +
-      ' </div>')
+      'TP Remaining: ' +
+      (resourceCounter.talentPointsRequired.max - resourceCounter.talentPointsRequired.current) +
+      '</div> </div>')
     appendImage('#talentPointsCounter', ASCENSION_API.talentEssenceIcon)
     appendImage('#abilityPointsCounter', ASCENSION_API.abilityEssenceIcon)
 
     $(parent).append('<div class="reset"> Reset All</div>')
+
+    $(parent).append('<div id ="levelCounter">' +
+      'Level Required: '
+      + resourceCounter.levelRequired.current
+      + '</div>')
 
     $(parent).find('.reset').on('click', () => {
       let event = new Event('resetAll')
@@ -684,10 +684,10 @@ function Footer() {
   }
 
   document.addEventListener('CounterChanged', (e) => {
-    $('#abilityPointsCounter').text('Ability Points Remaining: ' + e.A.current)
+    $('#abilityPointsCounter').text('AP Remaining: ' + (e.A.max - e.A.current))
     appendImage('#abilityPointsCounter', ASCENSION_API.abilityEssenceIcon)
 
-    $('#talentPointsCounter').text('Talent Points Remaining: ' + e.T.current)
+    $('#talentPointsCounter').text('TP Remaining: ' + (e.T.max - e.T.current))
     appendImage('#talentPointsCounter', ASCENSION_API.talentEssenceIcon)
 
     $('#levelCounter').text('Level Required: ' + e.L.current)
@@ -781,6 +781,7 @@ function main(talent_map, ability_map) {
       let abilityTree = new Tree(class_name, spec_name, abilityTrees[i], i + 1, '.abilities')
       abilityTree.loadCells(specData.length)
       abilityTree.createAbilityIcons(specData)
+      abilityTree.loadBackground()
     }
 
     //load Talent Data
