@@ -636,7 +636,7 @@ Header.prototype.loadIcons = function (target) {
 }
 
 function Footer() {
-
+  let self;
   this.initDesktop = function () {
     createElements('header > .resourceCounter')
     removeElements('footer')
@@ -646,8 +646,14 @@ function Footer() {
     removeElements('header > .resourceCounter')
   }
 
+  const appendImage = (target, icon) => {
+    let img = document.createElement("img")
+    img.src = icon
+    $(self).find(target).append(img)
+  }
   function createElements(parent) {
     $(parent).empty();
+    self = parent
     $(parent).append(
       '<div> ' +
       '<div id="abilityPointsCounter">' +
@@ -663,14 +669,15 @@ function Footer() {
       resourceCounter.levelRequired.current +
       '</div> ' +
       ' </div>')
+    appendImage('#talentPointsCounter', ASCENSION_API.talentEssenceIcon)
+    appendImage('#abilityPointsCounter', ASCENSION_API.abilityEssenceIcon)
+
     $(parent).append('<div class="reset"> Reset All</div>')
+
     $(parent).find('.reset').on('click', () => {
       let event = new Event('resetAll')
       document.dispatchEvent(event)
     })
-    // $(parent).append('<div> Level Required <div id ="levelCounter">' +
-    //   resourceCounter.levelRequired.current +
-    //   '</div>  </div>')
   }
   function removeElements(parent) {
     $(parent).empty();
@@ -678,7 +685,11 @@ function Footer() {
 
   document.addEventListener('CounterChanged', (e) => {
     $('#abilityPointsCounter').text('Ability Points Remaining: ' + e.A.current)
+    appendImage('#abilityPointsCounter', ASCENSION_API.abilityEssenceIcon)
+
     $('#talentPointsCounter').text('Talent Points Remaining: ' + e.T.current)
+    appendImage('#talentPointsCounter', ASCENSION_API.talentEssenceIcon)
+
     $('#levelCounter').text('Level Required: ' + e.L.current)
   })
 
