@@ -129,7 +129,7 @@ header >div:hover{
 .resourceCounter{
   display: grid;
   grid-template-columns: 2fr 1fr 2fr;
-  font-size: 0.65rem;
+  font-size: 85%;
   justify-content: center;
   align-items: center;
   justify-items: center;

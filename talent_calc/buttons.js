@@ -5,7 +5,7 @@
 
 
 var SELECTED = {
-  class: 'mage',
+  class: 'hunter',
   update: function (next) {
     this.class = next;
     let classChanged = new Event('classChanged')
