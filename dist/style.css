@@ -438,6 +438,9 @@ header >div:hover{
   
 }
 
+footer{
+  position: static;
+}
 
 footer > div{
   text-align: center;
