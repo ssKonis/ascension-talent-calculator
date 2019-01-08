@@ -1,1 +1,5 @@
-.history
+.history/
+node_modules/
+web_scraper/node_modules/
+web_scraper/"Ascension Classless Realm_files"
+web_scraper/classPage

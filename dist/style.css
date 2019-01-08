@@ -1,0 +1,455 @@
+/* Set Up Variables */
+:root{
+--header-height:10vh;
+--footer-height:10vh;
+}
+/*Hide Scroll bar*/
+::-webkit-scrollbar { 
+  display: none; 
+}
+
+  
+
+/* Body */
+*{
+  padding: 0;margin:0;;box-sizing: border-box; 
+  font-family: "Open Sans",'Arial','Helvetica', 'sans-serif';
+  font-weight: 400;
+
+
+}
+body{
+  background: black;
+}
+
+/* Containers */
+.wrapper {
+  display: grid;
+  grid-template-rows: auto var(--footer-height); /*auto = the body+header, 10vh = the footer*/
+  grid-template-columns: 1fr;
+  height: 100vh;
+  position: fixed;
+
+}
+
+.panel {
+  display: grid;
+  grid-template-rows: var(--header-height) auto; /*1vh = the header, auto = footer + body */
+  height: calc(100vh - (var(--footer-height))); /* height = size of page minus footer*/
+  background: black;
+
+}
+
+/*On desktop*/
+@media only screen and (min-width: 1224px) {
+  .panel{
+    /*Swaps sides of column layout back to normal*/
+    direction: ltr;
+    height: 100vh; 
+    /* max-height: 875px; */
+
+  }
+}
+
+.panel-body {
+  /* grid-template-rows: 1fr 9fr; */
+  overflow-y: auto;
+  display: grid;
+  justify-content: center;
+  align-content: center;
+
+
+}
+
+/*On Tablet*/
+@media only screen and (min-width: 768px) and (max-width: 1223px){
+  .panel-body{
+    justify-content: initial;
+    align-content: initial;
+    display:grid;
+    scroll-snap-type: x mandatory;
+    overflow-x:scroll;
+    grid-template-columns: repeat(2, 100% );
+    grid-template-rows: auto;
+  }
+}
+/*On desktop*/
+@media only screen and (min-width: 1224px) {
+  .panel-body{
+    display:grid;
+    grid-template-columns: 1fr 2fr;
+    justify-content:auto;
+    align-content: start;
+    /* direction:ltr; */
+    width: 100vw;
+    /* grid-template-columns: 10vw auto; */
+    
+  }
+}
+
+header{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  /* z-index: 1; */
+  background-color: rgb(33, 21, 16);
+  color: #ffd800;
+  justify-items: center;
+  align-items: center;
+
+}
+header >div:hover{
+  color:#ba0000;
+  cursor: pointer;
+}
+
+.resourceCounter{
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr;
+  justify-content: center;
+  align-items: center;
+  justify-items: center;
+  color: #ffd800;
+  font-size: 80%;
+  background-color: rgb(33, 21, 16); 
+}
+@media only screen and (min-width:1224px){
+  .resourceCounter{
+    font-size: 100%;
+  }
+}
+
+.reset{
+  cursor: pointer;
+}
+.reset:hover{
+  color:#ba0000;
+
+}
+
+
+/*On Tablet*/
+@media only screen and (min-width: 768px) and (max-width: 1223px){
+  header{
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr;
+    justify-items: inherit;
+    align-items: inherit;
+  }
+}
+
+/*On desktop*/
+@media only screen and (min-width:1224px){
+  header{
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr 2fr;
+    justify-items: initial;
+    align-items: initial;
+  }
+
+  header > div:hover{
+    color:inherit;
+    cursor: auto;
+  }
+}
+/* header > div{
+  border: 2px solid;
+  justify-content: center;
+  align-content: center;
+  display:grid;
+  text-align: center;
+}
+*/
+.classIcon{
+  height: 100%;
+  max-height: 10vh;
+  width: auto;
+  z-index: 2;
+  cursor: pointer;
+
+} 
+
+/* Dynamically Generated container for holding class icons. Only displays on Desktop*/
+.class-icon-container{
+  display:grid;
+  grid-auto-flow: column;
+}
+
+
+
+/* The Modal (background) */
+#modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: rgb(33, 21, 16);
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  width: 80%; /* Could be more or less, depending on screen size */
+  display: grid;
+  grid-template-rows: repeat(3,1fr);
+  grid-template-columns: repeat(3,1fr);
+  height:75vh;
+  justify-items: center;
+  align-items: center;
+  grid-gap:20px;
+  border-radius: 10px;
+  
+}
+/*Tooltips*/
+.tooltip-activator{
+  position:absolute;
+  height: 100%;
+  width:100%;
+
+}
+
+
+.tooltip{
+  width:100px;
+}
+
+.tooltip_content >div:nth-child(1){
+  display: inline;
+  font-size: 150%;
+}
+.tooltip_content > div:nth-child(2){
+  float:right;
+  display:inline;
+  font-size: 120%;
+  color:grey;
+} 
+
+.tooltip_content > div:nth-child(4){
+  color:#ffd800
+}
+.tooltip_content > div:nth-child(n+5){
+ display:inline;
+}
+
+.tooltip_wrapper{visibility: hidden;position: absolute; display:none}
+
+/* Content */
+.talents{
+  /* visibility: hidden;
+  position: absolute; */
+}
+
+
+.abilities{
+  position: absolute;
+  visibility: hidden;
+
+}
+
+.trees{
+  /*Positioning*/
+  display:grid;
+  scroll-snap-type: x mandatory;
+  overflow-x:scroll;
+  grid-template-columns: repeat(3, 100% );
+  grid-template-rows: 1fr 1fr;
+
+
+}
+
+/*On Tablet*/
+@media only screen and (min-width: 768px) and (max-width: 1223px){
+  .trees{
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto;
+    overflow-x:hidden;
+    scroll-snap-type: none;
+
+  }
+}
+
+/*On Tablet*/
+@media only screen and (min-width: 768px) and (max-width: 1223px){
+  .trees.talents{
+    order:1;
+
+
+  }
+  .trees.abilities{
+    order:2
+
+
+  }
+}
+
+/*On desktop*/
+@media only screen and (min-width: 1224px) {
+  .trees.talents{
+    /*Display all trees*/
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto;
+    justify-self: center;
+    /* max-width: 1200px; */
+   
+  }
+}
+.spec-banner > span{
+  cursor: pointer;
+
+}
+
+
+
+
+
+/*On desktop*/
+@media only screen and (min-width: 1224px) {
+  .trees.abilities{
+    /*Display all trees*/
+    grid-template-rows: auto;
+    grid-template-columns: 1fr;
+    overflow-x: visible;
+    scroll-snap-type: none;
+    position:static;
+    background-color: #000000;
+    max-height: 200px;
+
+  }
+}
+.spec-banner > span{
+  color: #ba0000;
+  font-weight: 900;
+}
+
+.spec-banner{
+  background-color: rgb(33, 21, 16);
+  border-radius: 5px;
+  max-height:50px;
+  margin: 10px;
+  padding:10px;
+  display:grid;
+  grid-template-columns: 1fr 9fr 1fr;
+  justify-items: center;
+  align-items: center;
+  color: #ffd800;
+  font-size: 130%;
+}
+
+
+
+.tree{
+  padding:30px;
+  box-shadow:  inset 0 0 20px 10px #000000;
+}
+
+/*On desktop*/
+@media only screen and (min-width: 1224px) {
+  .abilities > .tree{
+    padding: 5px;
+    box-shadow:none;
+  }
+ 
+}
+.tree{
+  scroll-snap-align:center;
+  background-repeat: no-repeat;
+  background-size: 100%, 100%;
+  background-clip: padding-box;
+  background-color: black;
+  display: grid;
+  grid-gap:10px;
+  justify-content: center;
+  align-content: center;
+
+  grid-template-columns: repeat(4, 1fr); /*change back to 1fr*/
+  grid-template-rows: repeat(11, 1fr);  
+
+}
+
+/*On desktop*/
+@media only screen and (min-width: 1224px) {
+  .trees.abilities > .tree{
+    scroll-snap-align:none;
+    grid-template-columns: repeat(auto-fill, 48px );
+    grid-gap:5px;
+    grid-template-rows: auto;
+  }
+
+  /* Change order of banners and trees*/
+  .trees.abilities > div:nth-child(1){order:1} 
+  .trees.abilities > div:nth-child(2){order:3}
+  .trees.abilities > div:nth-child(3){order:5}
+  .trees.abilities > div:nth-child(4){order:2}
+  .trees.abilities > div:nth-child(5){order:4}
+  .trees.abilities > div:nth-child(6){order:6}
+}
+
+.icon{
+  display:grid;
+  color: white;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.icon > img{
+ max-width: 64px;
+ max-height:64px;
+
+}
+/* on tablet and Desktop*/
+@media only screen and (min-width: 768px){
+  .icon > img{
+    max-width: 48px;
+    max-height:48px;
+  }
+}
+
+
+
+
+.rankBox{
+  background-color: black;
+  height:20px;
+  width:34px;
+  position: absolute;
+  right:0;
+  bottom:0;
+}
+
+
+/** Footer **/
+
+
+
+/*Desktop screens*/
+@media only screen and (min-width: 1224px) {
+  footer{
+    visibility: hidden;
+     
+  }
+  
+}
+
+
+footer > div{
+  text-align: center;
+  justify-content: center;
+  align-content: top;
+  display:grid;
+} 
+
+footer > .reset {
+  cursor: pointer;
+
+}
+
+
+

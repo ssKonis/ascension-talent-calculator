@@ -1,0 +1,22 @@
+{
+  "name": "talent_calculator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "gh-pages -d dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jameswilky/WoW-Ascension-Talent-Calculator.git"
+  },
+  "author": "James Wilkinson",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jameswilky/WoW-Ascension-Talent-Calculator/issues"
+  },
+  "homepage": "https://jameswilky.github.io./chess",
+  "dependencies": {
+    "gh-pages": "^2.0.1"
+  }
+}

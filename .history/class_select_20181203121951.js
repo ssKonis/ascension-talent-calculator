@@ -1,1 +1,0 @@
-('#selected_class').on('click')

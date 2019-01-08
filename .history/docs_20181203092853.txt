@@ -1,5 +1,0 @@
-API Access:
-
-
-Tool tips can be accessed in the following way:
-https://data.project-ascension.com/api/spells/16914/tooltip.html
