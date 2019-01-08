@@ -741,6 +741,34 @@ function toggleTree(target) {
 
 function main(talent_map, ability_map) {
 
+  var isMobile = {
+    Windows: function () {
+      return /IEMobile/i.test(navigator.userAgent);
+    },
+    Android: function () {
+      return /Android/i.test(navigator.userAgent);
+    },
+    BlackBerry: function () {
+      return /BlackBerry/i.test(navigator.userAgent);
+    },
+    iOS: function () {
+      return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    },
+    any: function () {
+      return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Windows());
+    }
+  };
+
+  //Modify viewport on android devices
+  if (isMobile.Android()) {
+    console.log(true)
+    $('.wrapper').css('height', '90vh')
+    $('.panel').css('height', 'calc(90vh - (var(--footer-height)))')
+  }
+  else {
+    console.log(false)
+  }
+
   dispatchMapContent();
   FOOTER = new Footer();
   HEADER = new Header();

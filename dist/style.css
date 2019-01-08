@@ -35,7 +35,8 @@ body{
 .panel {
   display: grid;
   grid-template-rows: var(--header-height) auto; /*1vh = the header, auto = footer + body */
-  height: calc(100vh - (var(--footer-height)));
+  height: calc(100vh - (var(--footer-height))); /* height = size of page minus footer*/
+  
   background: black;
 
 }
@@ -430,13 +431,13 @@ header >div:hover{
 
 
 /*Desktop screens*/
-/* @media only screen and (min-width: 1224px) {
+@media only screen and (min-width: 1224px) {
   footer{
     visibility: hidden;
      
   }
   
-} */
+}
 
 footer > div{
   text-align: center;
