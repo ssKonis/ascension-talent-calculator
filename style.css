@@ -35,7 +35,8 @@ body{
 .panel {
   display: grid;
   grid-template-rows: var(--header-height) auto; /*1vh = the header, auto = footer + body */
-  height: calc(100vh - (var(--footer-height))); /* height = size of page minus footer*/
+  /*height: calc(100vh - (var(--footer-height)));*/
+  height: 90vh;
   background: black;
 
 }
@@ -438,10 +439,6 @@ header >div:hover{
   
 }
 
-footer{
-  position: static;
-}
-
 footer > div{
   text-align: center;
   justify-content: center;
@@ -452,6 +449,9 @@ footer > div{
 footer > .reset {
   cursor: pointer;
 
+}
+
+footer {
 }
 
 
