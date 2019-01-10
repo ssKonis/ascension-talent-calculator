@@ -762,8 +762,8 @@ function main(talent_map, ability_map) {
   //Modify viewport on android devices
   if (isMobile.Android()) {
     console.log(true)
-    $('.wrapper').css('height', '90vh')
-    $('.panel').css('height', 'calc(90vh - (var(--footer-height)))')
+    $('.wrapper').css('height', '92vh')
+    $('.panel').css('height', 'calc(92vh - (var(--footer-height)))')
   }
   else {
     console.log(false)

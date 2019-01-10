@@ -20,6 +20,7 @@
 }
 body{
   background: black;
+  position:fixed;
 }
 
 /* Containers */
@@ -36,7 +37,6 @@ body{
   display: grid;
   grid-template-rows: var(--header-height) auto; /*1vh = the header, auto = footer + body */
   height: calc(100vh - (var(--footer-height))); /* height = size of page minus footer*/
-  
   background: black;
 
 }
