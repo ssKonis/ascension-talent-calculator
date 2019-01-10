@@ -262,6 +262,7 @@ header >div:hover{
   grid-template-rows: 1fr 1fr;
 
 
+
 }
 
 /*On Tablet*/
@@ -271,6 +272,8 @@ header >div:hover{
     grid-template-rows: auto;
     overflow-x:hidden;
     scroll-snap-type: none;
+    align-self: start;
+
 
   }
 }
