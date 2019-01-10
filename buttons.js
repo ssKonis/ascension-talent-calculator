@@ -1,11 +1,5 @@
-/* TODOS
- remove
-
- */
-
-
 var SELECTED = {
-  class: 'druid',
+  class: 'priest',
   update: function (next) {
     this.class = next;
     let classChanged = new Event('classChanged')
@@ -69,6 +63,14 @@ var resourceCounter = {
       t = t * -1
     }
 
+    //Handle Nan values
+    if (a == NaN) {
+      a = 2
+    }
+    if (t == NaN) {
+      t = 1 * multiplier
+    }
+
     this.abilityPointsRequired.current += a
     this.talentPointsRequired.current += t
 
@@ -77,6 +79,7 @@ var resourceCounter = {
 
   },
   updateLevel: function (tooltip, operation, multiplier) {
+
     let level = parseInt(tooltip.levelReq.split(' ')[2]);
     if (operation == 'add') {
       this.levelCostCandidates.push(level)
@@ -93,7 +96,7 @@ var resourceCounter = {
       }
     }
     let maxLevel = Math.max(...this.levelCostCandidates)
-    this.levelRequired.current = (maxLevel > 0) ? maxLevel : 1;
+    this.levelRequired.current = (maxLevel > 0) ? maxLevel : 1
     this.triggerCounterChange()
   },
   triggerCounterChange: function () {
@@ -689,7 +692,6 @@ function Footer() {
 
     $('#talentPointsCounter').text('TP Remaining: ' + (e.T.max - e.T.current))
     appendImage('#talentPointsCounter', ASCENSION_API.talentEssenceIcon)
-
     $('#levelCounter').text('Level Required: ' + e.L.current)
   })
 
@@ -765,9 +767,7 @@ function main(talent_map, ability_map) {
     $('.wrapper').css('height', '92vh')
     $('.panel').css('height', 'calc(92vh - (var(--footer-height)))')
   }
-  else {
-    console.log(false)
-  }
+
 
   dispatchMapContent();
   FOOTER = new Footer();
