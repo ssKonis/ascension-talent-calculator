@@ -103,6 +103,16 @@ header >div:hover{
   cursor: pointer;
 }
 
+.class-icon-container{
+  align-content: center;
+  justify-items: center;
+}
+/*On Tablet*/
+@media only screen and (min-width: 768px) and (max-width: 1223px){
+  header > .resourceCounter{
+    display: none;
+  }
+}
 .resourceCounter{
   display: grid;
   grid-template-columns: 2fr 1fr 2fr;
@@ -161,8 +171,6 @@ header >div:hover{
 }
 */
 .classIcon{
-  height: 100%;
-  max-height: 10vh;
   width: auto;
   z-index: 2;
   cursor: pointer;
@@ -299,13 +307,14 @@ header >div:hover{
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: auto;
     justify-self: center;
-    /* max-width: 1200px; */
-   
   }
 }
 .spec-banner > span{
   cursor: pointer;
 
+}
+
+.trees.talents{
 }
 
 
@@ -401,6 +410,8 @@ header >div:hover{
   align-items: center;
   position: relative;
   cursor: pointer;
+  max-width: 64px;
+  max-height: 64px;
 }
 
 .icon > img{
@@ -411,21 +422,34 @@ header >div:hover{
 /* on tablet and Desktop*/
 @media only screen and (min-width: 768px){
   .icon > img{
-    max-width: 48px;
-    max-height:48px;
+    max-width: 42px;
+    max-height:42px;
+  }
+  .icon{
+    max-width: 42px;
+    max-height: 42px;
   }
 }
 
 
 
-
 .rankBox{
+  font-size: 100%;
   background-color: black;
   height:20px;
   width:34px;
   position: absolute;
-  right:0;
-  bottom:0;
+  right: -5px;
+  bottom:-2px;
+}
+/* on tablet and Desktop*/
+@media only screen and (min-width: 768px){
+.rankBox{
+  font-size: 80%;
+  height:15px;
+  width:28px;
+ 
+}
 }
 
 
