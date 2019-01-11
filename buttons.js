@@ -1,5 +1,5 @@
 var SELECTED = {
-  class: 'priest',
+  class: 'druid',
   update: function (next) {
     this.class = next;
     let classChanged = new Event('classChanged')
