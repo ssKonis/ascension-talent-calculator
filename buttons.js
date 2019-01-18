@@ -1,5 +1,5 @@
 var SELECTED = {
-  class: 'druid',
+  class: 'mage',
   update: function (next) {
     this.class = next;
     let classChanged = new Event('classChanged')
@@ -48,8 +48,27 @@ var resourceCounter = {
   abilityPointsRequired: { current: 0, max: 59, maxed: false },
   levelRequired: { current: 1, max: 60 },
   levelCostCandidates: [],
+  validateTooltip: function (tooltip) {
+    if (isNaN(tooltip.abilityEssenceCost)) {
+      tooltip.abilityEssenceCost = 0
+    }
+    if (isNaN(tooltip.talentEssenceCost)) {
+      if (tooltip.isTalent) {
+        tooltip.talentEssenceCost = 1
+      }
+      else {
+        tooltip.talentEssenceCost = 0
+      }
+    }
+    if (tooltip.levelReq == '') {
+      tooltip.levelReq = 'Requires level 1'
+    }
+
+    return tooltip
+  },
 
   updateCounter: function (tooltip, operation = 'add', multiplier = 1) {
+    tooltip = this.validateTooltip(tooltip)
     this.updateEssence(tooltip, operation, multiplier)
     this.updateLevel(tooltip, operation, multiplier)
   },
@@ -63,14 +82,6 @@ var resourceCounter = {
       t = t * -1
     }
 
-    //Handle Nan values
-    if (a == NaN) {
-      a = 2
-    }
-    if (t == NaN) {
-      t = 1 * multiplier
-    }
-
     this.abilityPointsRequired.current += a
     this.talentPointsRequired.current += t
 
@@ -79,7 +90,6 @@ var resourceCounter = {
 
   },
   updateLevel: function (tooltip, operation, multiplier) {
-
     let level = parseInt(tooltip.levelReq.split(' ')[2]);
     if (operation == 'add') {
       this.levelCostCandidates.push(level)
@@ -113,7 +123,8 @@ var resourceCounter = {
     this.levelCostCandidates = [];
     this.triggerCounterChange();
 
-  }
+  },
+
 
 }
 $(document).ready(function () { //check document is loaded
@@ -343,9 +354,11 @@ Spell.prototype.updateToolTip = function () {
     //Fill tooltip with related metadata as divs
     $('.tooltip_content').empty();
     Object.keys(content).forEach(key => {
-      let div = document.createElement("div")
-      $(div).append(content[key])
-      $('.tooltip_content').append(div)
+      if (key != 'isTalent') {
+        let div = document.createElement("div")
+        $(div).append(content[key])
+        $('.tooltip_content').append(div)
+      }
     })
 
     {
@@ -375,6 +388,7 @@ Spell.prototype.requestToolTipMetaData = function (data) {
   let essenceCost = $(data).find('.ascension-tooltip-spell-essence-cost').text();
   content.abilityEssenceCost = parseInt(essenceCost.split(' ')[16])
   content.talentEssenceCost = parseInt(essenceCost.split(' ')[18])
+  content.isTalent = this instanceof Talent
   this.toolTipContent = content;
 
 }
@@ -430,9 +444,6 @@ Spell.prototype.saveIcon = function (operation) {
       newIcon.updateState()
       savedIcons.add(this)
     }
-
-
-
 
   }
 
@@ -763,7 +774,6 @@ function main(talent_map, ability_map) {
 
   //Modify viewport on android devices
   if (isMobile.Android()) {
-    console.log(true)
     $('.wrapper').css('height', '92vh')
     $('.panel').css('height', 'calc(92vh - (var(--footer-height)))')
   }
