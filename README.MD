@@ -2,4 +2,5 @@ This application is a talent and ability points calculator for the Project Ascen
 
 Take a look at the website here:
 
+Original Creator's Webpage
 https://jameswilky.github.io/ascension-talent-calculator/
