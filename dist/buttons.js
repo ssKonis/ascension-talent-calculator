@@ -43,10 +43,10 @@ var ASCENSION_API = {
 }
 
 var resourceCounter = {
-  //Max TP = 51, max AP = 59, max level = 60
-  talentPointsRequired: { current: 0, max: 51, maxed: false },
-  abilityPointsRequired: { current: 0, max: 59, maxed: false },
-  levelRequired: { current: 1, max: 60 },
+  //Max TP = 61, max AP = 69, max level = 70
+  talentPointsRequired: { current: 0, max: 61, maxed: false },
+  abilityPointsRequired: { current: 0, max: 69, maxed: false },
+  levelRequired: { current: 1, max: 70 },
   levelCostCandidates: [],
   validateTooltip: function (tooltip) {
     if (isNaN(tooltip.abilityEssenceCost)) {
